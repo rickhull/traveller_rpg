@@ -4,7 +4,6 @@ module TravellerRPG
   class Career
     class Error < RuntimeError; end
     class UnknownAssignment < Error; end
-    class MusterError < Error; end
 
     def self.roll_check?(label, dm:, check:, roll: nil)
       roll ||= TravellerRPG.roll('2d6')
@@ -240,7 +239,7 @@ module TravellerRPG
 
     def muster_out(dm: 0)
       if @active
-        raise(MusterError, "career has not started") unless @term > 0
+        raise(Error, "career has not started") unless @term > 0
         @active = false
         cash_benefit = 0
         @char.log "Muster out: #{self.name}"
