@@ -150,7 +150,7 @@ module TravellerRPG
     def qualify_check?(career_count)
       @char.log format("Qualify DM is based on Intelligence %i",
                        @char.stats.intelligence)
-      super(career_count, dm: @char.stats.intelligence)
+      super(career_count, dm: @char.class.stats_dm(@char.stats.intelligence))
     end
   end
 
