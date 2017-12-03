@@ -12,11 +12,10 @@ module TravellerRPG
 
     TERM_YEARS = 4
 
-    QUALIFY_CHECK = 5
     SURVIVAL_CHECK = 6
     ADVANCEMENT_CHECK = 9
 
-    STATS = Array.new(6) { :default }
+    PERSONAL_SKILLS = Array.new(6) { :default }
     SERVICE_SKILLS = Array.new(6) { :default }
     ADVANCED_SKILLS = Array.new(6) { :default }
     SPECIALIST_SKILLS = { default: Array.new(6) { :default } }
@@ -64,9 +63,12 @@ module TravellerRPG
     def initialize(char, assignment: nil, term: 0, active: false, rank: 0,
                    benefits: {})
       @char = char
-      @assignment = assignment
-      if @assignment and !self.class::SPECIALIST_SKILLS.key?(@assignment)
-        raise(UnknownAssignment, assignment.inspect)
+      s = self.class::SPECIALIST
+      if assignment
+        raise(UnknownAssignment, assignment.inspect) unless s.key?(assignment)
+        @assignment = assignment
+      else
+        @assignment = TravellerRPG.choose("Choose a specialty:", *s.keys)
       end
 
       # career tracking
@@ -75,27 +77,30 @@ module TravellerRPG
       @rank = rank
       @benefits = benefits  # acquired equipment, ships / shares
       @term_mandate = nil
+      @title = nil
+    end
+
+    def officer?
+      false
     end
 
     def activate
       @active = true
     end
 
-    def assignment
-      @assignment ||= TravellerRPG.choose("Choose a specialty:",
-                                       *self.class::SPECIALIST_SKILLS.keys)
-    end
-
     def active?
       !!@active
     end
 
-    def qualify_check?(career_count, dm: 0)
+    def qualify_check?(career_count)
+      stat, check = self.class::QUALIFICATION
+      @char.log format("#{self.name} qualification: #{stat} #{check}+")
+      dm = @char.class.stats_dm(@char.stats[stat])
       dm += -1 * career_count
       roll = TravellerRPG.roll('2d6')
       puts format("Qualify check: rolled %i (DM %i) against %i",
-                  roll, dm, self.class::QUALIFY_CHECK)
-      (roll + dm) >= self.class::QUALIFY_CHECK
+                  roll, dm, check)
+      (roll + dm) >= check
     end
 
     def survival_check?(dm: 0)
@@ -115,48 +120,21 @@ module TravellerRPG
     # any skills obtained start at level 1
     def training_roll
       roll = TravellerRPG.roll('d6')
-      @char.log "Training roll (d6): #{roll}"
-      choices = [:stats, :service, :specialist]
+      @char.log "Training roll: #{roll}"
+      choices = [:personal, :service, :specialist]
       choices << :advanced if self.class.advanced_skills?(@char.stats)
-      choices << :officer if self.respond_to?(:officer) and self.officer
+      choices << :officer if self.officer?
       choice = TravellerRPG.choose("Choose training regimen:", *choices)
-      case choice
-      when :stats
-        stat = self.class::STATS.fetch(roll - 1)
-        if @char.stats.respond_to?(stat)
-          @char.stats.boost(stat => 1)
-          @char.log "Trained #{stat.to_s.capitalize} " +
-                    "to #{@char.stats.send(stat)}"
-        else
-          raise "bad stat: #{stat}" unless TravellerRPG::SKILLS.key?(stat)
-          # stat is likely :jack_of_all_trades skill
-          @char.skills[stat] ||= 0
-          @char.skills[stat] += 1
-          @char.log "Trained stats skill: #{stat} #{@char.skills[stat]}"
-        end
-      when :service
-        svc = self.class::SERVICE_SKILLS.fetch(roll - 1)
-        @char.skills[svc] ||= 0
-        @char.skills[svc] += 1
-        @char.log "Trained service skill: #{svc} #{@char.skills[svc]}"
-      when :specialist
-        spec =
-          self.class::SPECIALIST_SKILLS.fetch(self.assignment).fetch(roll - 1)
-        @char.skills[spec] ||= 0
-        @char.skills[spec] += 1
-        @char.log "Trained #{@assignment.to_s.capitalize} specialist skill: " +
-                  "#{spec} #{@char.skills[spec]}"
-      when :advanced
-        adv = self.class::ADVANCED_SKILLS.fetch(roll - 1)
-        @char.skills[adv] ||= 0
-        @char.skills[adv] += 1
-        @char.log "Trained advanced skill: #{adv} #{@char.skills[adv]}"
-      when :officer
-        off = self.class::OFFICER_SKILLS.fetch(roll - 1)
-        @char.skills[off] ||= 0
-        @char.skills[off] += 1
-        @char.log "Trained officer skill: #{off} #{@char.skills[off]}"
-      end
+      @char.bump_skill \
+              case choice
+              when :personal then self.class::PERSONAL_SKILLS.fetch(roll - 1)
+              when :service  then self.class::SERVICE_SKILLS.fetch(roll - 1)
+              when :specialist
+                self.class::SPECIALIST.dig(@assignment, :skills, roll - 1)
+              when :advanced then self.class::ADVANCED_SKILLS.fetch(roll - 1)
+              when :officer  then self.class::OFFICER_SKILLS.fetch(roll - 1)
+              end
+      self
     end
 
     def event_roll(dm: 0)
@@ -187,6 +165,7 @@ module TravellerRPG
       @char.log "Advanced career to rank #{@rank}"
       title, skill, level = self.rank_benefit
       if title
+        @title = title
         @char.log "Awarded rank title: #{title}"
         @char.log "Achieved rank skill: #{skill} #{level}"
         @char.skills[skill] ||= 0
@@ -274,7 +253,11 @@ module TravellerRPG
       hsh = {}
       hsh['Term'] = @term if term
       hsh['Active'] = @active if active
-      hsh['Rank'] = @rank if rank
+      if rank
+        hsh['Officer Rank'] = self.rank if self.officer?
+        hsh['Rank'] = @rank
+        hsh['Title'] = @title if @title
+      end
       hsh['Benefits'] = @benefits if benefits
       report = ["Career: #{self.name}", "==="]
       hsh.each { |label, val|
