@@ -87,9 +87,34 @@ module TravellerRPG
         }
       end
       skill_choices.each { |sym|
-        self.log "Acquired background skill: #{sym} 0"
-        @skills[sym] ||= 0
+        if TravellerRPG::SKILLS.key?(sym)
+          self.log "Acquired background skill: #{sym} 0"
+          @skills[sym] ||= 0
+        else
+          raise(KeyError, sym)
+        end
       }
+      self
+    end
+
+    def bump_skill(sym, value: nil)
+      if TravellerRPG::SKILLS.key?(sym)
+        @skills[sym] ||= 0
+        if value
+          if @skills[sym] < value
+            @skills[sym] = value
+          else
+            self.log "#{sym} #{value} is < current #{@skills[sym]}"
+          end
+        else
+          @skills[sym] += 1
+          value = @skills[sym]
+        end
+      else
+        @stats[sym] += 1
+        value = @stats[sym]
+      end
+      self.log "Trained #{sym} to #{value}"
     end
 
     def add_stuff(benefits)
@@ -111,6 +136,7 @@ module TravellerRPG
       return @log unless msg
       puts msg
       @log << msg
+      self
     end
 
     def name
