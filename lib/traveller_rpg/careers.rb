@@ -72,31 +72,60 @@ module TravellerRPG
   class Agent < MilitaryCareer
   end
 
-  class Scout < MilitaryCareer
-    # note, 6th "stat" is really a skill - jack of all trades
-    STATS = [:strength, :dexterity, :endurance,
-             :intelligence, :education, :jack_of_all_trades]
-    SERVICE_SKILLS = [:pilot_small_craft, :survival, :mechanic,
+  class Scout < Career
+    # (stat for DM, check threshold)
+    QUALIFICATION   = [:intelligence, 5]
+    PERSONAL_SKILLS = [:strength, :dexterity, :endurance,
+                       :intelligence, :education, :jack_of_all_trades]
+    SERVICE_SKILLS  = [:pilot_small_craft, :survival, :mechanic,
                       :astrogation, :comms, :gun_combat_group]
-    ADVANCED_SKILLS = [:medic, :navigation, :engineer,
-                       :computers, :space_science, :jack_of_all_trades]
-
-    # made up by Rick
-    OFFICER_SKILLS = [:deception, :language_group, :investigate,
-                      :remote_operations, :tactics_military, :leadership]
-    SPECIALIST_SKILLS = {
-      courier: [:comms, :sensors, :pilot_spacecraft,
-                :vacc_suit, :zero_g, :astrogation],
-      survey: [:sensors, :persuade, :pilot_small_craft,
-               :navigation, :diplomat, :streetwise],
-      exploration: [:sensors, :pilot_spacecraft, :pilot_small_craft,
-                    :life_science_any, :stealth, :recon],
+    ADVANCED_SKILLS = [:medic, :navigation, :engineer_group,
+                       :computers, :space_sciences_group, :jack_of_all_trades]
+    SPECIALIST = {
+      courier: {
+        skills:   [:comms, :sensors, :pilot_spacecraft,
+                   :vacc_suit, :zero_g, :astrogation],
+        survival: [:endurance, 5],
+        advancement: [:education, 9],
+      },
+      surveyor: {
+        skills: [:sensors, :persuade, :pilot_small_craft,
+                 :navigation, :diplomat, :streetwise],
+        survival: [:endurance, 6],
+        advancement: [:intelligence, 8],
+      },
+      explorer: {
+        skills: [:sensors, :pilot_spacecraft, :pilot_small_craft,
+                 :life_sciences_group, :stealth, :recon],
+        survival: [:endurance, 7],
+        advancement: [:education, 7],
+      },
     }
+
+    MUSTER_OUT = {
+      1 => [20000, 'Ship Share'],
+      2 => [20000, 'INT +1'],
+      3 => [30000, 'EDU +1'],
+      4 => [30000, 'Weapon'],
+      5 => [50000, 'Weapon'],
+      6 => [50000, 'Scout Ship'],
+    }
+
+    # Weapon: Select any weapon up to 1000 creds and TL12
+    # If this benefit is rolled more than once, take a different weapon
+    # or one level in the appropriate Melee or Gun Combat skill
+
+    # Scout Ship: Receive a scout ship in exchange for performing periodic
+    #             scout missions
+
+    # Ship share: Accumulate these to redeem for a ship.  They are worth
+    #             roughly 1M creds but cannot be redeemed for creds.
+
 
     # key: roll; values: title, skill, skill_value
     RANKS = {
-      1 => [:scout, :vacc_suit, 1],
-      3 => [:senior_scout, :pilot, 1],
+      1 => ['Scout', :vacc_suit, 1],
+      3 => ['Senior Scout', :pilot, 1],
     }
 
     EVENTS = {
@@ -143,12 +172,6 @@ module TravellerRPG
 
     # not defined at http://www.traveller-srd.com/core-rules/careers/ :(
     BENEFITS = {}
-
-    def qualify_check?(career_count)
-      @char.log format("Qualify DM is based on Intelligence %i",
-                       @char.stats.intelligence)
-      super(career_count, dm: @char.class.stats_dm(@char.stats.intelligence))
-    end
   end
 
   class Drifter < Career
