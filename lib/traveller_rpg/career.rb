@@ -59,8 +59,7 @@ module TravellerRPG
       12 => 16000,
     }
 
-    attr_reader :stats, :skills, :benefits
-    attr_accessor :term, :active, :rank
+    attr_reader :term, :active, :rank, :benefits
 
     def initialize(char, assignment: nil, term: 0, active: false, rank: 0,
                    benefits: {})
@@ -76,6 +75,10 @@ module TravellerRPG
       @rank = rank
       @benefits = benefits  # acquired equipment, ships / shares
       @term_mandate = nil
+    end
+
+    def activate
+      @active = true
     end
 
     def assignment

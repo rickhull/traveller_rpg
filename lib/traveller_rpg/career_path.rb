@@ -40,10 +40,10 @@ module TravellerRPG
       raise(Ineligible, career.name) unless self.eligible?(career)
       raise(Error, "career is already active") if career.active?
       raise(Error, "career has already started") unless career.term == 0
-      self.muster_out
+      self.muster_out # exit any active career
       @char.log "Entering new career: #{career.name}"
+      career.activate
       @active_career = career
-      @active_career.active = true
       self.basic_training
       self
     end
