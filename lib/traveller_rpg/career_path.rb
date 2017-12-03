@@ -17,7 +17,7 @@ module TravellerRPG
     def eligible?(career)
       case career
       when Career
-        return false if career.active
+        return false if career.active?
         cls = career.class
       when String
         cls = TravellerRPG.career_class(career)
@@ -37,7 +37,7 @@ module TravellerRPG
 
     def enter(career)
       raise(Ineligible, career.name) unless self.eligible?(career)
-      raise(Error, "career is already active") if career.active
+      raise(Error, "career is already active") if career.active?
       raise(Error, "career has already started") unless career.term == 0
       self.muster_out
       @char.log "Entering new career: #{career.name}"
@@ -65,7 +65,7 @@ module TravellerRPG
     def run_term
       raise(Error, "no active career") unless @active_career
       @active_career.run_term
-      unless @active_career.active
+      unless @active_career.active?
         @careers << @active_career
         @active_career = nil
       end
@@ -73,7 +73,7 @@ module TravellerRPG
 
     def muster_out
       if @active_career
-        raise(Error, "career is inactive") unless @active_career.active
+        raise(Error, "career is inactive") unless @active_career.active?
         raise(Error, "must remain") if @active_career.must_remain?
         @char.add_stuff(@active_career.muster_out)
         @careers << @active_career
