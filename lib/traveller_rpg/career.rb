@@ -16,13 +16,10 @@ module TravellerRPG
     SURVIVAL_CHECK = 6
     ADVANCEMENT_CHECK = 9
 
-    STATS = Array.new(6) { {} }
+    STATS = Array.new(6) { :default }
     SERVICE_SKILLS = Array.new(6) { :default }
     ADVANCED_SKILLS = Array.new(6) { :default }
-    SPECIALIST_SKILLS = {
-      default: Array.new(6) { :default }
-    }
-
+    SPECIALIST_SKILLS = { default: Array.new(6) { :default } }
     RANKS = {}
 
     EVENTS = {
