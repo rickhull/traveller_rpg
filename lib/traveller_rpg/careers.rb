@@ -7,25 +7,27 @@ module TravellerRPG
     OFFICER_SKILLS = Array.new(6) { :default }
     OFFICER_RANKS = {}
 
-    attr_reader :officer, :officer_rank
-
     def initialize(char, **kwargs)
       super(char, **kwargs)
       @officer = false
     end
 
+    def officer?
+      !!@officer
+    end
+
     def rank
-      @officer ? @officer_rank : @rank
+      @officer ? @officer : @rank
     end
 
     def rank_benefit
-      @officer ? self.class::OFFICER_RANKS[@officer_rank] : super
+      @officer ? self.class::OFFICER_RANKS[@officer] : super
     end
 
     def advance_rank
       return super unless @officer
-      @officer_rank += 1
-      @char.log "Advanced career to officer rank #{@officer_rank}"
+      @officer += 1
+      @char.log "Advanced career to officer rank #{@officer}"
       title, skill, level = self.rank_benefit
       if title
         @char.log "Awarded officer rank title: #{title}"
@@ -47,16 +49,11 @@ module TravellerRPG
       if TravellerRPG.choose("Apply for commission?", :yes, :no) == :yes
         if self.commission_check?
           @char.log "Became an officer!"
-          @officer = true
-          @officer_rank = 1
+          @officer = 1
         else
           @char.log "Commission was rejected"
         end
       end
-    end
-
-    def officer?
-      !!@officer
     end
   end
 
