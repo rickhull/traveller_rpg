@@ -3,24 +3,24 @@ require 'traveller_rpg'
 module TravellerRPG
   class Homeworld
     TRAITS = {
-      agricultural: :animals,
+      agricultural: :animals_group,
       asteroid: :zero_g,
       desert: :survival,
-      fluid_oceans: :seafarer,
-      garden: :animals,
+      fluid_oceans: :seafarer_group,
+      garden: [:animals_riding, :animals_veterinary],
       high_technology: :computers,
       high_population: :streetwise,
       ice_capped: :vacc_suit,
-      industrial: :trade,
+      industrial: :trade_group,
       low_technology: :survival,
-      poor: :animals,
+      poor: :animals_group,
       rich: :carouse,
-      water_world: :seafarer,
+      water_world: :seafarer_group,
       vacuum: :vacc_suit,
-      education: [:admin, :advocate, :art, :carouse, :comms,
-                  :computer, :drive, :engineer, :language, :medic,
-                  :physical_science, :life_science, :social_science,
-                  :space_science, :trade],
+      education: [:admin, :advocate, :art_group, :carouse, :comms,
+                  :computers, :drive_group, :engineer_group, :language_group,
+                  :medic, :physical_sciences_group, :life_sciences_group,
+                  :social_sciences_group, :space_sciences_group, :trade_group],
     }
     TRAIT_MIN = 3
     TRAIT_MAX = 6
