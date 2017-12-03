@@ -125,43 +125,44 @@ module TravellerRPG
         stat = self.class::STATS.fetch(roll - 1)
         if @char.stats.respond_to?(stat)
           @char.stats.boost(stat => 1)
-          @char.log "Trained #{stat} to #{@char.stats.send(stat)}"
+          @char.log "Trained #{stat.to_s.capitalize} " +
+                    "to #{@char.stats.send(stat)}"
         else
           raise "bad stat: #{stat}" unless TravellerRPG::SKILLS.key?(stat)
           # stat is likely :jack_of_all_trades skill
           @char.skills[stat] ||= 0
           @char.skills[stat] += 1
-          @char.log "Trained (stats) skill #{stat} to #{@char.skills[stat]}"
+          @char.log "Trained stats skill: #{stat} #{@char.skills[stat]}"
         end
       when :service
         svc = self.class::SERVICE_SKILLS.fetch(roll - 1)
         @char.skills[svc] ||= 0
         @char.skills[svc] += 1
-        @char.log "Trained service skill #{svc} to #{@char.skills[svc]}"
+        @char.log "Trained service skill: #{svc} #{@char.skills[svc]}"
       when :specialist
         spec =
           self.class::SPECIALIST_SKILLS.fetch(self.assignment).fetch(roll - 1)
         @char.skills[spec] ||= 0
         @char.skills[spec] += 1
-        @char.log "Trained #{@assignment} specialist skill #{spec} " +
-                  "to #{@char.skills[spec]}"
+        @char.log "Trained #{@assignment.to_s.capitalize} specialist skill: " +
+                  "#{spec} #{@char.skills[spec]}"
       when :advanced
         adv = self.class::ADVANCED_SKILLS.fetch(roll - 1)
         @char.skills[adv] ||= 0
         @char.skills[adv] += 1
-        @char.log "Trained advanced skill #{adv} to #{@char.skills[adv]}"
+        @char.log "Trained advanced skill: #{adv} #{@char.skills[adv]}"
       when :officer
         off = self.class::OFFICER_SKILLS.fetch(roll - 1)
         @char.skills[off] ||= 0
         @char.skills[off] += 1
-        @char.log "Trained officer skill #{off} to #{@char.skills[off]}"
+        @char.log "Trained officer skill: #{off} #{@char.skills[off]}"
       end
     end
 
     def event_roll(dm: 0)
       roll = TravellerRPG.roll('2d6')
       clamped = (roll + dm).clamp(2, 12)
-      @char.log "Event roll (2d6): #{roll} + DM #{dm} = #{clamped}"
+      @char.log "Event roll: #{roll} (DM #{dm}) = #{clamped}"
       @char.log self.class::EVENTS.fetch(clamped)
       # TODO: actually perform the event stuff
     end
