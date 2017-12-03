@@ -5,8 +5,6 @@ module TravellerRPG
     class Error < RuntimeError; end
     class Ineligible < Error; end
 
-    TERM_YEARS = 4
-
     attr_reader :char, :careers, :active_career
 
     def initialize(character)
