@@ -4,10 +4,10 @@ Gem::Specification.new do |s|
   s.description = 'Mostly based on Traveller SRD'
   s.authors = ["Rick Hull"]
   s.homepage = 'https://github.com/rickhull/traveller_rpg'
-  s.license = 'GPL'
+  s.license = 'LGPL-3.0'
   s.files = [
     'traveller_rpg.gemspec',
-    'VERISON',
+    'VERSION',
     'Rakefile',
     'README.md',
     'lib/traveller_rpg.rb',
@@ -18,8 +18,6 @@ Gem::Specification.new do |s|
     'lib/traveller_rpg/data.rb',
     'lib/traveller_rpg/generator.rb',
     'lib/traveller_rpg/homeworld.rb',
-    'lib/traveller_rpg/.rb',
-    'lib/traveller_rpg/.rb',
     'bin/chargen',
   ]
   s.executables = ['chargen']
