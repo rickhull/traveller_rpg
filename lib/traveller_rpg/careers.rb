@@ -37,11 +37,11 @@ module TravellerRPG
       end
     end
 
-    def commission_check?(dm = 0)
-      roll = TravellerRPG.roll('2d6')
-      puts format("Commission check: roll %i (DM %i) against %i",
-                  roll, dm, self.class::COMMISSION_CHECK)
-      (roll + dm) >= self.class::COMMISSION_CHECK
+    def commission_check?(dm: 0)
+      stat, check = self.class::COMMISSION
+      @char.log "#{self.name} commission: #{stat} #{check}"
+      dm += @char.stats_dm(stat)
+      self.class.roll_check?('Commission', dm: dm, check: check)
     end
 
     def commission_roll(dm: 0)
