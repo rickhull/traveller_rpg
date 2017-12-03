@@ -46,7 +46,7 @@ module TravellerRPG
     }
 
     CASH = {
-      2 => -200,
+      2 => -500,
       3 => -100,
       4 => 200,
       5 => 400,
@@ -56,7 +56,7 @@ module TravellerRPG
       9 => 2000,
       10 => 4000,
       11 => 8000,
-      12 => 12000,
+      12 => 16000,
     }
 
     attr_reader :stats, :skills, :benefits
