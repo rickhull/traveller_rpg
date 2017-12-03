@@ -36,8 +36,8 @@ module TravellerRPG
       end
     end
 
-    def self.stats_dm(stat)
-      case stat
+    def self.stats_dm(stat_val)
+      case stat_val
       when 0 then -3
       when 1..2 then -2
       when 3..5 then -1
@@ -46,7 +46,7 @@ module TravellerRPG
       when 12..14 then 2
       when 15..20 then 3
       else
-        raise "unexpected stat: #{stat} (#{stat.class})"
+        raise "unexpected stat: #{stat_val} (#{stat_val.class})"
       end
     end
 
@@ -63,6 +63,10 @@ module TravellerRPG
       self.birth
     end
 
+    def stats_dm(stat_sym)
+      self.class.stats_dm(@stats[stat_sym])
+    end
+
     # gain background skills based on homeworld
     def birth
       return nil unless @log.empty?
@@ -70,7 +74,7 @@ module TravellerRPG
                       @desc.name,
                       @homeworld.name,
                       @homeworld.traits.join(' '))
-      skill_count = 3 + self.class.stats_dm(@stats.education)
+      skill_count = 3 + self.stats_dm(:education)
       self.log format("Education %i qualifies for %i skills",
                       @stats.education, skill_count)
       skill_choices = []
