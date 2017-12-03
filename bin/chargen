@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-require 'pry'
 require 'traveller_rpg'
 require 'traveller_rpg/careers'
 require 'traveller_rpg/generator'
@@ -34,14 +33,13 @@ loop {
   }
   path.muster_out if path.active_career
 
-  puts char.desc.pretty_inspect
-  puts char.stats.pretty_inspect
-  puts char.skills.pretty_inspect
-  puts char.stuff.pretty_inspect
+  puts "\n" * 4
+  puts path.careers.last.report
+  puts "\n" * 2
+  puts char.report
+  puts "\n" * 2
 
   break if TravellerRPG.choose("Exit career mode?", :yes, :no) == :yes
 }
-
-binding.pry if ENV['PRY']
 
 puts "DONE"
