@@ -1,0 +1,4 @@
+light
+medium
+medium
+full

@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby
+
+require 'pry'
+require 'traveller_rpg'
+require 'traveller_rpg/careers'
+require 'traveller_rpg/generator'
+require 'traveller_rpg/career_path'
+
+char = TravellerRPG::Generator.character
+path = TravellerRPG::CareerPath.new(char)
+
+careers = %w{Scout}
+
+loop {
+  careers = careers.select { |c| path.eligible? c }
+  if careers.empty?
+    puts "No eligible careers available!"
+    break
+  end
+  career = TravellerRPG.choose("Choose a career", *careers)
+  career = TravellerRPG.career_class(career).new(char)
+
+  # skip draft / drifter for now
+  accepted = false
+  accepted = path.apply(career) while !accepted
+
+  #
+  loop {
+    path.run_term
+    break unless path.active_career
+    break if career.must_exit?
+    next if career.must_remain?
+    break if TravellerRPG.choose("Muster out?", :yes, :no) == :yes
+  }
+  path.muster_out if path.active_career
+
+  puts char.desc.pretty_inspect
+  puts char.stats.pretty_inspect
+  puts char.skills.pretty_inspect
+  puts char.stuff.pretty_inspect
+
+  break if TravellerRPG.choose("Exit career mode?", :yes, :no) == :yes
+}
+
+binding.pry if ENV['PRY']
+
+puts "DONE"
