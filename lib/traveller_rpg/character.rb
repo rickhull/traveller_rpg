@@ -124,5 +124,41 @@ module TravellerRPG
     def skill_check?(skill, val = 0)
       @skills[skill] and @skills[skill] >= val
     end
+
+    def report(desc: :short, stats: true, skills: true, stuff: true)
+      hsh = {}
+      if desc
+        hsh['Description'] = { 'Name'   => @desc.name,
+                               'Gender' => @desc.gender,
+                               'Age'    => @desc.age }
+        if desc == :long
+          hsh['Description'].merge! 'Appearance'  => @desc.appearance,
+                                    'Temperament' => @desc.temperament,
+                                    'Plot'        => @desc.plot
+        end
+      end
+      if stats
+        hsh['Characteristics'] = {
+          'Strength' => @stats.strength,
+          'Dexterity' => @stats.dexterity,
+          'Endurance' => @stats.endurance,
+          'Intelligence' => @stats.intelligence,
+          'Education' => @stats.education,
+          'Social Status' => @stats.social_status,
+        }
+      end
+      hsh['Skills'] = @skills if skills
+      hsh['Stuff'] = @stuff if stuff
+      report = []
+      hsh.each { |section, tbl|
+        report << "#{section}\n==="
+        report << "(none)" if tbl.empty?
+        tbl.each { |label, val|
+          report << format("%s: %s", label.to_s.rjust(20, ' '), val.to_s)
+        }
+        report << ' '
+      }
+      report.join("\n")
+    end
   end
 end
