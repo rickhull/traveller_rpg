@@ -6,10 +6,6 @@ module TravellerRPG
     class UnknownAssignment < Error; end
     class MusterError < Error; end
 
-    def self.advanced_skills?(stats)
-      stats.education >= 8
-    end
-
     def self.roll_check?(label, dm:, check:, roll: nil)
       roll ||= TravellerRPG.roll('2d6')
       puts format("%s check: rolled %i (DM %i) against %i",
@@ -20,6 +16,7 @@ module TravellerRPG
     TERM_YEARS = 4
 
     QUALIFICATION = [:default, 5]
+    ADVANCED_EDUCATION = 8
     PERSONAL_SKILLS = Array.new(6) { :default }
     SERVICE_SKILLS = Array.new(6) { :default }
     ADVANCED_SKILLS = Array.new(6) { :default }
@@ -134,14 +131,18 @@ module TravellerRPG
       self.class.roll_check?('Advancement', dm: dm, check: check, roll: roll)
     end
 
+    def advanced_education?
+      @char.stats[:education] >= self.class::ADVANCED_EDUCATION
+    end
+
     # any skills obtained start at level 1
     def training_roll
+      choices = [:personal, :service, :specialist]
+      choices << :advanced if self.advanced_education?
+      choices << :officer if self.officer?
+      choice = TravellerRPG.choose("Choose skills regimen:", *choices)
       roll = TravellerRPG.roll('d6')
       @char.log "Training roll: #{roll}"
-      choices = [:personal, :service, :specialist]
-      choices << :advanced if self.class.advanced_skills?(@char.stats)
-      choices << :officer if self.officer?
-      choice = TravellerRPG.choose("Choose training regimen:", *choices)
       @char.bump_skill \
               case choice
               when :personal then self.class::PERSONAL_SKILLS.fetch(roll - 1)

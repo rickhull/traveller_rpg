@@ -75,6 +75,7 @@ module TravellerRPG
   class Scout < Career
     # (stat for DM, check threshold)
     QUALIFICATION   = [:intelligence, 5]
+    ADVANCED_EDUCATION = 8
     PERSONAL_SKILLS = [:strength, :dexterity, :endurance,
                        :intelligence, :education, :jack_of_all_trades]
     SERVICE_SKILLS  = [:pilot_small_craft, :survival, :mechanic,
