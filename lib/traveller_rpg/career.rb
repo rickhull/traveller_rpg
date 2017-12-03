@@ -235,7 +235,7 @@ module TravellerRPG
       end
     end
 
-    def retirement_benefit
+    def retirement_bonus
       @term >= 5 ? @term * 2000 : 0
     end
 
@@ -250,9 +250,9 @@ module TravellerRPG
           cash_benefit += self.cash_roll(dm: dm)
         }
         @char.log "Cash benefit: #{cash_benefit}"
-        @char.log "Retirement benefit: #{self.retirement_benefit}"
+        @char.log "Retirement bonus: #{self.retirement_bonus}"
         @benefits[:cash] ||= 0
-        @benefits[:cash] += cash_benefit + self.retirement_benefit
+        @benefits[:cash] += cash_benefit + self.retirement_bonus
         @benefits
       end
     end
