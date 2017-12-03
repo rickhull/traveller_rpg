@@ -32,6 +32,7 @@ module TravellerRPG
         self.enter(career)
       else
         @char.log "Did not qualify for #{career.name}"
+        false
       end
     end
 
