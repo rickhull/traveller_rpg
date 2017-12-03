@@ -125,6 +125,10 @@ module TravellerRPG
       @skills[skill] and @skills[skill] >= val
     end
 
+    def skill_level(sym)
+      @skills[sym] and @skills[sym].clamp(0, 4)
+    end
+
     def report(desc: :short, stats: true, skills: true, stuff: true)
       hsh = {}
       if desc
