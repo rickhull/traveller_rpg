@@ -269,5 +269,29 @@ module TravellerRPG
     def rank_benefit
       self.class::RANKS[@rank]
     end
+
+    def report(term: true, active: true, rank: true, benefits: true)
+      hsh = {}
+      hsh['Term'] = @term if term
+      hsh['Active'] = @active if active
+      hsh['Rank'] = @rank if rank
+      hsh['Benefits'] = @benefits if benefits
+      report = ["Career: #{self.name}", "==="]
+      hsh.each { |label, val|
+        if val.is_a?(Hash)
+          report << "#{label}:\n---"
+          report << "(none)" if val.empty?
+          k_width = 0
+          val.each { |k, v|
+            k_width = k.size if k.size > k_width
+            report << format("%s: %s", k.to_s.rjust(k_width, ' '), v.to_s)
+          }
+          report << ' '
+        else
+          report << format("%s: %s", label.to_s.rjust(8, ' '), val.to_s)
+        end
+      }
+      report.join("\n")
+    end
   end
 end
