@@ -23,7 +23,7 @@ loop {
   accepted = false
   accepted = path.apply(career) while !accepted
 
-  #
+  # run consecutive terms of this career
   loop {
     path.run_term
     break unless path.active_career
@@ -33,7 +33,7 @@ loop {
   }
   path.muster_out if path.active_career
 
-  puts "\n" * 4
+  puts "\n" * 2
   puts path.careers.last.report
   puts "\n" * 2
   puts char.report
