@@ -10,15 +10,26 @@ module TravellerRPG
       stats.education >= 8
     end
 
+    def self.roll_check?(label, dm:, check:, roll: nil)
+      roll ||= TravellerRPG.roll('2d6')
+      puts format("%s check: rolled %i (DM %i) against %i",
+                  label, roll, dm, check)
+      (roll + dm) >= check
+    end
+
     TERM_YEARS = 4
 
-    SURVIVAL_CHECK = 6
-    ADVANCEMENT_CHECK = 9
-
+    QUALIFICATION = [:default, 5]
     PERSONAL_SKILLS = Array.new(6) { :default }
     SERVICE_SKILLS = Array.new(6) { :default }
     ADVANCED_SKILLS = Array.new(6) { :default }
-    SPECIALIST_SKILLS = { default: Array.new(6) { :default } }
+    SPECIALIST = {
+      default: {
+        skills: Array.new(6) { :default },
+        survival: [:default, 6],
+        advancement: [:default, 8],
+      }
+    }
     RANKS = {}
 
     EVENTS = {
@@ -94,27 +105,33 @@ module TravellerRPG
 
     def qualify_check?(career_count)
       stat, check = self.class::QUALIFICATION
-      @char.log format("#{self.name} qualification: #{stat} #{check}+")
-      dm = @char.class.stats_dm(@char.stats[stat])
+      @char.log "#{self.name} qualification: #{stat} #{check}+"
+      dm = @char.stats_dm(stat)
       dm += -1 * career_count
-      roll = TravellerRPG.roll('2d6')
-      puts format("Qualify check: rolled %i (DM %i) against %i",
-                  roll, dm, check)
-      (roll + dm) >= check
+      self.class.roll_check?('Qualify', dm: dm, check: check)
     end
 
     def survival_check?(dm: 0)
-      roll = TravellerRPG.roll('2d6')
-      puts format("Survival check: rolled %i (DM %i) against %i",
-                  roll, dm, self.class::SURVIVAL_CHECK)
-      (roll + dm) >= self.class::SURVIVAL_CHECK
+      stat, check = self.class::SPECIALIST.fetch(@assignment).fetch(:survival)
+      @char.log "#{self.name} #{@assignment} survival: #{stat} #{check}+"
+      dm += @char.stats_dm(stat)
+      self.class.roll_check?('Survival', dm: dm, check: check)
     end
 
-    def advancement_check?(roll: nil, dm: 0)
-      roll ||= TravellerRPG.roll('2d6')
-      puts format("Advancement check: rolled %i (DM %i) against %i",
-                  roll, dm, self.class::ADVANCEMENT_CHECK)
-      (roll + dm) >= self.class::ADVANCEMENT_CHECK
+    def advancement_check?(dm: 0)
+      stat, check =
+            self.class::SPECIALIST.fetch(@assignment).fetch(:advancement)
+      @char.log "#{self.name} #{@assignment} advancement: #{stat} #{check}+"
+      dm += @char.stats_dm(stat)
+      roll = TravellerRPG.roll('2d6')
+      if roll <= @term
+        @term_mandate = :must_exit
+      elsif roll == 12
+        @term_mandate = :must_remain
+      else
+        @term_mandate = nil
+      end
+      self.class.roll_check?('Advancement', dm: dm, check: check, roll: roll)
     end
 
     # any skills obtained start at level 1
@@ -189,30 +206,28 @@ module TravellerRPG
                        self.name, @term, @char.age)
       self.training_roll
 
+      # TODO: DM?
       if self.survival_check?
-        @char.log format("%s term %i was successful", self.name, @term)
+        @char.log format("%s term %i completed successfully.",
+                         self.name, @term)
         @char.age TERM_YEARS
 
+        # TODO: DM?
         self.commission_roll if self.respond_to?(:commission_roll)
 
-        adv_roll = TravellerRPG.roll('2d6')
         # TODO: DM?
-        if self.advancement_check?(roll: adv_roll)
+        if self.advancement_check?
           self.advance_rank
           self.training_roll
         end
-        if adv_roll <= @term
-          @term_mandate = :must_exit
-        elsif adv_roll == 12
-          @term_mandate = :must_remain
-        else
-          @term_mandate = nil
-        end
 
+        # TODO: DM?
         self.event_roll
       else
-        @char.log "#{self.name} career ended with a mishap!"
-        @char.age rand(TERM_YEARS) + 1
+        years = rand(TERM_YEARS) + 1
+        @char.log format("%s career ended with a mishap after %i years.",
+                         self.name, years)
+        @char.age years
         self.mishap_roll
         @active = false
       end
