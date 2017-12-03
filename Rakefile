@@ -16,3 +16,29 @@ begin
 rescue LoadError
   warn "buildar tasks unavailable"
 end
+
+def chargen *args
+  ruby '-Ilib', 'bin/chargen', *args
+end
+
+desc "Run chargen"
+task :chargen do
+  # consume ARGV
+  args = []
+  found = false
+  while !ARGV.empty?
+    arg = ARGV.shift
+    # skip all args until we reach 'mrbt'
+    if found
+      args << arg unless arg == '--'
+    elsif arg == 'chargen'
+      found = true
+    end
+  end
+
+  begin
+    chargen *args
+  rescue RuntimeError
+    exit 1
+  end
+end
