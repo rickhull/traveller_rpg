@@ -14,6 +14,19 @@ module TravellerRPG
       @active_career
     end
 
+    def run(career)
+      self.apply(career) or self.fallback
+      return unless @active_career
+      loop {
+        @active_career.run_term
+        break unless @active_career.active?
+        break if @active_career.must_exit?
+        next if @active_career.must_remain?
+        break if TravellerRPG.choose("Muster out?", :yes, :no) == :yes
+      }
+      self.muster_out
+    end
+
     def eligible?(career)
       case career
       when Career
@@ -66,9 +79,15 @@ module TravellerRPG
       }
     end
 
-    def run_term
-      raise(Error, "no active career") unless @active_career
-      @active_career.run_term
+    def fallback
+      case TravellerRPG.choose("Fallback career:", :draft, :drifter, :none)
+      when :draft
+        choice = TravellerRPG.choose("Enlist:", 'Army', 'Navy', 'Marines')
+        career = TravellerRPG.career_class(choice).new(@char)
+        self.enter(career)
+      when :drifter
+        self.apply(TravellerRPG::Drifter.new(@char))
+      end
     end
 
     def muster_out
@@ -77,14 +96,6 @@ module TravellerRPG
         @careers << @active_career
         @active_career = nil
       end
-    end
-
-    def draft_term
-      @char.log "Drafted! (fake)"
-    end
-
-    def drifter_term
-      @char.log "Became a drifter (fake)"
     end
   end
 end
