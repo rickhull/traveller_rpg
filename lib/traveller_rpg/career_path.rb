@@ -74,6 +74,7 @@ module TravellerRPG
     def basic_training(career)
       return unless career.term.zero?
       skills = career.class::SERVICE_SKILLS - @char.skills.keys
+      return if skills.empty?
       if @careers.length > 0
         skills = [TravellerRPG.choose("Choose service skill:", *skills)]
       end
