@@ -61,12 +61,13 @@ module TravellerRPG
 
     # roll => [cash, benefit]
     MUSTER_OUT = {
-      1 => [20000, 'Default'],
-      2 => [20000, 'Default'],
-      3 => [30000, 'Default'],
-      4 => [30000, 'Default'],
-      5 => [50000, 'Default'],
-      6 => [50000, 'Default'],
+      1 => [5, 'Default'],
+      2 => [5, 'Default'],
+      3 => [5, 'Default'],
+      4 => [5, 'Default'],
+      5 => [5, 'Default'],
+      6 => [5, 'Default'],
+      7 => [5, 'Default'],
     }
 
     attr_reader :term, :active, :rank, :assignment
