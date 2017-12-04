@@ -115,7 +115,7 @@ module TravellerRPG
 
 
   class Drifter < Career
-    QUALIFICATION = [:intelligence, 0]
+    # QUALIFICATION = [:intelligence, 0]
     ADVANCED_EDUCATION = 99
     PERSONAL_SKILLS = [:strength, :endurance, :dexterity,
                        :language_group, :social_sciences_group,
@@ -191,6 +191,10 @@ module TravellerRPG
       5 => '',
       6 => '',
     }
+
+    def qualify_check?(dm: 0)
+      true
+    end
   end
 
 
