@@ -276,10 +276,11 @@ module TravellerRPG
       self.class::RANKS[@rank]
     end
 
-    def report(term: true, active: true, rank: true)
+    def report(term: true, active: true, rank: true, spec: true)
       hsh = {}
       hsh['Term'] = @term if term
       hsh['Active'] = @active if active
+      hsh['Specialty'] = @assignment if spec
       if rank
         hsh['Officer Rank'] = self.rank if self.officer?
         hsh['Rank'] = @rank
