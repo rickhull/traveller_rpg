@@ -89,7 +89,90 @@ module TravellerRPG
   end
 
   class Citizen < Career; end
-  class Drifter < Career; end
+
+
+
+
+  class Drifter < Career
+    QUALIFICATION = [:intelligence, 0]
+    ADVANCED_EDUCATION = 99
+    PERSONAL_SKILLS = [:strength, :endurance, :dexterity,
+                       :language_group, :profession, :jack_of_all_trades]
+    SERVICE_SKILLS = [:athletics_group, :melee_unarmed, :recon,
+                      :streetwise, :stealth, :survival]
+    ADVANCED_SKILLS = []
+    SPECIALIST = {
+      barbarian: {
+        skills: [:animals_group, :carouse, :melee_blade,
+                 :stealth, :seafarer_group, :survival],
+        survival: [:endurance, 7],
+        advancement: [:strength, 7],
+        ranks: {
+          1 => [nil, :survival, 1],
+          2 => ['Warrior', :melee_blade, 1],
+          4 => ['Chieftain', :leadership, 1],
+          6 => ['Warlord', nil, nil],
+        },
+      },
+      wanderer: {
+        skills: [:drive_group, :deception, :recon,
+                 :stealth, :streetwise, :survival],
+        survival: [:endurance, 7],
+        advancement: [:intelligence, 7],
+        ranks: {
+          1 => [nil, :streetwise, 1],
+          3 => [nil, :deception, 1],
+        },
+      },
+      scavenger: {
+        skills: [:pilot_small_craft, :mechanic, :astrogation,
+                 :vacc_suit, :profession, :gun_combat_group],
+        survival: [:dexterity, 7],
+        advancement: [:endurance, 7],
+        ranks: {
+          1 => [nil, :vacc_suit, 1],
+          3 => [nil, :mechanic, 1],
+        },
+      },
+    }
+
+    MUSTER_OUT = {
+      1 => [0, 'Contact'],
+      2 => [0, 'Weapon'],
+      3 => [1000, 'Ally'],
+      4 => [2000, 'Weapon'],
+      5 => [3000, 'EDU +1'],
+      6 => [4000, 'Ship Share'],
+      7 => [8000, 'Ship Share x2'],
+    }
+
+    EVENTS = {
+      1 => '',
+      2 => '',
+      3 => '',
+      4 => '',
+      5 => '',
+      6 => '',
+      7 => '',
+      8 => '',
+      9 => '',
+      10 => '',
+      11 => '',
+      12 => '',
+    }
+
+    MISHAPS = {
+      1 => '',
+      2 => '',
+      3 => '',
+      4 => '',
+      5 => '',
+      6 => '',
+    }
+  end
+
+
+
   class Entertainer < Career; end
   class MerchantMarine < Career; end
   class Rogue < Career; end
