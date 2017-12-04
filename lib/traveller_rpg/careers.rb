@@ -6,9 +6,9 @@ module TravellerRPG
     QUALIFICATION   = [:intelligence, 6]
     ADVANCED_EDUCATION = 8
     PERSONAL_SKILLS = [:gun_combat_group, :dexterity, :endurance,
-                       :melee_group, :intelligence, :athletics]
+                       :melee_group, :intelligence, :athletics_group]
     SERVICE_SKILLS  = [:streetwise, :drive_group, :investigate,
-                       :flyer, :recon, :gun_combat_group]
+                       :flyer_group, :recon, :gun_combat_group]
     ADVANCED_SKILLS = [:advocate, :language_group, :explosives_group,
                        :medic, :vacc_suit, :electronics_group]
     SPECIALIST = {
