@@ -97,7 +97,8 @@ module TravellerRPG
     QUALIFICATION = [:intelligence, 0]
     ADVANCED_EDUCATION = 99
     PERSONAL_SKILLS = [:strength, :endurance, :dexterity,
-                       :language_group, :profession, :jack_of_all_trades]
+                       :language_group, :social_sciences_group,
+                       :jack_of_all_trades]
     SERVICE_SKILLS = [:athletics_group, :melee_unarmed_combat, :recon,
                       :streetwise, :stealth, :survival]
     ADVANCED_SKILLS = []
@@ -126,7 +127,7 @@ module TravellerRPG
       },
       scavenger: {
         skills: [:pilot_small_craft, :mechanic, :astrogation,
-                 :vacc_suit, :profession, :gun_combat_group],
+                 :vacc_suit, :engineer_group, :gun_combat_group],
         survival: [:dexterity, 7],
         advancement: [:endurance, 7],
         ranks: {
