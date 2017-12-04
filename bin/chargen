@@ -6,6 +6,10 @@ require 'traveller_rpg/generator'
 require 'traveller_rpg/career_path'
 
 char = TravellerRPG::Generator.character
+puts
+puts char.report(stuff: false, credits: false)
+puts
+
 path = TravellerRPG::CareerPath.new(char)
 
 careers = %w{Scout}
