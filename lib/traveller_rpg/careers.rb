@@ -31,7 +31,7 @@ module TravellerRPG
           3 => ['Detective', nil, nil],
           4 => ['Lieutenant', :investigate, 1],
           5 => ['Chief', :admin, 1],
-          6 => ['Commissioner', :social_standing, 1],
+          6 => ['Commissioner', :social_standing, nil],
         },
       },
       intelligence: {
@@ -58,18 +58,6 @@ module TravellerRPG
       5 => [10000, 'Combat Implant'],
       6 => [25000, 'SOC +1 or Combat Implant'],
       7 => [50000, 'TAS Membership'],
-    }
-
-    # TODO: this is just the LEO ranks
-    # really, Agent ranks are per SPECIALTY (ugh)
-    RANKS = {
-      0 => ['Rookie', nil, nil],
-      1 => ['Corporal', :streetwise, 1],
-      2 => ['Sergeant', nil, nil],
-      3 => ['Detective', nil, nil],
-      4 => ['Lieutenant', :investigate, 1],
-      5 => ['Chief', :admin, 1],
-      6 => ['Commissioner', :social_standing, 1],
     }
 
     EVENTS = {
