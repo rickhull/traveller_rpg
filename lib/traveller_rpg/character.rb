@@ -50,16 +50,19 @@ module TravellerRPG
       end
     end
 
-    attr_reader :desc, :stats, :homeworld, :skills, :stuff
+    attr_reader :desc, :stats, :homeworld, :skills,
+                :stuff, :credits, :cash_rolls
 
     def initialize(desc:, stats:, homeworld:,
-                   skills: {}, stuff: {}, log: [])
+                   skills: {}, stuff: {}, log: [], credits: 0, cash_rolls: 0)
       @desc = desc
       @stats = stats
       @homeworld = homeworld
       @skills = skills
       @stuff = stuff
       @log = log
+      @cash_rolls = cash_rolls # max 3 lifetime
+      @credits = credits
       self.birth
     end
 
@@ -159,7 +162,32 @@ module TravellerRPG
       @skills[sym] and @skills[sym].clamp(0, 4)
     end
 
-    def report(desc: :short, stats: true, skills: true, stuff: true)
+    def cash_roll(amount)
+      @cash_rolls += 1
+      if @cash_rolls <= 3
+        @credits += amount
+        self.log "Acquired #{amount} credits from cash roll ##{@cash_rolls}"
+      else
+        self.log "Ignoring cash roll ##{@cash_rolls}"
+      end
+      self
+    end
+
+    def benefit(item)
+      if item.is_a?(Integer)
+        if item != 0
+          self.log "Acquired #{item} credits as a career benefit"
+          @credits += item
+        end
+      else
+        self.log "Acquired #{item} as a career benefit"
+        @stuff[item] ||= 0
+        @stuff[item] += 1
+      end
+    end
+
+    def report(desc: :short, stats: true, skills: true, stuff: true,
+               log: false, credits: true)
       hsh = {}
       if desc
         hsh['Description'] = { 'Name'   => @desc.name,
@@ -183,13 +211,26 @@ module TravellerRPG
       end
       hsh['Skills'] = @skills if skills
       hsh['Stuff'] = @stuff if stuff
+      hsh['Log'] = @log if log
+      if credits
+        hsh['Credits'] = {
+          'Total' => @credits,
+          'Cash Rolls' => @cash_rolls,
+        }
+      end
       report = []
       hsh.each { |section, tbl|
         report << "#{section}\n==="
         report << "(none)" if tbl.empty?
-        tbl.each { |label, val|
-          report << format("%s: %s", label.to_s.rjust(20, ' '), val.to_s)
-        }
+        if tbl.is_a?(Hash)
+          tbl.each { |label, val|
+            report << format("%s: %s", label.to_s.rjust(20, ' '), val.to_s)
+          }
+        elsif tbl.is_a?(Array)
+          report += tbl
+        else
+          report << tbl
+        end
         report << ' '
       }
       report.join("\n")
