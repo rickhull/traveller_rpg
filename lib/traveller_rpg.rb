@@ -23,6 +23,7 @@ module TravellerRPG
 
   def self.choose(msg, *args)
     puts msg + '  (' + args.join('  ') + ')'
+    raise "no choices" if args.empty?
     return self.player_choose(msg, *args) if PLAYER_CHOOSE
     choice = args.sample
     puts "> #{choice}"
