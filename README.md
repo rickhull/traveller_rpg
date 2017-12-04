@@ -12,7 +12,7 @@ git clone https://github.com/rickhull/traveller_rpg.git
 
 cd traveller_rpg
 
-rake chargen
+HUMAN=1 rake chargen
 ```
 
 ## Sample output
