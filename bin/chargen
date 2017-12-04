@@ -12,7 +12,7 @@ puts
 
 path = TravellerRPG::CareerPath.new(char)
 
-careers = %w{Scout}
+careers = %w{Scout Agent}
 
 loop {
   careers = careers.select { |c| path.eligible? c }
