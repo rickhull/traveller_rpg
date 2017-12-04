@@ -112,15 +112,14 @@ module TravellerRPG
     end
 
     def survival_check?(dm: 0)
-      stat, check = self.class::SPECIALIST.fetch(@assignment).fetch(:survival)
+      stat, check = self.specialty.fetch(:survival)
       @char.log "#{self.name} #{@assignment} survival: #{stat} #{check}+"
       dm += @char.stats_dm(stat)
       self.class.roll_check?('Survival', dm: dm, check: check)
     end
 
     def advancement_check?(dm: 0)
-      stat, check =
-            self.class::SPECIALIST.fetch(@assignment).fetch(:advancement)
+      stat, check = self.specialty.fetch(:advancement)
       @char.log "#{self.name} #{@assignment} advancement: #{stat} #{check}+"
       dm += @char.stats_dm(stat)
       roll = TravellerRPG.roll('2d6')
@@ -271,9 +270,13 @@ module TravellerRPG
       self.class.name.split('::').last
     end
 
+    def specialty
+      self.class::SPECIALIST.fetch(@assignment)
+    end
+
     # possibly nil
     def rank_benefit
-      self.class::RANKS[@rank]
+      self.specialty.fetch(:ranks)[@rank]
     end
 
     def report(term: true, active: true, rank: true, spec: true)
