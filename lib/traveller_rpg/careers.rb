@@ -66,14 +66,13 @@ module TravellerRPG
   class Marines < MilitaryCareer
   end
 
-  class MerchantMarine < MilitaryCareer
+  class MerchantMarine < Career
   end
 
   class Agent < MilitaryCareer
   end
 
   class Scout < Career
-    # (stat for DM, check threshold)
     QUALIFICATION   = [:intelligence, 5]
     ADVANCED_EDUCATION = 8
     PERSONAL_SKILLS = [:strength, :dexterity, :endurance,
@@ -110,6 +109,7 @@ module TravellerRPG
       4 => [30000, 'Weapon'],
       5 => [50000, 'Weapon'],
       6 => [50000, 'Scout Ship'],
+      7 => [50000, 'Scout Ship'],
     }
 
     # Weapon: Select any weapon up to 1000 creds and TL12
@@ -170,9 +170,6 @@ module TravellerRPG
            'drifting on the fringes of friendly space',
       6 => 'Injured.  Roll on the Injury table.',
     }
-
-    # not defined at http://www.traveller-srd.com/core-rules/careers/ :(
-    BENEFITS = {}
   end
 
   class Drifter < Career
