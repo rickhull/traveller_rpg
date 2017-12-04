@@ -5,28 +5,22 @@ module TravellerRPG
     class Error < RuntimeError; end
     class UnknownAssignment < Error; end
 
-    def self.roll_check?(label, dm:, check:, roll: nil)
-      roll ||= TravellerRPG.roll('2d6')
-      puts format("%s check: rolled %i (DM %i) against %i",
-                  label, roll, dm, check)
-      (roll + dm) >= check
-    end
-
-    def self.muster_roll(label, dm: 0)
-      roll = TravellerRPG.roll('d6')
-      clamped = (roll + dm).clamp(1, 7)
-      puts "#{label} roll: #{roll} (DM #{dm}) = #{clamped}"
-      clamped
-    end
+    #
+    # Actually useful defaults
 
     TERM_YEARS = 4
+    ADVANCED_EDUCATION = 8
+
+    #
+    # Examples -- but should not be used as actual defaults
 
     QUALIFICATION = [:default, 5]
-    ADVANCED_EDUCATION = 5
+
     PERSONAL_SKILLS = Array.new(6) { :default }
     SERVICE_SKILLS = Array.new(6) { :default }
     ADVANCED_SKILLS = Array.new(6) { :default }
-    RANKS = {} # rank num => [title, skill, level]
+
+    RANKS = { 0 => ['Rookie', :default, 0] }
     SPECIALIST = {
       default: {
         skills: Array.new(6) { :default },
@@ -49,7 +43,6 @@ module TravellerRPG
       11 => nil,
       12 => nil,
     }
-
     MISHAPS = {
       1 => nil,
       2 => nil,
@@ -59,16 +52,29 @@ module TravellerRPG
       6 => nil,
     }
 
-    # roll => [cash, benefit]
     MUSTER_OUT = {
-      1 => [5, 'Default'],
-      2 => [5, 'Default'],
+      1 => [0, 'Default'],
+      2 => [0, 'Default'],
       3 => [5, 'Default'],
       4 => [5, 'Default'],
-      5 => [5, 'Default'],
-      6 => [5, 'Default'],
-      7 => [5, 'Default'],
+      5 => [10, 'Default'],
+      6 => [10, 'Default'],
+      7 => [5000, 'Default'], # Gambler DM +1
     }
+
+    def self.roll_check?(label, dm:, check:, roll: nil)
+      roll ||= TravellerRPG.roll('2d6')
+      puts format("%s check: rolled %i (DM %i) against %i",
+                  label, roll, dm, check)
+      (roll + dm) >= check
+    end
+
+    def self.muster_roll(label, dm: 0)
+      roll = TravellerRPG.roll('d6')
+      clamped = (roll + dm).clamp(1, 7)
+      puts "#{label} roll: #{roll} (DM #{dm}) = #{clamped}"
+      clamped
+    end
 
     attr_reader :term, :active, :rank, :assignment
 
@@ -96,6 +102,8 @@ module TravellerRPG
       else
         @assignment = TravellerRPG.choose("Choose a specialty:", *s.keys)
       end
+      @title, skill, level = self.rank_benefit
+      @char.train(skill, level) if skill
       self
     end
 
@@ -103,11 +111,10 @@ module TravellerRPG
       !!@active
     end
 
-    def qualify_check?(career_count)
+    def qualify_check?(dm: 0)
       stat, check = self.class::QUALIFICATION
       @char.log "#{self.name} qualification: #{stat} #{check}+"
-      dm = @char.stats_dm(stat)
-      dm += -1 * career_count
+      dm += @char.stats_dm(stat)
       self.class.roll_check?('Qualify', dm: dm, check: check)
     end
 
@@ -145,7 +152,7 @@ module TravellerRPG
       choice = TravellerRPG.choose("Choose skills regimen:", *choices)
       roll = TravellerRPG.roll('d6')
       @char.log "Training roll: #{roll}"
-      @char.bump_skill \
+      @char.train \
               case choice
               when :personal then self.class::PERSONAL_SKILLS.fetch(roll - 1)
               when :service  then self.class::SERVICE_SKILLS.fetch(roll - 1)
@@ -160,15 +167,15 @@ module TravellerRPG
     def event_roll(dm: 0)
       roll = TravellerRPG.roll('2d6')
       clamped = (roll + dm).clamp(2, 12)
-      @char.log "Event roll: #{roll} (DM #{dm}) = #{clamped}"
-      @char.log self.class::EVENTS.fetch(clamped)
+      puts "Event roll: #{roll} (DM #{dm}) = #{clamped}"
+      @char.log "Event: #{self.class::EVENTS.fetch(clamped) || roll}"
       # TODO: actually perform the event stuff
     end
 
     def mishap_roll
       roll = TravellerRPG.roll('d6')
-      @char.log "Mishap roll: #{roll}"
-      @char.log self.class::MISHAPS.fetch(roll)
+      puts "Mishap roll: #{roll}"
+      @char.log "Mishap: #{self.class::MISHAPS.fetch(roll) || roll}"
       # TODO: actually perform the mishap stuff
     end
 
@@ -177,14 +184,14 @@ module TravellerRPG
       @char.log "Advanced career to rank #{@rank}"
       title, skill, level = self.rank_benefit
       if title
-        @title = title
         @char.log "Awarded rank title: #{title}"
+        @title = title
       end
       if skill
         @char.log "Achieved rank skill: #{skill} #{level}"
-        @char.skills[skill] ||= 0
-        @char.skills[skill] = level if level > @char.skills[skill]
+        @char.train(skill, level)
       end
+      self
     end
 
     def must_remain?
@@ -242,7 +249,7 @@ module TravellerRPG
       # one cash and one benefit per term
       # except if last term suffered mishap, no benefit for that term
 
-      cash_rolls = (@term - @char.cash_rolls).clamp(0, 3)
+      cash_rolls = @term.clamp(0, 3 - @char.cash_rolls)
       benefit_rolls = @term
 
       if @active
@@ -291,18 +298,8 @@ module TravellerRPG
       end
       report = ["Career: #{self.name}", "==="]
       hsh.each { |label, val|
-        if val.is_a?(Hash)
-          report << "#{label}:\n---"
-          report << "(none)" if val.empty?
-          k_width = 0
-          val.each { |k, v|
-            k_width = k.size if k.size > k_width
-            report << format("%s: %s", k.to_s.rjust(k_width, ' '), v.to_s)
-          }
-          report << ' '
-        else
-          report << format("%s: %s", label.to_s.rjust(8, ' '), val.to_s)
-        end
+        val = val.to_s.capitalize if val.is_a? Symbol
+        report << format("%s: %s", label.to_s.rjust(10, ' '), val.to_s)
       }
       report.join("\n")
     end
@@ -310,11 +307,19 @@ module TravellerRPG
 
 
   #
-  # MilitaryCareer adds Officer commission and Officer ranks
-  #
+  # MilitaryCareer adds Officer commission and parallel Officer ranks
 
   class MilitaryCareer < Career
-    COMMISSION = [:default, 0]
+
+    #
+    # Actually useful defaults
+
+    COMMISSION = [:social_status, 8]
+
+    #
+    # Examples -- but should not be used as actual defaults
+
+    AGE_PENALTY = 40
     OFFICER_SKILLS = Array.new(6) { :default }
     OFFICER_RANKS = {}
 
@@ -322,6 +327,38 @@ module TravellerRPG
       super(char, **kwargs)
       @officer = false
     end
+
+    # Implement age penalty
+    def qualify_check?(dm: 0)
+      dm -= 2 if @char.age >= self.class::AGE_PENALTY
+      super(dm: dm)
+    end
+
+    def commission_check?(dm: 0)
+      stat, check = self.class::COMMISSION
+      @char.log "#{self.name} commission: #{stat} #{check}"
+      dm += @char.stats_dm(stat)
+      self.class.roll_check?('Commission', dm: dm, check: check)
+    end
+
+    #
+    # Achieve an officer commission
+
+    def commission_roll(dm: 0)
+      return if @officer
+      if TravellerRPG.choose("Apply for commission?", :yes, :no) == :yes
+        if self.commission_check?
+          @char.log "Became an officer!"
+          @officer = 0       # officer rank
+          self.advance_rank  # officers start at rank 1
+        else
+          @char.log "Commission was rejected"
+        end
+      end
+    end
+
+    #
+    # Handle parallel officer track, conditional on officer commission
 
     def officer?
       !!@officer
@@ -342,28 +379,11 @@ module TravellerRPG
       title, skill, level = self.rank_benefit
       if title
         @char.log "Awarded officer rank title: #{title}"
-        @char.log "Achieved officer rank skill: #{skill} #{level}"
-        @char.skills[skill] ||= 0
-        @char.skills[skill] = level if level > @char.skills[skill]
+        @title = title
       end
-    end
-
-    def commission_check?(dm: 0)
-      stat, check = self.class::COMMISSION
-      @char.log "#{self.name} commission: #{stat} #{check}"
-      dm += @char.stats_dm(stat)
-      self.class.roll_check?('Commission', dm: dm, check: check)
-    end
-
-    def commission_roll(dm: 0)
-      return if @officer
-      if TravellerRPG.choose("Apply for commission?", :yes, :no) == :yes
-        if self.commission_check?
-          @char.log "Became an officer!"
-          @officer = 1
-        else
-          @char.log "Commission was rejected"
-        end
+      if skill
+        @char.log "Achieved officer rank skill: #{skill} #{level}"
+        @char.train(skill, level)
       end
     end
   end
