@@ -104,24 +104,33 @@ module TravellerRPG
                       :astrogation, :comms, :gun_combat_group]
     ADVANCED_SKILLS = [:medic, :navigation, :engineer_group,
                        :computers, :space_sciences_group, :jack_of_all_trades]
+
+    RANKS = {
+      1 => ['Scout', :vacc_suit, 1],
+      3 => ['Senior Scout', :pilot, 1],
+    }
+
     SPECIALIST = {
       courier: {
         skills:   [:comms, :sensors, :pilot_spacecraft,
                    :vacc_suit, :zero_g, :astrogation],
         survival: [:endurance, 5],
         advancement: [:education, 9],
+        ranks: RANKS,
       },
       surveyor: {
         skills: [:sensors, :persuade, :pilot_small_craft,
                  :navigation, :diplomat, :streetwise],
         survival: [:endurance, 6],
         advancement: [:intelligence, 8],
+        ranks: RANKS,
       },
       explorer: {
         skills: [:sensors, :pilot_spacecraft, :pilot_small_craft,
                  :life_sciences_group, :stealth, :recon],
         survival: [:endurance, 7],
         advancement: [:education, 7],
+        ranks: RANKS,
       },
     }
 
@@ -145,12 +154,6 @@ module TravellerRPG
     # Ship share: Accumulate these to redeem for a ship.  They are worth
     #             roughly 1M creds but cannot be redeemed for creds.
 
-
-    # key: roll; values: title, skill, skill_value
-    RANKS = {
-      1 => ['Scout', :vacc_suit, 1],
-      3 => ['Senior Scout', :pilot, 1],
-    }
 
     EVENTS = {
       2 => 'Disaster! Roll on the mishap table but you are not ejected ' +
