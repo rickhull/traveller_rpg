@@ -11,24 +11,42 @@ module TravellerRPG
                        :flyer_group, :recon, :gun_combat_group]
     ADVANCED_SKILLS = [:advocate, :language_group, :explosives,
                        :medic, :vacc_suit, :electronics_group]
+    RANKS = {
+      1 => ['Agent', :deception, 1],
+      2 => ['Field Agent', :investigate, 1],
+      4 => ['Special Agent', :gun_combat_group, 1],
+      5 => ['Assistant Director', nil, nil],
+      6 => ['Director', nil, nil],
+    }
     SPECIALIST = {
       law_enforcement: {
         skills:   [:investigate, :recon, :streetwise,
                    :stealth, :melee_group, :advocate],
         survival: [:endurance, 6],
         advancement: [:intelligence, 6],
+        ranks: {
+          0 => ['Rookie', nil, nil],
+          1 => ['Corporal', :streetwise, 1],
+          2 => ['Sergeant', nil, nil],
+          3 => ['Detective', nil, nil],
+          4 => ['Lieutenant', :investigate, 1],
+          5 => ['Chief', :admin, 1],
+          6 => ['Commissioner', :social_standing, 1],
+        },
       },
       intelligence: {
         skills: [:investigate, :recon, :comms,
                  :stealth, :persuade, :deception],
         survival: [:intelligence, 7],
         advancement: [:intelligence, 5],
+        ranks: RANKS,
       },
       corporate: {
         skills: [:investigate, :computers, :stealth,
                  :carouse, :deception, :streetwise],
         survival: [:intelligence, 5],
         advancement: [:intelligence, 7],
+        ranks: RANKS,
       },
     }
 
