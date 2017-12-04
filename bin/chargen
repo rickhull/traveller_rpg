@@ -25,13 +25,13 @@ loop {
 
   # run consecutive terms of this career
   loop {
-    path.run_term
-    break unless path.active_career
+    career.run_term
+    break unless career.active?
     break if career.must_exit?
     next if career.must_remain?
     break if TravellerRPG.choose("Muster out?", :yes, :no) == :yes
   }
-  path.muster_out if path.active_career
+  path.muster_out
 
   puts "\n" * 2
   puts path.careers.last.report
