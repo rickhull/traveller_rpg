@@ -66,17 +66,11 @@ module TravellerRPG
     def run_term
       raise(Error, "no active career") unless @active_career
       @active_career.run_term
-      unless @active_career.active?
-        @careers << @active_career
-        @active_career = nil
-      end
     end
 
     def muster_out
       if @active_career
-        raise(Error, "career is inactive") unless @active_career.active?
-        raise(Error, "must remain") if @active_career.must_remain?
-        @char.add_stuff(@active_career.muster_out)
+        @active_career.muster_out
         @careers << @active_career
         @active_career = nil
       end
