@@ -53,10 +53,13 @@ module TravellerRPG
       if @careers.length.zero?
         @active_career.class::SERVICE_SKILLS
       else
-        [TravellerRPG.choose("Service skill",
-                             *@active_career.class::SERVICE_SKILLS)]
+        skills = @active_career.class::SERVICE_SKILLS
+        skills -= @char.skills.keys
+        skills.empty? ? [] : [TravellerRPG.choose("Service skill", *skills)]
       end.each { |sym|
-        unless char.skills.key?(sym)
+        if char.skills.key?(sym)
+          @char.log "Basic training for #{sym} already acquired"
+        else
           @char.log "Acquired basic training skill: #{sym} 0"
           @char.skills[sym] = 0
         end
