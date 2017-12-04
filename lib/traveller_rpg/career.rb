@@ -12,6 +12,13 @@ module TravellerRPG
       (roll + dm) >= check
     end
 
+    def self.muster_roll(label, dm: 0)
+      roll = TravellerRPG.roll('d6')
+      clamped = (roll + dm).clamp(1, 6)
+      puts "#{label} roll: #{roll} (DM #{dm}) = #{clamped}"
+      clamped
+    end
+
     TERM_YEARS = 4
 
     QUALIFICATION = [:default, 5]
@@ -26,6 +33,7 @@ module TravellerRPG
         advancement: [:default, 8],
       }
     }
+    # rank num => [title, skill, level]
     RANKS = {}
 
     EVENTS = {
@@ -51,24 +59,19 @@ module TravellerRPG
       6 => nil,
     }
 
-    CASH = {
-      2 => -500,
-      3 => -100,
-      4 => 200,
-      5 => 400,
-      6 => 600,
-      7 => 800,
-      8 => 1000,
-      9 => 2000,
-      10 => 4000,
-      11 => 8000,
-      12 => 16000,
+    # roll => [cash, benefit]
+    MUSTER_OUT = {
+      1 => [20000, 'Default'],
+      2 => [20000, 'Default'],
+      3 => [30000, 'Default'],
+      4 => [30000, 'Default'],
+      5 => [50000, 'Default'],
+      6 => [50000, 'Default'],
     }
 
-    attr_reader :term, :active, :rank, :benefits
+    attr_reader :term, :active, :rank
 
-    def initialize(char, assignment: nil, term: 0, active: false, rank: 0,
-                   benefits: {})
+    def initialize(char, assignment: nil, term: 0, active: false, rank: 0)
       @char = char
       s = self.class::SPECIALIST
       if assignment
@@ -82,7 +85,6 @@ module TravellerRPG
       @term = term
       @active = active
       @rank = rank
-      @benefits = benefits  # acquired equipment, ships / shares
       @term_mandate = nil
       @title = nil
     end
@@ -164,17 +166,9 @@ module TravellerRPG
 
     def mishap_roll
       roll = TravellerRPG.roll('d6')
-      @char.log "Mishap roll (d6): #{roll}"
+      @char.log "Mishap roll: #{roll}"
       @char.log self.class::MISHAPS.fetch(roll)
       # TODO: actually perform the mishap stuff
-    end
-
-    def cash_roll(dm: 0)
-      roll = TravellerRPG.roll('2d6')
-      clamped = (roll + dm).clamp(2, 12)
-      amount = self.class::CASH.fetch(clamped)
-      puts "Cash roll: #{roll} (DM #{dm}) = #{clamped} for #{amount}"
-      amount
     end
 
     def advance_rank
@@ -238,21 +232,34 @@ module TravellerRPG
     end
 
     def muster_out(dm: 0)
+      @char.log "Muster out: #{self.name}"
+      raise(Error, "career has not started") unless @term > 0
+      dm += @char.skill_check?(:gambler, 1) ? 1 : 0
+
+      # one cash and one benefit per term
+      # except if last term suffered mishap, no benefit for that term
+
+      cash_rolls = (@term - @char.cash_rolls).clamp(0, 3)
+      benefit_rolls = @term
+
       if @active
-        raise(Error, "career has not started") unless @term > 0
+        @char.log "Career is in good standing -- collect all benefits"
         @active = false
-        cash_benefit = 0
-        @char.log "Muster out: #{self.name}"
-        dm += @char.skill_check?(:gambler, 1) ? 1 : 0
-        @term.clamp(0, 3).times {
-          cash_benefit += self.cash_roll(dm: dm)
-        }
-        @char.log "Cash benefit: #{cash_benefit}"
-        @char.log "Retirement bonus: #{self.retirement_bonus}"
-        @benefits[:cash] ||= 0
-        @benefits[:cash] += cash_benefit + self.retirement_bonus
-        @benefits
+      else
+        @char.log "Left career early -- lose benefit for last term"
+        benefit_rolls -= 1
       end
+      cash_rolls.times {
+        clamped = self.class.muster_roll('Cash', dm: dm)
+        @char.cash_roll self.class::MUSTER_OUT.fetch(clamped).first
+      }
+      benefit_rolls.times {
+        clamped = self.class.muster_roll('Benefits', dm: dm)
+        @char.benefit self.class::MUSTER_OUT.fetch(clamped).last
+      }
+      @char.log "Retirement bonus: #{self.retirement_bonus}"
+      @char.benefit self.retirement_bonus
+      self
     end
 
     def name
@@ -264,7 +271,7 @@ module TravellerRPG
       self.class::RANKS[@rank]
     end
 
-    def report(term: true, active: true, rank: true, benefits: true)
+    def report(term: true, active: true, rank: true)
       hsh = {}
       hsh['Term'] = @term if term
       hsh['Active'] = @active if active
@@ -273,7 +280,6 @@ module TravellerRPG
         hsh['Rank'] = @rank
         hsh['Title'] = @title if @title
       end
-      hsh['Benefits'] = @benefits if benefits
       report = ["Career: #{self.name}", "==="]
       hsh.each { |label, val|
         if val.is_a?(Hash)
