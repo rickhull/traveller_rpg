@@ -17,7 +17,7 @@ loop {
   careers = path.eligible(careers)
   break if careers.empty?
 
-  career = TravellerRPG.choose("Choose a career", *careers)
+  career = TravellerRPG.choose("Choose a career:", *careers)
   career = TravellerRPG.career_class(career).new(char)
   path.run(career)
 

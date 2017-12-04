@@ -75,7 +75,7 @@ module TravellerRPG
       return unless career.term.zero?
       skills = career.class::SERVICE_SKILLS - @char.skills.keys
       if @careers.length > 0
-        skills = [TravellerRPG.choose("Service skill", *skills)]
+        skills = [TravellerRPG.choose("Choose service skill:", *skills)]
       end
       skills.each { |sym|
         raise "unknown skill: #{sym}" unless TravellerRPG::SKILLS.key?(sym)
