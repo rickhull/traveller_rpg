@@ -9,7 +9,7 @@ module TravellerRPG
                        :melee_group, :intelligence, :athletics_group]
     SERVICE_SKILLS  = [:streetwise, :drive_group, :investigate,
                        :flyer_group, :recon, :gun_combat_group]
-    ADVANCED_SKILLS = [:advocate, :language_group, :explosives_group,
+    ADVANCED_SKILLS = [:advocate, :language_group, :explosives,
                        :medic, :vacc_suit, :electronics_group]
     SPECIALIST = {
       law_enforcement: {
@@ -98,7 +98,7 @@ module TravellerRPG
     ADVANCED_EDUCATION = 99
     PERSONAL_SKILLS = [:strength, :endurance, :dexterity,
                        :language_group, :profession, :jack_of_all_trades]
-    SERVICE_SKILLS = [:athletics_group, :melee_unarmed, :recon,
+    SERVICE_SKILLS = [:athletics_group, :melee_unarmed_combat, :recon,
                       :streetwise, :stealth, :survival]
     ADVANCED_SKILLS = []
     SPECIALIST = {
