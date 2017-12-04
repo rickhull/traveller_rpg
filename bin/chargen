@@ -6,30 +6,23 @@ require 'traveller_rpg/generator'
 require 'traveller_rpg/career_path'
 
 char = TravellerRPG::Generator.character
+path = TravellerRPG::CareerPath.new(char)
+careers = %w{Scout Agent}
+
 puts
 puts char.report(desc: :long, stuff: false, credits: false)
 puts
 
-path = TravellerRPG::CareerPath.new(char)
-
-careers = %w{Scout Agent}
-
 loop {
-  careers = careers.select { |c| path.eligible? c }
-  if careers.empty?
-    puts "No eligible careers available!"
-    break
-  end
+  careers = path.eligible(careers)
+  break if careers.empty?
+
   career = TravellerRPG.choose("Choose a career", *careers)
   career = TravellerRPG.career_class(career).new(char)
   path.run(career)
 
   puts "\n"
-  path.careers.each { |c|
-    puts "\n" * 1
-    puts c.report
-    puts "\n" * 1
-  }
+  path.careers.each { |c| puts c.report, "\n" }
   puts "\n"
   puts char.report
   puts "\n" * 2
