@@ -1,5 +1,5 @@
 module TravellerRPG
-  PLAYER_CHOICE = ENV['PLAYER_CHOICE']
+  PLAYER_CHOOSE = ENV['HUMAN']
 
   ROLL_RGX = %r{
     \A    # starts with
@@ -22,8 +22,8 @@ module TravellerRPG
   end
 
   def self.choose(msg, *args)
-    return self.player_choose(msg, *args) if PLAYER_CHOICE
-    puts msg + '  (' + args.join(' ') + ')'
+    puts msg + '  (' + args.join('  ') + ')'
+    return self.player_choose(msg, *args) if PLAYER_CHOOSE
     choice = args.sample
     puts "> #{choice}"
     choice
@@ -32,10 +32,11 @@ module TravellerRPG
   def self.player_choose(msg, *args)
     chosen = false
     while !chosen
-      puts msg + '  (' + args.join(' ') + ')'
-      choice = self.prompt.to_s.downcase.to_sym
+      choice = self.player_prompt
       if args.include?(choice)
         chosen = choice
+      elsif args.include?(choice.to_sym)
+        chosen = choice.to_sym
       else
         puts "Try again.\n"
       end
