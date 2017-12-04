@@ -22,20 +22,7 @@ loop {
   end
   career = TravellerRPG.choose("Choose a career", *careers)
   career = TravellerRPG.career_class(career).new(char)
-
-  # skip draft / drifter for now
-  accepted = false
-  accepted = path.apply(career) while !accepted
-
-  # run consecutive terms of this career
-  loop {
-    career.run_term
-    break unless career.active?
-    break if career.must_exit?
-    next if career.must_remain?
-    break if TravellerRPG.choose("Muster out?", :yes, :no) == :yes
-  }
-  path.muster_out
+  path.run(career)
 
   puts "\n" * 2
   puts path.careers.last.report
