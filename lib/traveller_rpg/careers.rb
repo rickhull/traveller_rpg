@@ -69,7 +69,90 @@ module TravellerRPG
   class MerchantMarine < Career
   end
 
-  class Agent < MilitaryCareer
+  class Agent < Career
+    QUALIFICATION   = [:intelligence, 6]
+    ADVANCED_EDUCATION = 8
+    PERSONAL_SKILLS = [:gun_combat_group, :dexterity, :endurance,
+                       :melee_group, :intelligence, :athletics]
+    SERVICE_SKILLS  = [:streetwise, :drive_group, :investigate,
+                       :flyer, :recon, :gun_combat_group]
+    ADVANCED_SKILLS = [:advocate, :language_group, :explosives_group,
+                       :medic, :vacc_suit, :electronics_group]
+    SPECIALIST = {
+      law_enforcement: {
+        skills:   [:investigate, :recon, :streetwise,
+                   :stealth, :melee_group, :advocate],
+        survival: [:endurance, 6],
+        advancement: [:intelligence, 6],
+      },
+      intelligence: {
+        skills: [:investigate, :recon, :comms,
+                 :stealth, :persuade, :deception],
+        survival: [:intelligence, 7],
+        advancement: [:intelligence, 5],
+      },
+      corporate: {
+        skills: [:investigate, :computers, :stealth,
+                 :carouse, :deception, :streetwise],
+        survival: [:intelligence, 5],
+        advancement: [:intelligence, 7],
+      },
+    }
+
+    MUSTER_OUT = {
+      1 => [1000, 'Scientific Equipment'],
+      2 => [2000, 'INT +1'],
+      3 => [5000, 'Ship Share'],
+      4 => [7500, 'Weapon'],
+      5 => [10000, 'Combat Implant'],
+      6 => [25000, 'SOC +1 or Combat Implant'],
+      7 => [50000, 'TAS Membership'],
+    }
+
+    # TODO: this is just the LEO ranks
+    # really, Agent ranks are per SPECIALTY (ugh)
+    RANKS = {
+      0 => ['Rookie', nil, nil],
+      1 => ['Corporal', :streetwise, 1],
+      2 => ['Sergeant', nil, nil],
+      3 => ['Detective', nil, nil],
+      4 => ['Lieutenant', :investigate, 1],
+      5 => ['Chief', :admin, 1],
+      6 => ['Commissioner', :social_standing, 1],
+    }
+
+    EVENTS = {
+      2 => 'Disaster',
+      3 => 'Investigation',
+      4 => 'Mission',
+      5 => 'Network',
+      6 => 'Specialist training',
+      7 => 'Life Event',
+      8 => 'Undercover',
+      9 => 'Call of Duty',
+      10 => 'Vehicle training',
+      11 => 'Befriended',
+      12 => 'Discover conspiracy',
+    }
+
+    MISHAPS = {
+      1 => 'Severely injured in action.  Roll twice on the Injury table ' +
+           'or take a level 2 Injury.',
+      2 => 'A criminal offers you a deal.  Accept the deal to leave career; ' +
+           'Refuse, and you must roll twice on the Injury Table and take ' +
+           'the lower result.  Gain an Enemy and one level in any skill.',
+      3 => 'An investigation goes critically wrong, ruining your career. ' +
+           'Roll Advocate 8+; Succeed == keep benefit this term; ' +
+           'Fail, lost benefit as normal.  A roll of 2 mandates ' +
+           'Prisoner career next term',
+      4 => 'You learn something you should not know, and people want to ' +
+           'kill you for it.  Gain an Enemy and Deception 1',
+      5 => 'Your work comes home with you, and someone gets hurt. ' +
+           'Choose a Contact, Ally, or Family Member, and roll twice on the ' +
+           'Injury Table for them, taking the lower result.',
+      6 => 'Injured. Roll on the Injury table.',
+    }
+
   end
 
   class Scout < Career
