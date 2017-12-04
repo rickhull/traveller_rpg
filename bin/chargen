@@ -7,7 +7,7 @@ require 'traveller_rpg/career_path'
 
 char = TravellerRPG::Generator.character
 puts
-puts char.report(stuff: false, credits: false)
+puts char.report(desc: :long, stuff: false, credits: false)
 puts
 
 path = TravellerRPG::CareerPath.new(char)
@@ -24,9 +24,13 @@ loop {
   career = TravellerRPG.career_class(career).new(char)
   path.run(career)
 
-  puts "\n" * 2
-  puts path.careers.last.report
-  puts "\n" * 2
+  puts "\n"
+  path.careers.each { |c|
+    puts "\n" * 1
+    puts c.report
+    puts "\n" * 1
+  }
+  puts "\n"
   puts char.report
   puts "\n" * 2
 
