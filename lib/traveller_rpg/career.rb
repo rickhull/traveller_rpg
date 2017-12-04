@@ -22,19 +22,19 @@ module TravellerRPG
     TERM_YEARS = 4
 
     QUALIFICATION = [:default, 5]
-    ADVANCED_EDUCATION = 8
+    ADVANCED_EDUCATION = 5
     PERSONAL_SKILLS = Array.new(6) { :default }
     SERVICE_SKILLS = Array.new(6) { :default }
     ADVANCED_SKILLS = Array.new(6) { :default }
+    RANKS = {} # rank num => [title, skill, level]
     SPECIALIST = {
       default: {
         skills: Array.new(6) { :default },
-        survival: [:default, 6],
-        advancement: [:default, 8],
+        survival: [:default, 5],
+        advancement: [:default, 5],
+        ranks: RANKS,
       }
     }
-    # rank num => [title, skill, level]
-    RANKS = {}
 
     EVENTS = {
       2 => nil,
@@ -253,6 +253,7 @@ module TravellerRPG
         @char.log "Left career early -- lose benefit for last term"
         benefit_rolls -= 1
       end
+
       cash_rolls.times {
         clamped = self.class.muster_roll('Cash', dm: dm)
         @char.cash_roll self.class::MUSTER_OUT.fetch(clamped).first
@@ -309,7 +310,7 @@ module TravellerRPG
   #
 
   class MilitaryCareer < Career
-    COMMISSION_CHECK = 9
+    COMMISSION = [:default, 0]
     OFFICER_SKILLS = Array.new(6) { :default }
     OFFICER_RANKS = {}
 
