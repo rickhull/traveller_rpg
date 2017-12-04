@@ -69,17 +69,10 @@ module TravellerRPG
       6 => [50000, 'Default'],
     }
 
-    attr_reader :term, :active, :rank
+    attr_reader :term, :active, :rank, :assignment
 
-    def initialize(char, assignment: nil, term: 0, active: false, rank: 0)
+    def initialize(char, term: 0, active: false, rank: 0)
       @char = char
-      s = self.class::SPECIALIST
-      if assignment
-        raise(UnknownAssignment, assignment.inspect) unless s.key?(assignment)
-        @assignment = assignment
-      else
-        @assignment = TravellerRPG.choose("Choose a specialty:", *s.keys)
-      end
 
       # career tracking
       @term = term
@@ -93,8 +86,16 @@ module TravellerRPG
       false
     end
 
-    def activate
+    def activate(assignment = nil)
       @active = true
+      s = self.class::SPECIALIST
+      if assignment
+        raise(UnknownAssignment, assignment.inspect) unless s.key?(assignment)
+        @assignment = assignment
+      else
+        @assignment = TravellerRPG.choose("Choose a specialty:", *s.keys)
+      end
+      self
     end
 
     def active?
