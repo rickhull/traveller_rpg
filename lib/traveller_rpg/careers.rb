@@ -73,17 +73,32 @@ module TravellerRPG
     }
 
     EVENTS = {
-      2 => 'Disaster',
-      3 => 'Investigation',
-      4 => 'Mission',
-      5 => 'Network',
-      6 => 'Specialist training',
-      7 => 'Life Event',
-      8 => 'Undercover',
-      9 => 'Call of Duty',
-      10 => 'Vehicle training',
-      11 => 'Befriended',
-      12 => 'Discover conspiracy',
+      2 => 'Disaster! Roll on the Mishap Table, but you are not ejected ' +
+           'from this career.',
+      3 => 'An investigation takes on a dangerous turn.  Roll ' +
+           'Investigate 8+ or Streetwise 8+. If you fail, roll on the ' +
+           'Mishap Table.  If you suceed, increase one skill of ' +
+           'Deception, Jack-of-all-Trades, Persuade, or Tactics.',
+      4 => 'You complete a mission for your superiors, and are suitably ' +
+           'rewarded.  Gain DM+1 to any one Benefit Roll from this career.',
+      5 => 'You establish a network of contacts.  Gain d3 Contacts.',
+      6 => 'You are given advanced training in a specialist field. Roll ' +\
+           'EDU 8+ to increase any existing skill by 1.',
+      7 => 'Life Event. Roll on the Live Events Table.',
+      8 => 'You go undercover to investigate an enemy.  Roll Deception 8+.' +
+           'If you succeed, roll immediately on the Rogue or Citizen Events ' +
+           'Table and make one roll on any Specialist skill table for that ' +
+           'career. If you fail, roll immediately on the Rogue or Citizen ' +
+           'Mishap Table',
+      9 => 'You go above and beyond the call of duty.  Gain DM+2 to your ' +
+           'next Advancement check',
+      10 => 'You are given spcialist training in vehicles.  Gain one of ' +
+            'Drive 1, Flyer 1, Pilot 1, or Gunner 1.',
+      11 => 'You are befriended by a senior agent. Either increase ' +
+            'Investigate by 1 or DM+4 to an Advancement roll thanks to ' +
+            'their aid.',
+      12 => 'Your efforts uncover a major conspiracy against your ' +
+            'employers. You are automatically promoted.',
     }
 
     MISHAPS = {
