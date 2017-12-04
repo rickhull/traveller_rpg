@@ -14,7 +14,7 @@ module TravellerRPG
 
     def self.muster_roll(label, dm: 0)
       roll = TravellerRPG.roll('d6')
-      clamped = (roll + dm).clamp(1, 6)
+      clamped = (roll + dm).clamp(1, 7)
       puts "#{label} roll: #{roll} (DM #{dm}) = #{clamped}"
       clamped
     end
@@ -178,6 +178,8 @@ module TravellerRPG
       if title
         @title = title
         @char.log "Awarded rank title: #{title}"
+      end
+      if skill
         @char.log "Achieved rank skill: #{skill} #{level}"
         @char.skills[skill] ||= 0
         @char.skills[skill] = level if level > @char.skills[skill]
