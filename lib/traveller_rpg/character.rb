@@ -104,24 +104,20 @@ module TravellerRPG
       self
     end
 
-    def bump_skill(sym, value: nil)
-      if TravellerRPG::SKILLS.key?(sym)
-        @skills[sym] ||= 0
-        if value
-          if @skills[sym] < value
-            @skills[sym] = value
-          else
-            self.log "#{sym} #{value} is < current #{@skills[sym]}"
-          end
+    def train(sym, level = nil)
+      target = TravellerRPG::SKILLS.key?(sym) ? @skills : @stats
+      target[sym] ||= 0
+      if level
+        if target[sym] < level
+          target[sym] = level
         else
-          @skills[sym] += 1
-          value = @skills[sym]
+          self.log "#{sym} #{level} is < current #{target[sym]}"
         end
       else
-        @stats[sym] += 1
-        value = @stats[sym]
+        target[sym] += 1
+        level = target[sym]
       end
-      self.log "Trained #{sym} to #{value}"
+      self.log "#{sym} is trained to #{level}"
     end
 
     def add_stuff(benefits)
