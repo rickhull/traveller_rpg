@@ -2,73 +2,6 @@ require 'traveller_rpg'
 require 'traveller_rpg/career'
 
 module TravellerRPG
-  class MilitaryCareer < Career
-    COMMISSION_CHECK = 9
-    OFFICER_SKILLS = Array.new(6) { :default }
-    OFFICER_RANKS = {}
-
-    def initialize(char, **kwargs)
-      super(char, **kwargs)
-      @officer = false
-    end
-
-    def officer?
-      !!@officer
-    end
-
-    def rank
-      @officer ? @officer : @rank
-    end
-
-    def rank_benefit
-      @officer ? self.class::OFFICER_RANKS[@officer] : super
-    end
-
-    def advance_rank
-      return super unless @officer
-      @officer += 1
-      @char.log "Advanced career to officer rank #{@officer}"
-      title, skill, level = self.rank_benefit
-      if title
-        @char.log "Awarded officer rank title: #{title}"
-        @char.log "Achieved officer rank skill: #{skill} #{level}"
-        @char.skills[skill] ||= 0
-        @char.skills[skill] = level if level > @char.skills[skill]
-      end
-    end
-
-    def commission_check?(dm: 0)
-      stat, check = self.class::COMMISSION
-      @char.log "#{self.name} commission: #{stat} #{check}"
-      dm += @char.stats_dm(stat)
-      self.class.roll_check?('Commission', dm: dm, check: check)
-    end
-
-    def commission_roll(dm: 0)
-      return if @officer
-      if TravellerRPG.choose("Apply for commission?", :yes, :no) == :yes
-        if self.commission_check?
-          @char.log "Became an officer!"
-          @officer = 1
-        else
-          @char.log "Commission was rejected"
-        end
-      end
-    end
-  end
-
-  class Navy < MilitaryCareer
-  end
-
-  class Army < MilitaryCareer
-  end
-
-  class Marines < MilitaryCareer
-  end
-
-  class MerchantMarine < Career
-  end
-
   class Agent < Career
     QUALIFICATION   = [:intelligence, 6]
     ADVANCED_EDUCATION = 8
@@ -154,6 +87,13 @@ module TravellerRPG
     }
 
   end
+
+  class Citizen < Career; end
+  class Drifter < Career; end
+  class Entertainer < Career; end
+  class MerchantMarine < Career; end
+  class Rogue < Career; end
+  class Scholar < Career; end
 
   class Scout < Career
     QUALIFICATION   = [:intelligence, 5]
@@ -255,6 +195,12 @@ module TravellerRPG
     }
   end
 
-  class Drifter < Career
+  class Army < MilitaryCareer
+  end
+
+  class Navy < MilitaryCareer
+  end
+
+  class Marines < MilitaryCareer
   end
 end
