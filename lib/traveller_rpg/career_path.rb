@@ -1,5 +1,7 @@
 require 'traveller_rpg'
 require 'traveller_rpg/careers'
+require 'traveller_rpg/skill'
+
 
 module TravellerRPG
   autoload :Generator, 'traveller_rpg/generator'
@@ -121,15 +123,14 @@ module TravellerRPG
 
     def basic_training(career)
       return unless career.term.zero?
-      skills = career.class::SERVICE_SKILLS - @char.skills.keys
-      return if skills.empty?
+      skills = career.class::SERVICE_SKILLS.flatten - @char.skills.keys
       if @careers.length > 0
-        skills = [TravellerRPG.choose("Choose service skill:", *skills)]
+        skills =
+          [TravellerRPG.choose("Choose service skill:", *skills)]
       end
-      skills.each { |sym|
-        raise "unknown skill: #{sym}" unless TravellerRPG::SKILLS.key?(sym)
-        @char.log "Acquired basic training skill: #{sym} 0"
-        @char.skills[sym] = 0
+      skills.each { |skill|
+        @char.train(skill, 0)
+        @char.log "Acquired basic training skill: #{skill} 0"
       }
     end
 
