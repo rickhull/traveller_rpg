@@ -1,6 +1,9 @@
+require 'traveller_rpg'
 require 'traveller_rpg/careers'
 
 module TravellerRPG
+  autoload :Generator, 'traveller_rpg/generator'
+
   class CareerPath
     class Error < RuntimeError; end
     class Ineligible < Error; end
@@ -19,10 +22,7 @@ module TravellerRPG
     end
 
     def self.run(careers, character: nil)
-      unless character
-        require 'traveller_rpg/generator'
-        character = Generator.character
-      end
+      character = Generator.character unless character
       puts "\n", character.report(desc: :long, stuff: false, credits: false)
       path = self.new(character)
       loop {
