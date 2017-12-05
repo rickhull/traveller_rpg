@@ -54,13 +54,9 @@ module TravellerRPG
 
     attr_reader :skills
 
-    def initialize(name, level: 0, desc: '', skills: [])
-      @skill = Skill.new(name, level: level, desc: desc)
+    def initialize(name, desc: '', skills: [])
+      @skill = Skill.new(name, desc: desc)
       @skills = skills.reduce({}) { |memo, s| memo.merge(s.name => s) }
-    end
-
-    def method_missing(meth, *args)
-      @skill.send(meth, *args)
     end
 
     def bump(_level = nil)
@@ -82,9 +78,13 @@ module TravellerRPG
       @skills[name] = skill
     end
 
+    def method_missing(meth, *args)
+      @skill.send(meth, *args)
+    end
+
     def filter(names)
       @skills.keys.reduce([]) { |memo, s|
-        names.delete(s.name) ? (memo + [s]) : memo
+        names.delete(s) ? (memo + [@skills[s]]) : memo
       }
     end
 

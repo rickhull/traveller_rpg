@@ -1,6 +1,41 @@
 require 'traveller_rpg/skill'
 require 'minitest/autorun'
 
+describe "TravellerRPG.skill?" do
+  it "recognizes subskills" do
+    TravellerRPG.skill?('Animals:Handling').must_equal true
+    TravellerRPG.skill?(:animals, :handling).must_equal true
+  end
+
+  it "must accept a single string arg" do
+    ['Admin', 'Animals', 'Animals:Handling'].each { |valid|
+      TravellerRPG.skill?(valid).must_equal true
+    }
+  end
+
+  it "must reject multiple string args" do
+    proc { TravellerRPG.skill?('This', 'That') }.must_raise ArgumentError
+  end
+
+  it "must accept any number of symbol args" do
+    [[:admin], [:animals], [:animals, :handling]].each { |valid|
+      TravellerRPG.skill?(*valid).must_equal true
+    }
+  end
+end
+
+describe "TravellerRPG.skill" do
+  it "does not recognize subskills" do
+    proc { TravellerRPG.skill('Animals:Handling') }.must_raise KeyError
+    proc { TravellerRPG.skill(:animals, :handling) }.must_raise ArgumentError
+  end
+
+  it "accepts a single symbol to find a Skill or ComplexSkill" do
+    TravellerRPG.skill(:admin).must_be_kind_of Skill
+    TravellerRPG.skill(:animals).must_be_kind_of ComplexSkill
+  end
+end
+
 include TravellerRPG
 
 describe Skill do
@@ -51,7 +86,7 @@ describe Skill do
 
   describe "new instance" do
     before do
-      @name = 'Jacob'
+      @name = 'John Jacob'
       @desc = 'Jingleheimer Schmidt'
       @level = 2
       @invalid_level = 99
@@ -81,7 +116,7 @@ describe Skill do
       s.level.must_equal s.class::MAX
     end
 
-    describe "bump" do
+    describe "Skill#bump" do
       before do
         @skill = Skill.new('Stuff')
         @level = 3
@@ -118,4 +153,104 @@ describe Skill do
 end
 
 describe ComplexSkill do
+  before do
+    @skill_names = %w{First Second Third}
+    @skills = @skill_names.map { |n| Skill.new(n) }
+    @skill = ComplexSkill.new('Complex', skills: @skills)
+  end
+
+  describe "new instance" do
+    before do
+      @name = 'Complex'
+      @desc = 'with specialties'
+    end
+
+    it "must initialize with a name" do
+      s = ComplexSkill.new(@name)
+      s.name.must_equal @name
+      s.level.must_equal 0
+      s.desc.must_be_empty
+    end
+
+    it "must accept a desc" do
+      s = ComplexSkill.new(@name, desc: @desc)
+      s.name.must_equal @name
+      s.level.must_equal 0
+      s.desc.must_equal @desc
+    end
+
+    # ComplexSkills can only have level 0 for the general skill
+    it "must not accept a level" do
+      [0, 1, 2].each { |level|
+        proc { ComplexSkill.new(@name, level: level) }.must_raise Exception
+      }
+    end
+  end
+
+  describe "ComplexSkill#bump" do
+    it "must ignore level" do
+      out, err = capture_io do
+        @skill.bump(5)
+      end
+      out.wont_be_empty
+      err.must_be_empty
+      @skill.level.must_equal 0
+      @skill.skills.values.reduce(0) { |memo, skill|
+        memo + skill.level
+      }.must_equal 1 # one bump, level ignored
+    end
+
+    it "must bump specialties" do
+      out, err = capture_io do
+        5.times { @skill.bump }
+      end
+      out.wont_be_empty
+      err.must_be_empty
+      @skill.level.must_equal 0
+      @skill.skills.values.reduce(0) { |memo, skill|
+        memo + skill.level
+      }.must_equal 5
+    end
+  end
+
+  describe "ComplexSkill#fetch" do
+    it "must retrieve a specialty skill by name" do
+      spec = @skill.fetch(@skill_names.sample)
+      spec.must_be_kind_of Skill
+    end
+
+    it "must raise if specialty is not found" do
+      proc { @skill.fetch('Nonexistent') }.must_raise KeyError
+    end
+  end
+
+  describe "ComplexSkill#[]" do
+    it "must retrieve a specialty skill by name" do
+      spec = @skill[@skill_names.sample]
+      spec.must_be_kind_of Skill
+    end
+
+    it "returns nil if specialty is not found" do
+      spec = @skill['Nonexistent']
+      spec.must_be_nil
+    end
+  end
+
+  describe "Skill methods" do
+    it "uses method_missing to address the general skill" do
+      @skill.name.must_be_kind_of String
+      @skill.level.must_be_kind_of Numeric
+      @skill.desc.must_be_kind_of String
+    end
+  end
+
+  describe "ComplexSkill#filter" do
+    it "returns a subset of subskills according to names provided" do
+      subskills = @skill.filter(['First', 'Second'])
+      subskills.must_be_kind_of Array
+      subskills.size.must_equal 2
+      subskills.any? { |s| s.name == 'Third' }.must_equal false
+      subskills.any? { |s| s.name == 'First' }.must_equal true
+    end
+  end
 end
