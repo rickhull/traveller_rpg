@@ -11,7 +11,7 @@ module TravellerRPG
 
   def self.roll(str = nil, faces: 6, dice: 2, count: 1)
     return self.roll_str(str) if str
-    rolln = -> (faces, dice) { Array.new(dice) { rand(faces) + 1 } }
+    rolln = -> (f, d) { Array.new(d) { rand(f) + 1 } }
     (Array.new(count) { rolln.(faces, dice).sum }.sum.to_f / count).round
   end
 
