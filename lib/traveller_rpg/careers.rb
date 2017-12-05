@@ -111,9 +111,6 @@ module TravellerRPG
 
   class Citizen < Career; end
 
-
-
-
   class Drifter < Career
     # QUALIFICATION = [:intelligence, 0]
     ADVANCED_EDUCATION = 99
@@ -198,6 +195,7 @@ module TravellerRPG
   end
 
   class Entertainer < Career; end
+  class Merchant < Career; end
   class Rogue < Career; end
   class Scholar < Career; end
 
@@ -397,12 +395,12 @@ module TravellerRPG
     AGE_PENALTY = 30
 
     PERSONAL_SKILLS = [:strength, :dexterity, :endurance,
-                       :gambler, :melee_unarmed, :melee_blade]
-    SERVICE_SKILLS = [:athletics_group, :vacc_suit, :tactics,
-                      :heavy_weapons, :gun_combat_group, :stealth]
+                       :gambler, :melee_unarmed_combat, :melee_blade]
+    SERVICE_SKILLS = [:athletics_group, :vacc_suit, :tactics_group,
+                      :heavy_weapons_group, :gun_combat_group, :stealth]
     ADVANCED_SKILLS = [:medic, :survival, :explosives,
                        :engineer_group, :pilot_group, :navigation]
-    OFFICER_SKILLS = [:engineer_group, :tactics, :admin,
+    OFFICER_SKILLS = [:engineer_group, :tactics_group, :admin,
                       :advocate, :vacc_suit, :leadership]
     RANKS = {
       0 => ['Marine', :gun_combat_group, 1], # TODO
@@ -416,7 +414,7 @@ module TravellerRPG
     OFFICER_RANKS = {
       1 => ['Lieutenant', :leadership, 1],
       2 => ['Captain', nil, nil],
-      3 => ['Force Commander', :tactics, 1],
+      3 => ['Force Commander', :tactics_group, 1],
       4 => ['Lieutenant Colonel', nil, nil],
       5 => ['Colonel', :social_status, 10],  # TODO
       6 => ['Brigadier', nil, nil],
@@ -441,7 +439,7 @@ module TravellerRPG
         skills: [:vacc_suit, :heavy_weapons_group, :recon,
                  :melee_blade, :tactics_military, :gun_combat_group],
         survival: [:endurance, 7],
-        advancement: [:ducation, 5],
+        advancement: [:education, 5],
         ranks: RANKS,
       }
     }
