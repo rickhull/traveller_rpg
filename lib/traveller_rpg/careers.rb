@@ -31,7 +31,7 @@ module TravellerRPG
           3 => ['Detective', nil, nil],
           4 => ['Lieutenant', :investigate, 1],
           5 => ['Chief', :admin, 1],
-          6 => ['Commissioner', :social_standing, nil],
+          6 => ['Commissioner', :social_status, nil],
         },
       },
       intelligence: {
@@ -483,7 +483,7 @@ module TravellerRPG
     AGE_PENALTY = 34
 
     PERSONAL_SKILLS = [:strength, :dexterity, :endurance,
-                       :intelligence, :education, :social_standing]
+                       :intelligence, :education, :social_status]
     SERVICE_SKILLS = [:pilot_group, :vacc_suit, :athletics_group,
                       :gunner_group, :mechanic, :gun_combat_group]
     ADVANCED_SKILLS = [:engineer_electronics, :astrogation, :engineer_group,
