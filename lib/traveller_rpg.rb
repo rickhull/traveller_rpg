@@ -51,10 +51,6 @@ module TravellerRPG
     $stdin.gets(chomp: true)
   end
 
-  def self.career_class(str)
-    Object.const_get("TravellerRPG::#{str.split('::').last}")
-  end
-
   # per http://www.traveller-srd.com/core-rules/skills/
   SKILLS = {
     admin:  nil,
