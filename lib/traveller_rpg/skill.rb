@@ -1,6 +1,5 @@
 require 'traveller_rpg'
 
-# some skills have specialties -- e.g. Animals (riding, veterinary, etc)
 module TravellerRPG
   class Skill
     MAX = 5
@@ -8,7 +7,7 @@ module TravellerRPG
     def self.name(*syms)
       syms.map { |sym|
         sym.to_s.split('_').map(&:capitalize).join(' ')
-      }.join('.')
+      }.join(':')
     end
 
     def self.sym(name)
@@ -19,38 +18,54 @@ module TravellerRPG
       name.split(':').map { |n| self.sym(n) }
     end
 
-    attr_reader :name, :value, :desc
+    attr_reader :name, :level, :desc
 
-    def initialize(name, value: 0, desc: '')
+    def initialize(name, level: 0, desc: '')
       @name = name
-      @value = value
+      self.level = level
       @desc = desc
     end
 
     def bump(level = nil)
       if level
-        @value = level if level > @value
+        self.level = level if level > @level
       else
-        @value += 1
+        self.level += 1
       end
-      @value = @value.clamp(0, MAX)
     end
 
     def to_s
-      @value.to_s
+      @level.to_s
+    end
+
+    private
+
+    def level=(val)
+      @level = val.clamp(0, MAX)
+      warn "level #{val} was clamped to #{@level}" if val != @level
+      @level
     end
   end
 
+  # note, Engineer (e.g.) can't go above 0, so Engineer#bump means
+  # you have to pick a specialty to bump
   class ComplexSkill
+    MAX = 0
+
     attr_reader :skills
 
-    def initialize(name, value: 0, desc: '', skills: [])
-      @skill = Skill.new(name, value: value, desc: desc)
+    def initialize(name, level: 0, desc: '', skills: [])
+      @skill = Skill.new(name, level: level, desc: desc)
       @skills = skills.reduce({}) { |memo, s| memo.merge(s.name => s) }
     end
 
     def method_missing(meth, *args)
       @skill.send(meth, *args)
+    end
+
+    def bump(_level = nil)
+      name = TravellerRPG.choose("Choose a specialty:", *@skills.keys)
+      @skills[name].bump
     end
 
     def fetch(name)
@@ -68,12 +83,9 @@ module TravellerRPG
     end
 
     def filter(names)
-      result = []
-      size = names.size
-      @skills.each { |s|
-        result << s if names.delete(s.name)
+      @skills.keys.reduce([]) { |memo, s|
+        names.delete(s.name) ? (memo + [s]) : memo
       }
-      result
     end
 
     def to_s
