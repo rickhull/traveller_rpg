@@ -111,13 +111,13 @@ module TravellerRPG
         if target[sym] < level
           target[sym] = level
         else
-          self.log "#{sym} #{level} is < current #{target[sym]}"
+          self.log "Train: #{sym} is already #{target[sym]}"
         end
       else
         target[sym] += 1
         level = target[sym]
       end
-      self.log "#{sym} is trained to #{level}"
+      self.log "Trained: #{sym} #{level}"
     end
 
     def add_stuff(benefits)
