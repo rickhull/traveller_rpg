@@ -69,32 +69,26 @@ module TravellerRPG
       (roll + dm) >= check
     end
 
-    def self.muster_roll(label, dm: 0)
-      roll = TravellerRPG.roll('d6')
-      clamped = (roll + dm).clamp(1, 7)
-      puts "#{label} roll: #{roll} (DM #{dm}) = #{clamped}"
-      clamped
-    end
+    attr_reader :term, :status, :rank, :title, :assignment
 
-    attr_reader :term, :active, :rank, :assignment
-
-    def initialize(char, term: 0, active: false, rank: 0)
+    def initialize(char, term: 0, status: :new, rank: 0)
       @char = char
 
       # career tracking
       @term = term
-      @active = active
+      @status = status
       @rank = rank
       @term_mandate = nil
       @title = nil
     end
 
-    def officer?
-      false
-    end
-
+    # move status from :new to :active
+    # take on an assignment
+    # take any rank 0 title or skill
+    #
     def activate(assignment = nil)
-      @active = true
+      raise("invalid status: #{@status}") unless @status == :new
+      @status = :active
       s = self.class::SPECIALIST
       if assignment
         raise(UnknownAssignment, assignment.inspect) unless s.key?(assignment)
@@ -107,8 +101,24 @@ module TravellerRPG
       self
     end
 
+    def officer?
+      false
+    end
+
     def active?
-      !!@active
+      @status == :active
+    end
+
+    def finished?
+      [:mishap, :finished].include? @status
+    end
+
+    def must_remain?
+      @term_mandate == :must_remain
+    end
+
+    def must_exit?
+      @term_mandate == :must_exit
     end
 
     def qualify_check?(dm: 0)
@@ -194,16 +204,8 @@ module TravellerRPG
       self
     end
 
-    def must_remain?
-      @term_mandate == :must_remain
-    end
-
-    def must_exit?
-      @term_mandate == :must_exit
-    end
-
     def run_term
-      raise(Error, "career is inactive") unless @active
+      raise(Error, "career is inactive") unless self.active?
       raise(Error, "must exit") if self.must_exit?
       @term += 1
       @char.log format("%s term %i started, age %i",
@@ -233,7 +235,7 @@ module TravellerRPG
                          self.name, years)
         @char.age years
         self.mishap_roll
-        @active = false
+        @status = :mishap
       end
     end
 
@@ -241,35 +243,36 @@ module TravellerRPG
       @term >= 5 ? @term * 2000 : 0
     end
 
+    def muster_roll(label)
+      roll = TravellerRPG.roll('d6')
+      dm = @char.skill_check?(:gambler, 1) ? 1 : 0
+      puts "#{label} roll: #{roll} (DM #{dm})"
+      self.class::MUSTER_OUT.fetch(roll + dm)
+    end
+
     def muster_out(dm: 0)
       @char.log "Muster out: #{self.name}"
       raise(Error, "career has not started") unless @term > 0
-      dm += @char.skill_check?(:gambler, 1) ? 1 : 0
-
-      # one cash and one benefit per term
-      # except if last term suffered mishap, no benefit for that term
-
       cash_rolls = @term.clamp(0, 3 - @char.cash_rolls)
       benefit_rolls = @term
 
-      if @active
-        @char.log "Career is in good standing -- collect all benefits"
-        @active = false
-      else
-        @char.log "Left career early -- lose benefit for last term"
+      case @status
+      when :active
+        @char.log "Muster out: Career in good standing; collect all benefits"
+      when :mishap
+        @char.log "Muster out: Career ended early; lose last term benefit"
         benefit_rolls -= 1
+      when :new, :finished
+        raise "invalid status: #{@status}"
+      else
+        raise "unknown status: #{@status}"
       end
 
-      cash_rolls.times {
-        clamped = self.class.muster_roll('Cash', dm: dm)
-        @char.cash_roll self.class::MUSTER_OUT.fetch(clamped).first
-      }
-      benefit_rolls.times {
-        clamped = self.class.muster_roll('Benefits', dm: dm)
-        @char.benefit self.class::MUSTER_OUT.fetch(clamped).last
-      }
-      @char.log "Retirement bonus: #{self.retirement_bonus}"
+      # Collect "muster out" benefits
+      cash_rolls.times { @char.cash_roll self.muster_roll('Cash').first }
+      benefit_rolls.times { @char.benefit self.muster_roll('Benefit').last }
       @char.benefit self.retirement_bonus
+      @status = :finished
       self
     end
 
@@ -286,20 +289,24 @@ module TravellerRPG
       self.specialty.fetch(:ranks)[@rank]
     end
 
-    def report(term: true, active: true, rank: true, spec: true)
+    def report(term: true, status: true, rank: true, spec: true)
       hsh = {}
       hsh['Term'] = @term if term
-      hsh['Active'] = @active if active
+      hsh['Status'] = @status if status
       hsh['Specialty'] = @assignment if spec
+      hsh['Title'] = @title if @title
       if rank
-        hsh['Officer Rank'] = self.rank if self.officer?
-        hsh['Rank'] = @rank
-        hsh['Title'] = @title if @title
+        if self.officer?
+          hsh['Officer Rank'] = @officer_rank
+          hsh['Enlisted Rank'] = @rank
+        else
+          hsh['Rank'] = @rank
+        end
       end
       report = ["Career: #{self.name}", "==="]
       hsh.each { |label, val|
         val = val.to_s.capitalize if val.is_a? Symbol
-        report << format("%s: %s", label.to_s.rjust(10, ' '), val.to_s)
+        report << format("%s: %s", label.to_s.rjust(15, ' '), val.to_s)
       }
       report.join("\n")
     end
