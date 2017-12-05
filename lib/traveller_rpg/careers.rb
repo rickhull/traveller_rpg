@@ -488,7 +488,7 @@ module TravellerRPG
                       :gunner_group, :mechanic, :gun_combat_group]
     ADVANCED_SKILLS = [:engineer_electronics, :astrogation, :engineer_group,
                        :drive_group, :navigation, :admin]
-    OFFICER_SKILLS = [:leadership, :engineer_electronics, :pilot,
+    OFFICER_SKILLS = [:leadership, :engineer_electronics, :pilot_group,
                       :melee_blade, :admin, :tactics_naval]
     RANKS = {
       0 => ['Crewman', nil, nil],
