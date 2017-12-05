@@ -196,6 +196,7 @@ module TravellerRPG
     tactics_group: nil,
     tactics_military: nil,
     tactics_ground: nil,
+    tactics_naval: nil,
 
     trade_group: nil,
     trade_biologicals: nil,
