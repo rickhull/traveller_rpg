@@ -5,45 +5,45 @@ module TravellerRPG
   class Agent < Career
     QUALIFICATION   = [:intelligence, 6]
     ADVANCED_EDUCATION = 8
-    PERSONAL_SKILLS = [:gun_combat_group, :dexterity, :endurance,
-                       :melee_group, :intelligence, :athletics_group]
-    SERVICE_SKILLS  = [:streetwise, :drive_group, :investigate,
-                       :flyer_group, :recon, :gun_combat_group]
-    ADVANCED_SKILLS = [:advocate, :language_group, :explosives,
-                       :medic, :vacc_suit, :electronics_group]
+    PERSONAL_SKILLS = ['Gun Combat', :dexterity, :endurance,
+                       'Melee', :intelligence, 'Athletics']
+    SERVICE_SKILLS  = ['Streetwise', 'Drive', 'Investigate',
+                       'Flyer', 'Recon', 'Gun Combat']
+    ADVANCED_SKILLS = ['Advocate', 'Language', 'Explosives',
+                       'Medic', 'Vacc Suit', 'Electronics']
     RANKS = {
-      1 => ['Agent', :deception, 1],
-      2 => ['Field Agent', :investigate, 1],
-      4 => ['Special Agent', :gun_combat_group, 1],
-      5 => ['Assistant Director', nil, nil],
-      6 => ['Director', nil, nil],
+      1 => ['Agent', 'Deception', 1],
+      2 => ['Field Agent', 'Investigate', 1],
+      4 => ['Special Agent', 'Gun Combat', 1],
+      5 => ['Assistant Director'],
+      6 => ['Director'],
     }
     SPECIALIST = {
       law_enforcement: {
-        skills:   [:investigate, :recon, :streetwise,
-                   :stealth, :melee_group, :advocate],
+        skills:   ['Investigate', 'Recon', 'Streetwise',
+                   'Stealth', :melee, 'Advocate'],
         survival: [:endurance, 6],
         advancement: [:intelligence, 6],
         ranks: {
-          0 => ['Rookie', nil, nil],
-          1 => ['Corporal', :streetwise, 1],
-          2 => ['Sergeant', nil, nil],
-          3 => ['Detective', nil, nil],
-          4 => ['Lieutenant', :investigate, 1],
-          5 => ['Chief', :admin, 1],
-          6 => ['Commissioner', :social_status, nil],
+          0 => ['Rookie'],
+          1 => ['Corporal', 'Streetwise', 1],
+          2 => ['Sergeant'],
+          3 => ['Detective'],
+          4 => ['Lieutenant', 'Investigate', 1],
+          5 => ['Chief', 'Admin', 1],
+          6 => ['Commissioner', :social_status],
         },
       },
       intelligence: {
-        skills: [:investigate, :recon, :comms,
-                 :stealth, :persuade, :deception],
+        skills: ['Investigate', 'Recon', 'Electronics:Comms',
+                 'Stealth', 'Persuade', 'Deception'],
         survival: [:intelligence, 7],
         advancement: [:intelligence, 5],
         ranks: RANKS,
       },
       corporate: {
-        skills: [:investigate, :computers, :stealth,
-                 :carouse, :deception, :streetwise],
+        skills: ['Investigate', 'Electronics:Computers', 'Stealth',
+                 'Carouse', 'Deception', 'Streetwise'],
         survival: [:intelligence, 5],
         advancement: [:intelligence, 7],
         ranks: RANKS,
@@ -115,42 +115,41 @@ module TravellerRPG
     # QUALIFICATION = [:intelligence, 0]
     ADVANCED_EDUCATION = 99
     PERSONAL_SKILLS = [:strength, :endurance, :dexterity,
-                       :language_group, :social_sciences_group,
-                       :jack_of_all_trades]
-    SERVICE_SKILLS = [:athletics_group, :melee_unarmed_combat, :recon,
-                      :streetwise, :stealth, :survival]
+                       'Language', 'Profession', 'Jack Of All Trades']
+    SERVICE_SKILLS = ['Athletics', 'Melee:Unarmed', 'Recon',
+                      'Streetwise', 'Stealth', 'Survival']
     ADVANCED_SKILLS = []
     SPECIALIST = {
       barbarian: {
-        skills: [:animals_group, :carouse, :melee_blade,
-                 :stealth, :seafarer_group, :survival],
+        skills: ['Animals', 'Carouse', 'Melee:Blade', 'Stealth',
+                 ['Seafarer:Personal', 'Seafarer:Sails'], 'Survival'],
         survival: [:endurance, 7],
         advancement: [:strength, 7],
         ranks: {
-          1 => [nil, :survival, 1],
-          2 => ['Warrior', :melee_blade, 1],
-          4 => ['Chieftain', :leadership, 1],
+          1 => [nil, 'Survival', 1],
+          2 => ['Warrior', 'Melee:Blade', 1],
+          4 => ['Chieftain', 'Leadership', 1],
           6 => ['Warlord', nil, nil],
         },
       },
       wanderer: {
-        skills: [:drive_group, :deception, :recon,
-                 :stealth, :streetwise, :survival],
+        skills: ['Drive', 'Deception', 'Recon',
+                 'Stealth', 'Streetwise', 'Survival'],
         survival: [:endurance, 7],
         advancement: [:intelligence, 7],
         ranks: {
-          1 => [nil, :streetwise, 1],
-          3 => [nil, :deception, 1],
+          1 => [nil, 'Streetwise', 1],
+          3 => [nil, 'Deception', 1],
         },
       },
       scavenger: {
-        skills: [:pilot_small_craft, :mechanic, :astrogation,
-                 :vacc_suit, :engineer_group, :gun_combat_group],
+        skills: ['Pilot:Small Craft', 'Mechanic', 'Astrogation',
+                 'Vacc Suit', 'Engineer', 'Gun Combat'],
         survival: [:dexterity, 7],
         advancement: [:endurance, 7],
         ranks: {
-          1 => [nil, :vacc_suit, 1],
-          3 => [nil, :mechanic, 1],
+          1 => [nil, 'Vacc Suit', 1],
+          3 => [nil, 'Mechanic', 1],
         },
       },
     }
@@ -163,30 +162,6 @@ module TravellerRPG
       5 => [3000, 'EDU +1'],
       6 => [4000, 'Ship Share'],
       7 => [8000, 'Ship Share x2'],
-    }
-
-    EVENTS = {
-      1 => '',
-      2 => '',
-      3 => '',
-      4 => '',
-      5 => '',
-      6 => '',
-      7 => '',
-      8 => '',
-      9 => '',
-      10 => '',
-      11 => '',
-      12 => '',
-    }
-
-    MISHAPS = {
-      1 => '',
-      2 => '',
-      3 => '',
-      4 => '',
-      5 => '',
-      6 => '',
     }
 
     def qualify_check?(dm: 0)
@@ -203,35 +178,35 @@ module TravellerRPG
     QUALIFICATION   = [:intelligence, 5]
     ADVANCED_EDUCATION = 8
     PERSONAL_SKILLS = [:strength, :dexterity, :endurance,
-                       :intelligence, :education, :jack_of_all_trades]
-    SERVICE_SKILLS  = [:pilot_small_craft, :survival, :mechanic,
-                      :astrogation, :comms, :gun_combat_group]
-    ADVANCED_SKILLS = [:medic, :navigation, :engineer_group,
-                       :computers, :space_sciences_group, :jack_of_all_trades]
+                       :intelligence, :education, 'Jack Of All Trades']
+    SERVICE_SKILLS  = [['Pilot:Small Craft', 'Pilot:Spacecraft'], 'Survival',
+                       'Mechanic', 'Astrogation', 'Vacc Suit', 'Gun Combat']
+    ADVANCED_SKILLS = ['Medic', 'Navigation', 'Engineer',
+                       'Explosives', 'Science', 'Jack Of All Trades']
 
     RANKS = {
-      1 => ['Scout', :vacc_suit, 1],
-      3 => ['Senior Scout', :pilot, 1],
+      1 => ['Scout', 'Vacc Suit', 1],
+      3 => ['Senior Scout', 'Pilot', 1],
     }
 
     SPECIALIST = {
       courier: {
-        skills:   [:comms, :sensors, :pilot_spacecraft,
-                   :vacc_suit, :zero_g, :astrogation],
+        skills:   ['Electronics', 'Flyer', 'Pilot:Spacecraft',
+                   'Engineer', 'Athletics', 'Astrogation'],
         survival: [:endurance, 5],
         advancement: [:education, 9],
         ranks: RANKS,
       },
       surveyor: {
-        skills: [:sensors, :persuade, :pilot_small_craft,
-                 :navigation, :diplomat, :streetwise],
+        skills: ['Electronics', 'Persuade', 'Pilot',
+                 'Navigation', 'Diplomat', 'Streetwise'],
         survival: [:endurance, 6],
         advancement: [:intelligence, 8],
         ranks: RANKS,
       },
       explorer: {
-        skills: [:sensors, :pilot_spacecraft, :pilot_small_craft,
-                 :life_sciences_group, :stealth, :recon],
+        skills: ['Electronics', 'Pilot', 'Engineer',
+                 'Science', 'Stealth', 'Recon'],
         survival: [:endurance, 7],
         advancement: [:education, 7],
         ranks: RANKS,
@@ -306,76 +281,53 @@ module TravellerRPG
     QUALIFICATION = [:endurance, 5]
     AGE_PENALTY = 30
     PERSONAL_SKILLS = [:strength, :dexterity, :endurance,
-                       :gambler, :medic, :melee_group]
-    SERVICE_SKILLS = [:drive_group, :athletics_group, :gun_combat_group,
-                      :recon, :melee_group, :heavy_weapons_group]
-    ADVANCED_SKILLS = [:tactics_military, :leadership, :advocate,
-                       :diplomat, :electronics, :admin]
-    OFFICER_SKILLS = [:tactics_military, :leadership, :advocate,
-                      :diplomat, :electronics, :admin]
+                       'Gambler', 'Medic', 'Melee']
+    SERVICE_SKILLS =  [['Drive', 'Vacc Suit'], 'Athletics', 'Gun Combat',
+                      'Recon', 'Melee', 'Heavy Weapons']
+    ADVANCED_SKILLS = ['Tactics:Military', 'Electronics', 'Navigation',
+                       'Explosives', 'Engineer', 'Survival']
+    OFFICER_SKILLS = ['Tactics:Military', 'Leadership', 'Advocate',
+                      'Diplomat', 'Electronics', 'Admin']
     RANKS = {
-      0 => ['Private', :gun_combat_group, 1],
-      1 => ['Lance Corporal', :recon, 1],
-      2 => ['Corporal', nil, nil],
-      3 => ['Lance Sergeant', :leadership, 1],
-      4 => ['Sergeant', nil, nil],
-      5 => ['Gunnery Sergeant', nil, nil],
-      6 => ['Sergeant Major', nil, nil],
+      0 => ['Private', 'Gun Combat', 1],
+      1 => ['Lance Corporal', 'Recon', 1],
+      2 => ['Corporal'],
+      3 => ['Lance Sergeant', 'Leadership', 1],
+      4 => ['Sergeant'],
+      5 => ['Gunnery Sergeant'],
+      6 => ['Sergeant Major'],
     }
     OFFICER_RANKS = {
-      1 => ['Lieutenant', :leadership, 1],
-      2 => ['Captain', nil, nil],
-      3 => ['Major', :tactics_military, 1],
-      4 => ['Lieutenant Colonel', nil, nil],
-      5 => ['Colonel', nil, nil],
-      6 => ['General', :social_status, 10],  # TODO
+      1 => ['Lieutenant', 'Leadership', 1],
+      2 => ['Captain'],
+      3 => ['Major', 'Tactics:Military', 1],
+      4 => ['Lieutenant Colonel'],
+      5 => ['Colonel'],
+      6 => ['General', :social_status, 10], # TODO
     }
 
     SPECIALIST = {
       support: {
-        skills: [:mechanic, :flyer_group, :engineer_group, # TODO: profession
-                 :explosives, :comms, :medic],
+        skills: ['Mechanic', ['Drive', 'Flyer'], 'Profession',
+                 'Explosives', 'Electronics:Comms', 'Medic'],
         survival: [:endurance, 5],
         advancement: [:education, 7],
         ranks: RANKS,
       },
       infantry: {
-        skills: [:gun_combat_group, :melee_group, :heavy_weapons_group,
-                 :stealth, :athletics_group, :recon],
+        skills: ['Gun Combat', 'Melee', 'Heavy Weapons',
+                 'Stealth', 'Athletics', 'Recon'],
         survival: [:strength, 6],
         advancement: [:education, 6],
         ranks: RANKS,
       },
       cavalry: {
-        skills: [:mechanic, :drive_group, :flyer_group,
-                 :recon, :heavy_weapons_group, :sensors], # TODO: HW vehicle
+        skills: ['Mechanic', 'Drive', 'Flyer', 'Recon',
+                 'Heavy Weapons:Vehicle', 'Electronics:Sensors'],
         survival: [:intelligence, 7],
         advancement: [:intelligence, 5],
         ranks: RANKS,
       },
-    }
-
-    EVENTS = {
-      2 => nil,
-      3 => nil,
-      4 => nil,
-      5 => nil,
-      6 => nil,
-      7 => nil,
-      8 => nil,
-      9 => nil,
-      10 => nil,
-      11 => nil,
-      12 => nil,
-    }
-
-    MISHAPS = {
-      1 => nil,
-      2 => nil,
-      3 => nil,
-      4 => nil,
-      5 => nil,
-      6 => nil,
     }
 
     # roll => [cash, benefit]
@@ -394,77 +346,54 @@ module TravellerRPG
     QUALIFICATION = [:endurance, 6]
     AGE_PENALTY = 30
 
-    PERSONAL_SKILLS = [:strength, :dexterity, :endurance,
-                       :gambler, :melee_unarmed_combat, :melee_blade]
-    SERVICE_SKILLS = [:athletics_group, :vacc_suit, :tactics_group,
-                      :heavy_weapons_group, :gun_combat_group, :stealth]
-    ADVANCED_SKILLS = [:medic, :survival, :explosives,
-                       :engineer_group, :pilot_group, :navigation]
-    OFFICER_SKILLS = [:engineer_group, :tactics_group, :admin,
-                      :advocate, :vacc_suit, :leadership]
+    PERSONAL_SKILLS = [:strength, :dexterity, :endurance, 'Gambler',
+                       'Melee:Unarmed', 'Melee:Blade']
+    SERVICE_SKILLS = ['Athletics', 'Vacc Suit', 'Tactics',
+                      'Heavy Weapons', 'Gun Combat', 'Stealth']
+    ADVANCED_SKILLS = ['Medic', 'Survival', 'Explosives',
+                       'Engineer', 'Pilot', 'Navigation']
+    OFFICER_SKILLS = ['Electronics', 'Tactics', 'Admin',
+                      'Advocate', 'Vacc Suit', 'Leadership']
     RANKS = {
-      0 => ['Marine', :gun_combat_group, 1], # TODO
-      1 => ['Lance Corporal', :gun_combat_group, 1],
-      2 => ['Corporal', nil, nil],
-      3 => ['Lance Sergeant', :leadership, 1],
-      4 => ['Sergeant', nil, nil],
-      5 => ['Gunnery Sergeant', :endurance, nil],
-      6 => ['Sergeant Major', nil, nil],
+      0 => ['Marine', 'Gun Combat', 1], # TODO "or Melee Blade"
+      1 => ['Lance Corporal', 'Gun Combat', 1], # TODO: any
+      2 => ['Corporal'],
+      3 => ['Lance Sergeant', 'Leadership', 1],
+      4 => ['Sergeant'],
+      5 => ['Gunnery Sergeant', :endurance],
+      6 => ['Sergeant Major'],
     }
     OFFICER_RANKS = {
-      1 => ['Lieutenant', :leadership, 1],
-      2 => ['Captain', nil, nil],
-      3 => ['Force Commander', :tactics_group, 1],
-      4 => ['Lieutenant Colonel', nil, nil],
+      1 => ['Lieutenant', 'Leadership', 1],
+      2 => ['Captain'],
+      3 => ['Force Commander', 'Tactics', 1],
+      4 => ['Lieutenant Colonel'],
       5 => ['Colonel', :social_status, 10],  # TODO
-      6 => ['Brigadier', nil, nil],
+      6 => ['Brigadier'],
     }
 
     SPECIALIST = {
       support: {
-        skills: [:engineer_electronics, :mechanic, :flyer_group, # TODO
-                 :medic, :heavy_weapons_group, :gun_combat_group],
+        skills: ['Electronics', 'Mechanic', ['Drive', 'Flyer'],
+                 'Medic', 'Heavy Weapons', 'Gun Combat'],
         survival: [:endurance, 5],
         advancement: [:education, 7],
         ranks: RANKS,
       },
       star_marine: {
-        skills: [:vacc_suit, :athletics_group, :gunner_group,
-                 :melee_blade, :engineer_electronics, :gun_combat_group],
+        skills: ['Vacc Suit', 'Athletics', 'Gunner',
+                 'Melee:Blade', 'Electronics', 'Gun Combat'],
         survival: [:endurance, 6],
         advancement: [:education, 6],
         ranks: RANKS,
       },
       ground_assault: {
-        skills: [:vacc_suit, :heavy_weapons_group, :recon,
-                 :melee_blade, :tactics_military, :gun_combat_group],
+        skills: ['Vacc Suit', 'Heavy Weapons', 'Recon',
+                 'Melee:Blade', 'Tactics:Military', 'Gun Combat'],
         survival: [:endurance, 7],
         advancement: [:education, 5],
         ranks: RANKS,
       }
-    }
-
-    EVENTS = {
-      2 => nil,
-      3 => nil,
-      4 => nil,
-      5 => nil,
-      6 => nil,
-      7 => nil,
-      8 => nil,
-      9 => nil,
-      10 => nil,
-      11 => nil,
-      12 => nil,
-    }
-
-    MISHAPS = {
-      1 => nil,
-      2 => nil,
-      3 => nil,
-      4 => nil,
-      5 => nil,
-      6 => nil,
     }
 
     MUSTER_OUT = {
@@ -484,74 +413,51 @@ module TravellerRPG
 
     PERSONAL_SKILLS = [:strength, :dexterity, :endurance,
                        :intelligence, :education, :social_status]
-    SERVICE_SKILLS = [:pilot_group, :vacc_suit, :athletics_group,
-                      :gunner_group, :mechanic, :gun_combat_group]
-    ADVANCED_SKILLS = [:engineer_electronics, :astrogation, :engineer_group,
-                       :drive_group, :navigation, :admin]
-    OFFICER_SKILLS = [:leadership, :engineer_electronics, :pilot_group,
-                      :melee_blade, :admin, :tactics_naval]
+    SERVICE_SKILLS = ['Pilot', 'Vacc Suit', 'Athletics',
+                      'Gunner', 'Mechanic', 'Gun Combat']
+    ADVANCED_SKILLS = ['Electronics', 'Astrogation', 'Engineer',
+                       'Drive', 'Navigation', 'Admin']
+    OFFICER_SKILLS = ['Leadership', 'Electronics', 'Pilot',
+                      'Melee:Blade', 'Admin', 'Tactics:Naval']
     RANKS = {
-      0 => ['Crewman', nil, nil],
-      1 => ['Able Spacehand', :mechanic, 1],
-      2 => ['Petty Officer 3rd class', :vacc_suit, 1],
-      3 => ['Petty Officer 2nd class', nil, nil],
+      0 => ['Crewman'],
+      1 => ['Able Spacehand', 'Mechanic', 1],
+      2 => ['Petty Officer 3rd class', 'Vacc Suit', 1],
+      3 => ['Petty Officer 2nd class'],
       4 => ['Petty Officer 1st class', :endurance, nil],
-      5 => ['Chief Petty Officer', nil, nil],
-      6 => ['Master Chief', nil, nil],
+      5 => ['Chief Petty Officer'],
+      6 => ['Master Chief'],
     }
     OFFICER_RANKS = {
-      1 => ['Ensign', :melee_blade, 1],
-      2 => ['Sublieutenant', :leadership, 1],
-      3 => ['Lieutenant', nil, nil],
-      4 => ['Commander', :tactics_naval, 1],
+      1 => ['Ensign', 'Melee:Blade', 1],
+      2 => ['Sublieutenant', 'Leadership', 1],
+      3 => ['Lieutenant'],
+      4 => ['Commander', 'Tactics:Naval', 1],
       5 => ['Captain', :social_status, 10], # TODO
       6 => ['Admiral', :social_status, 12], # TODO
     }
     SPECIALIST = {
       line_crew: {
-        skills: [:engineer_electronics, :mechanic, :gun_combat_group,
-                 :flyer_group, :melee_group, :vacc_suit],
+        skills: ['Electronics', 'Mechanic', 'Gun Combat',
+                 'Flyer', 'Melee', 'Vacc Suit'],
         survival: [:intelligence, 5],
         advancement: [:education, 7],
         ranks: RANKS,
       },
       engineer_gunner: {
-        skills: [:engineer_group, :mechanic, :engineer_electronics,
-                 :engineer_group, :gunner_group, :flyer_group],
+        skills: ['Engineer', 'Mechanic', 'Electronics',
+                 'Engineer', 'Gunner', 'Flyer'],
         survival: [:intelligence, 6],
         advancement: [:education, 6],
         ranks: RANKS,
       },
       flight: {
-        skills: [:pilot_group, :flyer_group, :gunner_group,
-                 :pilot_small_craft, :astrogation, :engineer_electronics],
+        skills: ['Pilot', 'Flyer', 'Gunner',
+                 'Pilot:Small Craft', 'Astrogation', 'Electronics'],
         survival: [:dexterity, 7],
         advancement: [:education, 5],
         ranks: RANKS,
       },
-    }
-
-    EVENTS = {
-      2 => nil,
-      3 => nil,
-      4 => nil,
-      5 => nil,
-      6 => nil,
-      7 => nil,
-      8 => nil,
-      9 => nil,
-      10 => nil,
-      11 => nil,
-      12 => nil,
-    }
-
-    MISHAPS = {
-      1 => nil,
-      2 => nil,
-      3 => nil,
-      4 => nil,
-      5 => nil,
-      6 => nil,
     }
 
     MUSTER_OUT = {
