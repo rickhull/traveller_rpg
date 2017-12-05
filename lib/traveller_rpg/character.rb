@@ -1,4 +1,5 @@
 require 'traveller_rpg'
+require 'traveller_rpg/skill'
 
 module TravellerRPG
   class Character
@@ -15,6 +16,14 @@ module TravellerRPG
       def boost(hsh)
         hsh.each { |k,v| self[k] += v if self[k] }
         self
+      end
+
+      def bump(sym, level = nil)
+        if level
+          self[sym] = level if level > self[sym]
+        else
+          self[sym] += 1
+        end
       end
     end
 
@@ -80,44 +89,30 @@ module TravellerRPG
       skill_count = 3 + self.stats_dm(:education)
       self.log format("Education %i qualifies for %i skills",
                       @stats.education, skill_count)
-      skill_choices = []
-
-      # choose skill_count skills
-      if @homeworld.skills.size <= skill_count
-        self.log format("Homeworld %s only has %i skills available",
-                        @homeworld.name, @homeworld.skills.size)
-        skill_choices = @homeworld.skills
-      else
-        skill_count.times { |i|
-          available = @homeworld.skills - skill_choices
-          skill_choices << TravellerRPG.choose("Choose a skill:", *available)
-        }
-      end
-      skill_choices.each { |sym|
-        if TravellerRPG::SKILLS.key?(sym)
-          self.log "Acquired background skill: #{sym} 0"
-          @skills[sym] ||= 0
-        else
-          raise(KeyError, sym)
-        end
+      skill_count.times {
+        skill = TravellerRPG.choose("Choose a skill:", *@homeworld.skills)
+        self.train(skill, 0)
       }
-      self
     end
 
-    def train(sym, level = nil)
-      target = TravellerRPG::SKILLS.key?(sym) ? @skills : @stats
-      target[sym] ||= 0
-      if level
-        if target[sym] < level
-          target[sym] = level
-        else
-          self.log "Train: #{sym} is already #{target[sym]}"
-        end
+
+
+    def train(skill, level = nil)
+      skill = Traveller.choose("Choose skill:", *skill) if skill.is_a?(Array)
+      return @stats.bump(skill, level) if skill.is_a?(Symbol)
+      raise("unexpected skill: #{skill.inspect}") unless skill.is_a?(String)
+      raise("unknown skill: #{skill}") unless TravellerRPG.skill?(skill)
+      syms = Skill.syms(skill)
+      raise("unexpected syms: #{syms}") unless (1..2).include?(syms.size)
+      skill = TravellerRPG.skill(syms.shift)
+      @skills[skill.name] ||= skill
+      subskill = syms.shift
+
+      if subskill
+        @skills[skill.name].fetch(Skill.name(subskill)).bump(level)
       else
-        target[sym] += 1
-        level = target[sym]
+        @skills[skill.name].bump(level)
       end
-      self.log "Trained: #{sym} #{level}"
     end
 
     def add_stuff(benefits)
@@ -221,6 +216,13 @@ module TravellerRPG
         if tbl.is_a?(Hash)
           tbl.each { |label, val|
             report << format("%s: %s", label.to_s.rjust(20, ' '), val.to_s)
+            if val.is_a?(ComplexSkill)
+              val.skills.each { |name, skill|
+                report << format("%s: %s",
+                                 [label, name].join(':').rjust(20, ' '),
+                                 skill.to_s) if skill.value > 0
+              }
+            end
           }
         elsif tbl.is_a?(Array)
           report += tbl
