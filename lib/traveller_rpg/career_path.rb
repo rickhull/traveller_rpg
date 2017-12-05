@@ -45,8 +45,9 @@ module TravellerRPG
       @careers = []
     end
 
+    # Run career to completion; keep running terms while possible
     def run(career)
-      career = self.fallback unless self.apply(career)
+      career = self.apply(career)
       loop {
         career.run_term
         break unless career.active?
@@ -59,6 +60,9 @@ module TravellerRPG
       career
     end
 
+    # Pass eligibility and qualify_check
+    # Take Drifter or Draft if disqualified
+    # Then enter career
     def apply(career)
       raise(Ineligible, career.name) unless self.eligible?(career)
       if career.qualify_check?(dm: -1 * @careers.size)
@@ -66,16 +70,12 @@ module TravellerRPG
         self.enter(career)
       else
         @char.log "Did not qualify for #{career.name}"
-        false
-      end
-    end
-
-    def fallback
-      case TravellerRPG.choose("Fallback career:", :drifter, :draft)
-      when :drifter
-        self.enter TravellerRPG::Drifter.new(@char)
-      when :draft
-        self.draft
+        case TravellerRPG.choose("Fallback career:", :drifter, :draft)
+        when :drifter
+          self.enter TravellerRPG::Drifter.new(@char)
+        when :draft
+          self.draft
+        end
       end
     end
 
