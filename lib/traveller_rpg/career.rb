@@ -364,6 +364,10 @@ module TravellerRPG
       !!@officer
     end
 
+    def enlisted_rank
+      @rank
+    end
+
     def rank
       @officer ? @officer : @rank
     end
