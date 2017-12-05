@@ -14,42 +14,42 @@ module TravellerRPG
     #
     # Examples -- but should not be used as actual defaults
 
-    QUALIFICATION = [:default, 5]
+    # QUALIFICATION = [:default, 5]
 
-    PERSONAL_SKILLS = Array.new(6) { :default }
-    SERVICE_SKILLS = Array.new(6) { :default }
-    ADVANCED_SKILLS = Array.new(6) { :default }
+    # PERSONAL_SKILLS = Array.new(6) { :default }
+    # SERVICE_SKILLS = Array.new(6) { :default }
+    # ADVANCED_SKILLS = Array.new(6) { :default }
 
-    RANKS = { 0 => ['Rookie', :default, 0] }
-    SPECIALIST = {
-      default: {
-        skills: Array.new(6) { :default },
-        survival: [:default, 5],
-        advancement: [:default, 5],
-        ranks: RANKS,
-      }
-    }
+    # RANKS = { 0 => ['Rookie', :default, 0] }
+    # SPECIALIST = {
+    #   default: {
+    #     skills: Array.new(6) { :default },
+    #     survival: [:default, 5],
+    #     advancement: [:default, 5],
+    #     ranks: RANKS,
+    #   }
+    # }
 
     EVENTS = {
-      2 => nil,
-      3 => nil,
-      4 => nil,
-      5 => nil,
-      6 => nil,
-      7 => nil,
-      8 => nil,
-      9 => nil,
-      10 => nil,
-      11 => nil,
-      12 => nil,
+      2 => 'Event #2',
+      3 => 'Event #3',
+      4 => 'Event #4',
+      5 => 'Event #5',
+      6 => 'Event #6',
+      7 => 'Event #7',
+      8 => 'Event #8',
+      9 => 'Event #9',
+      10 => 'Event #10',
+      11 => 'Event #11',
+      12 => 'Event #12',
     }
     MISHAPS = {
-      1 => nil,
-      2 => nil,
-      3 => nil,
-      4 => nil,
-      5 => nil,
-      6 => nil,
+      1 => 'Mishap #1',
+      2 => 'Mishap #2',
+      3 => 'Mishap #3',
+      4 => 'Mishap #4',
+      5 => 'Mishap #5',
+      6 => 'Mishap #6',
     }
 
     MUSTER_OUT = {
@@ -178,14 +178,14 @@ module TravellerRPG
       roll = TravellerRPG.roll('2d6')
       clamped = (roll + dm).clamp(2, 12)
       puts "Event roll: #{roll} (DM #{dm}) = #{clamped}"
-      @char.log "Event: #{self.class::EVENTS.fetch(clamped) || roll}"
+      @char.log "Event: #{self.class::EVENTS.fetch(clamped)}"
       # TODO: actually perform the event stuff
     end
 
     def mishap_roll
       roll = TravellerRPG.roll('d6')
       puts "Mishap roll: #{roll}"
-      @char.log "Mishap: #{self.class::MISHAPS.fetch(roll) || roll}"
+      @char.log "Mishap: #{self.class::MISHAPS.fetch(roll)}"
       # TODO: actually perform the mishap stuff
     end
 
@@ -326,9 +326,9 @@ module TravellerRPG
     #
     # Examples -- but should not be used as actual defaults
 
-    AGE_PENALTY = 40
-    OFFICER_SKILLS = Array.new(6) { :default }
-    OFFICER_RANKS = {}
+    # AGE_PENALTY = 40
+    # OFFICER_SKILLS = Array.new(6) { 'Default' }
+    # OFFICER_RANKS = {}
 
     def initialize(char, **kwargs)
       super(char, **kwargs)
