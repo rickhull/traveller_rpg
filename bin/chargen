@@ -2,6 +2,4 @@
 
 require 'traveller_rpg/career_path'
 
-careers = %w{Agent Army Marines Navy Scout}
-TravellerRPG::CareerPath.run(careers)
-puts "DONE"
+TravellerRPG::CareerPath.run(%w{Agent Army Marines Navy Scout})
