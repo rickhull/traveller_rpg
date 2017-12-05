@@ -197,10 +197,7 @@ module TravellerRPG
     end
   end
 
-
-
   class Entertainer < Career; end
-  class MerchantMarine < Career; end
   class Rogue < Career; end
   class Scholar < Career; end
 
@@ -308,11 +305,265 @@ module TravellerRPG
   end
 
   class Army < MilitaryCareer
-  end
+    QUALIFICATION = [:endurance, 5]
+    AGE_PENALTY = 30
+    PERSONAL_SKILLS = [:strength, :dexterity, :endurance,
+                       :gambler, :medic, :melee_group]
+    SERVICE_SKILLS = [:drive_group, :athletics_group, :gun_combat_group,
+                      :recon, :melee_group, :heavy_weapons_group]
+    ADVANCED_SKILLS = [:tactics_military, :leadership, :advocate,
+                       :diplomat, :electronics, :admin]
+    OFFICER_SKILLS = [:tactics_military, :leadership, :advocate,
+                      :diplomat, :electronics, :admin]
+    RANKS = {
+      0 => ['Private', :gun_combat_group, 1],
+      1 => ['Lance Corporal', :recon, 1],
+      2 => ['Corporal', nil, nil],
+      3 => ['Lance Sergeant', :leadership, 1],
+      4 => ['Sergeant', nil, nil],
+      5 => ['Gunnery Sergeant', nil, nil],
+      6 => ['Sergeant Major', nil, nil],
+    }
+    OFFICER_RANKS = {
+      1 => ['Lieutenant', :leadership, 1],
+      2 => ['Captain', nil, nil],
+      3 => ['Major', :tactics_military, 1],
+      4 => ['Lieutenant Colonel', nil, nil],
+      5 => ['Colonel', nil, nil],
+      6 => ['General', :social_status, 10],  # TODO
+    }
 
-  class Navy < MilitaryCareer
+    SPECIALIST = {
+      support: {
+        skills: [:mechanic, :flyer_group, :engineer_group, # TODO: profession
+                 :explosives, :comms, :medic],
+        survival: [:endurance, 5],
+        advancement: [:education, 7],
+        ranks: RANKS,
+      },
+      infantry: {
+        skills: [:gun_combat_group, :melee_group, :heavy_weapons_group,
+                 :stealth, :athletics_group, :recon],
+        survival: [:strength, 6],
+        advancement: [:education, 6],
+        ranks: RANKS,
+      },
+      cavalry: {
+        skills: [:mechanic, :drive_group, :flyer_group,
+                 :recon, :heavy_weapons_group, :sensors], # TODO: HW vehicle
+        survival: [:intelligence, 7],
+        advancement: [:intelligence, 5],
+        ranks: RANKS,
+      },
+    }
+
+    EVENTS = {
+      2 => nil,
+      3 => nil,
+      4 => nil,
+      5 => nil,
+      6 => nil,
+      7 => nil,
+      8 => nil,
+      9 => nil,
+      10 => nil,
+      11 => nil,
+      12 => nil,
+    }
+
+    MISHAPS = {
+      1 => nil,
+      2 => nil,
+      3 => nil,
+      4 => nil,
+      5 => nil,
+      6 => nil,
+    }
+
+    # roll => [cash, benefit]
+    MUSTER_OUT = {
+      1 => [2000, 'Combat Implant'],
+      2 => [5000, 'INT +1'],
+      3 => [10_000, 'EDU +1'],
+      4 => [10_000, 'Weapon'],
+      5 => [10_000, 'Armour'],
+      6 => [20_000, 'END +1 or Combat Implant'],
+      7 => [30_000, 'SOC +1'],
+    }
   end
 
   class Marines < MilitaryCareer
+    QUALIFICATION = [:endurance, 6]
+    AGE_PENALTY = 30
+
+    PERSONAL_SKILLS = [:strength, :dexterity, :endurance,
+                       :gambler, :melee_unarmed, :melee_blade]
+    SERVICE_SKILLS = [:athletics_group, :vacc_suit, :tactics,
+                      :heavy_weapons, :gun_combat_group, :stealth]
+    ADVANCED_SKILLS = [:medic, :survival, :explosives,
+                       :engineer_group, :pilot_group, :navigation]
+    OFFICER_SKILLS = [:engineer_group, :tactics, :admin,
+                      :advocate, :vacc_suit, :leadership]
+    RANKS = {
+      0 => ['Marine', :gun_combat_group, 1], # TODO
+      1 => ['Lance Corporal', :gun_combat_group, 1],
+      2 => ['Corporal', nil, nil],
+      3 => ['Lance Sergeant', :leadership, 1],
+      4 => ['Sergeant', nil, nil],
+      5 => ['Gunnery Sergeant', :endurance, nil],
+      6 => ['Sergeant Major', nil, nil],
+    }
+    OFFICER_RANKS = {
+      1 => ['Lieutenant', :leadership, 1],
+      2 => ['Captain', nil, nil],
+      3 => ['Force Commander', :tactics, 1],
+      4 => ['Lieutenant Colonel', nil, nil],
+      5 => ['Colonel', :social_status, 10],  # TODO
+      6 => ['Brigadier', nil, nil],
+    }
+
+    SPECIALIST = {
+      support: {
+        skills: [:engineer_electronics, :mechanic, :flyer_group, # TODO
+                 :medic, :heavy_weapons_group, :gun_combat_group],
+        survival: [:endurance, 5],
+        advancement: [:education, 7],
+        ranks: RANKS,
+      },
+      star_marine: {
+        skills: [:vacc_suit, :athletics_group, :gunner_group,
+                 :melee_blade, :engineer_electronics, :gun_combat_group],
+        survival: [:endurance, 6],
+        advancement: [:education, 6],
+        ranks: RANKS,
+      },
+      ground_assault: {
+        skills: [:vacc_suit, :heavy_weapons_group, :recon,
+                 :melee_blade, :tactics_military, :gun_combat_group],
+        survival: [:endurance, 7],
+        advancement: [:ducation, 5],
+        ranks: RANKS,
+      }
+    }
+
+    EVENTS = {
+      2 => nil,
+      3 => nil,
+      4 => nil,
+      5 => nil,
+      6 => nil,
+      7 => nil,
+      8 => nil,
+      9 => nil,
+      10 => nil,
+      11 => nil,
+      12 => nil,
+    }
+
+    MISHAPS = {
+      1 => nil,
+      2 => nil,
+      3 => nil,
+      4 => nil,
+      5 => nil,
+      6 => nil,
+    }
+
+    MUSTER_OUT = {
+      1 => [2000, 'Armour'],
+      2 => [5000, 'INT +1'],
+      3 => [5000, 'EDU +1'],
+      4 => [10_000, 'Weapon'],
+      5 => [20_000, 'TAS Membership'],
+      6 => [30_000, 'Armour or END +1'],
+      7 => [40_000, 'SOC +2'],
+    }
+  end
+
+  class Navy < MilitaryCareer
+    QUALIFICATION = [:intelligence, 6]
+    AGE_PENALTY = 34
+
+    PERSONAL_SKILLS = [:strength, :dexterity, :endurance,
+                       :intelligence, :education, :social_standing]
+    SERVICE_SKILLS = [:pilot_group, :vacc_suit, :athletics_group,
+                      :gunner_group, :mechanic, :gun_combat_group]
+    ADVANCED_SKILLS = [:engineer_electronics, :astrogation, :engineer_group,
+                       :drive_group, :navigation, :admin]
+    OFFICER_SKILLS = [:leadership, :engineer_electronics, :pilot,
+                      :melee_blade, :admin, :tactics_naval]
+    RANKS = {
+      0 => ['Crewman', nil, nil],
+      1 => ['Able Spacehand', :mechanic, 1],
+      2 => ['Petty Officer 3rd class', :vacc_suit, 1],
+      3 => ['Petty Officer 2nd class', nil, nil],
+      4 => ['Petty Officer 1st class', :endurance, nil],
+      5 => ['Chief Petty Officer', nil, nil],
+      6 => ['Master Chief', nil, nil],
+    }
+    OFFICER_RANKS = {
+      1 => ['Ensign', :melee_blade, 1],
+      2 => ['Sublieutenant', :leadership, 1],
+      3 => ['Lieutenant', nil, nil],
+      4 => ['Commander', :tactics_naval, 1],
+      5 => ['Captain', :social_status, 10], # TODO
+      6 => ['Admiral', :social_status, 12], # TODO
+    }
+    SPECIALIST = {
+      line_crew: {
+        skills: [:engineer_electronics, :mechanic, :gun_combat_group,
+                 :flyer_group, :melee_group, :vacc_suit],
+        survival: [:intelligence, 5],
+        advancement: [:education, 7],
+        ranks: RANKS,
+      },
+      engineer_gunner: {
+        skills: [:engineer_group, :mechanic, :engineer_electronics,
+                 :engineer_group, :gunner_group, :flyer_group],
+        survival: [:intelligence, 6],
+        advancement: [:education, 6],
+        ranks: RANKS,
+      },
+      flight: {
+        skills: [:pilot_group, :flyer_group, :gunner_group,
+                 :pilot_small_craft, :astrogation, :engineer_electronics],
+        survival: [:dexterity, 7],
+        advancement: [:education, 5],
+        ranks: RANKS,
+      },
+    }
+
+    EVENTS = {
+      2 => nil,
+      3 => nil,
+      4 => nil,
+      5 => nil,
+      6 => nil,
+      7 => nil,
+      8 => nil,
+      9 => nil,
+      10 => nil,
+      11 => nil,
+      12 => nil,
+    }
+
+    MISHAPS = {
+      1 => nil,
+      2 => nil,
+      3 => nil,
+      4 => nil,
+      5 => nil,
+      6 => nil,
+    }
+
+    MUSTER_OUT = {
+      1 => [1000, 'Personal Vehicle or Ship Share'],
+      2 => [5000, 'INT +1'],
+      3 => [5000, 'EDU +1 or two Ship Shares'],
+      4 => [10_000, 'Weapon'],
+      5 => [20_000, 'TAS Membership'],
+      6 => [50_000, "Ship's Boat or two Ship Shares"],
+      7 => [50_000, 'SOC +2'],
+    }
   end
 end
