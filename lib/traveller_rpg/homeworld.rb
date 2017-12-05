@@ -3,47 +3,42 @@ require 'traveller_rpg'
 module TravellerRPG
   class Homeworld
     TRAITS = {
-      agricultural: :animals_group,
-      asteroid: :zero_g,
-      desert: :survival,
-      fluid_oceans: :seafarer_group,
-      garden: [:animals_riding, :animals_veterinary],
-      high_technology: :computers,
-      high_population: :streetwise,
-      ice_capped: :vacc_suit,
-      industrial: :trade_group,
-      low_technology: :survival,
-      poor: :animals_group,
-      rich: :carouse,
-      water_world: :seafarer_group,
-      vacuum: :vacc_suit,
-      education: [:admin, :advocate, :art_group, :carouse, :comms,
-                  :computers, :drive_group, :engineer_group, :language_group,
-                  :medic, :physical_sciences_group, :life_sciences_group,
-                  :social_sciences_group, :space_sciences_group, :trade_group],
+      economy: {
+        agricultural: ['Animals'],
+        industrial:   ['Profession'],
+      },
+      wealth: {
+        poor:         ['Melee:Unarmed', 'Medic'],
+        rich:         ['Carouse', 'Gambler', 'Profession'],
+      },
+      population: {
+        low_technology:  ['Survival', 'Animals'],
+        high_technology: ['Electronics', 'Science', 'Astrogation'],
+        high_population: ['Art', 'Broker', 'Diplomat', 'Leadership',
+                          'Profession', 'Streetwise'],
+      },
+      environment: {
+        lunar:      ['Science:Astronomy', 'Science:Cosmology',   'Vacc Suit'],
+        ice_capped: ['Science:Astronomy', 'Science:Planetology', 'Vacc Suit'],
+        fluid_oceans: ['Seafarer'],
+        water_world:  ['Seafarer', 'Flyer'],
+        desert:       ['Survival'],
+        garden:       ['Animals:Handling', 'Art'],
+      },
     }
-    TRAIT_MIN = 3
-    TRAIT_MAX = 6
+    TRAIT_MIN = 2
+    TRAIT_MAX = 4
 
     attr_reader :name, :traits, :skills
 
-    def initialize(name, traits = [])
+    def initialize(name) # TODO: allow trait initialization
       @name = name
-      if traits.size > self.class::TRAIT_MAX
-        warn "lots of world traits: #{traits}"
-      elsif traits.empty?
-        sample_num = rand(TRAIT_MAX - TRAIT_MIN + 1) + TRAIT_MIN
-        traits = self.class::TRAITS.keys.sample(sample_num)
-      end
-      @traits = traits
+      sample_num = rand(TRAIT_MAX - TRAIT_MIN + 1) + TRAIT_MIN
       @skills = []
-      @traits.each { |trait|
-        skill = self.class::TRAITS.fetch(trait)
-        if skill.is_a?(Array)
-          skill.each { |sk| @skills << sk }
-        else
-          @skills << skill
-        end
+      @traits = self.class::TRAITS.keys.sample(sample_num).map { |t|
+        k = TRAITS[t].keys.sample
+        @skills += TRAITS[t][k]
+        k
       }
       @skills.uniq!
     end
