@@ -121,6 +121,18 @@ module TravellerRPG
       }
     end
 
+    def benefit(item)
+      if item.is_a?(Integer)
+        if item != 0
+          self.log "Acquired #{item} credits as a career benefit"
+          @credits += item
+        end
+      else
+        self.log "Acquired #{item} as a career benefit"
+        self.add_stuff(item => 1)
+      end
+    end
+
     def log(msg = nil)
       return @log unless msg
       puts msg
@@ -146,19 +158,6 @@ module TravellerRPG
         self.log "Ignoring cash roll ##{@cash_rolls}"
       end
       self
-    end
-
-    def benefit(item)
-      if item.is_a?(Integer)
-        if item != 0
-          self.log "Acquired #{item} credits as a career benefit"
-          @credits += item
-        end
-      else
-        self.log "Acquired #{item} as a career benefit"
-        @stuff[item] ||= 0
-        @stuff[item] += 1
-      end
     end
 
     def report(desc: :short, stats: true, skills: true, stuff: true,
