@@ -1,5 +1,5 @@
 require 'traveller_rpg'
-require 'traveller_rpg/skill'
+require 'traveller_rpg/skill_set'
 
 module TravellerRPG
   class Character
@@ -62,8 +62,8 @@ module TravellerRPG
     attr_reader :desc, :stats, :homeworld, :skills,
                 :stuff, :credits, :cash_rolls
 
-    def initialize(desc:, stats:, homeworld:,
-                   skills: {}, stuff: {}, log: [], credits: 0, cash_rolls: 0)
+    def initialize(desc:, stats:, homeworld:, skills: SkillSet.new,
+                   stuff: {}, log: [], credits: 0, cash_rolls: 0)
       @desc = desc
       @stats = stats
       @homeworld = homeworld
@@ -95,24 +95,10 @@ module TravellerRPG
       }
     end
 
-
-
     def train(skill, level = nil)
       skill = Traveller.choose("Choose skill:", *skill) if skill.is_a?(Array)
       return @stats.bump(skill, level) if skill.is_a?(Symbol)
-      raise("unexpected skill: #{skill.inspect}") unless skill.is_a?(String)
-      raise("unknown skill: #{skill}") unless TravellerRPG.skill?(skill)
-      syms = Skill.syms(skill)
-      raise("unexpected syms: #{syms}") unless (1..2).include?(syms.size)
-      skill = TravellerRPG.skill(syms.shift)
-      @skills[skill.name] ||= skill
-      subskill = syms.shift
-
-      if subskill
-        @skills[skill.name].fetch(Skill.name(subskill)).bump(level)
-      else
-        @skills[skill.name].bump(level)
-      end
+      @skills.bump(skill, level)
     end
 
     def add_stuff(benefits)

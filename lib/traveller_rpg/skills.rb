@@ -1,33 +1,6 @@
 require 'traveller_rpg/skill'
 
 module TravellerRPG
-  def self.skill?(*args)
-    case args.first
-    when String
-      raise(ArgumentError, "only one string arg expected") if args.length != 1
-      symbols = Skill.syms(args.first)
-    when Symbol
-      symbols = args
-    else
-      raise(ArgumentError, "unexpected args: #{args.first.inspect}")
-    end
-    return false unless SKILLS.key?(symbols.first)
-    return true if symbols.length == 1
-    return false if symbols.length > 2
-    return false unless SKILLS[symbols.first]
-    SKILLS[symbols.first].include?(symbols.last)
-  end
-
-  def self.skill(sym)
-    subs = SKILLS.fetch(sym)
-    if subs.nil?
-      Skill.new(Skill.name(sym))
-    else
-      ComplexSkill.new(Skill.name(sym),
-                       skills: subs.map { |s| Skill.new(Skill.name(s)) })
-    end
-  end
-
   def self.known_skill?(str)
     return true if SIMPLE_SKILLS.key?(str) or COMPLEX_SKILLS.key?(str)
     !!COMPLEX_SKILLS.dig(*str.split(':'))
