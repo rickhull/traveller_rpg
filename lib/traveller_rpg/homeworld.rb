@@ -6,28 +6,28 @@ module TravellerRPG
       economy: {
         agricultural: ['Animals'],
         industrial:   ['Profession'],
+        high_tech:    ['Electronics', 'Science', 'Astrogation'],
       },
       wealth: {
         poor:         ['Melee:Unarmed', 'Medic'],
         rich:         ['Carouse', 'Gambler', 'Profession'],
       },
       population: {
-        low_technology:  ['Survival', 'Animals'],
-        high_technology: ['Electronics', 'Science', 'Astrogation'],
+        low_population:  ['Survival', 'Jack Of All Trades'],
         high_population: ['Art', 'Broker', 'Diplomat', 'Leadership',
                           'Profession', 'Streetwise'],
       },
       environment: {
         lunar:      ['Science:Astronomy', 'Science:Cosmology',   'Vacc Suit'],
         ice_capped: ['Science:Astronomy', 'Science:Planetology', 'Vacc Suit'],
-        fluid_oceans: ['Seafarer'],
-        water_world:  ['Seafarer', 'Flyer'],
-        desert:       ['Survival'],
+        fluid_oceans: ['Seafarer', 'Navigation'],
+        water_world:  ['Seafarer', 'Tactics:Naval'],
+        desert:       ['Survival', 'Flyer'],
         garden:       ['Animals:Handling', 'Art'],
       },
     }
     TRAIT_MIN = 2
-    TRAIT_MAX = 4
+    TRAIT_MAX = TRAITS.keys.size
 
     attr_reader :name, :traits, :skills
 
