@@ -63,7 +63,8 @@ module TravellerRPG
       @skills = skills.reduce({}) { |memo, s| memo.merge(s.name => s) }
     end
 
-    def bump(_level = nil)
+    def bump(level = nil)
+      raise(ArgumentError, "level must be nil, not #{level}") unless level.nil?
       name = TravellerRPG.choose("Choose a specialty:", *@skills.keys)
       @skills[name].bump
     end

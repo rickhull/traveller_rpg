@@ -153,16 +153,8 @@ describe ComplexSkill do
   end
 
   describe "ComplexSkill#bump" do
-    it "must ignore level" do
-      out, err = capture_io do
-        @skill.bump(5)
-      end
-      out.wont_be_empty
-      err.must_be_empty
-      @skill.level.must_equal 0
-      @skill.skills.values.reduce(0) { |memo, skill|
-        memo + skill.level
-      }.must_equal 1 # one bump, level ignored
+    it "must raise if level is provided" do
+      proc { @skill.bump(1) }.must_raise ArgumentError
     end
 
     it "must bump specialties" do
