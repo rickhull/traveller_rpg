@@ -8,6 +8,10 @@ module TravellerRPG
       @skills = {}
     end
 
+    def to_h
+      @skills
+    end
+
     # return the skill for name, or nil
     def [](name)
       raise(UnknownSkill, name) unless TravellerRPG.known_skill? name
@@ -39,6 +43,26 @@ module TravellerRPG
       else
         @skills[name]
       end
+    end
+
+    def empty?
+      @skills.empty?
+    end
+
+    def report
+      return '(none)' if @skills.empty?
+      report = []
+      width = @skills.keys.map(&:size).max + 2
+      @skills.each { |name, skill|
+        report << format("%s: %s", name.rjust(width, ' '), skill)
+        if skill.is_a? ComplexSkill
+          skill.skills.each { |subname, subskill|
+            label = [name, subname].join(':').rjust(width + 20, ' ')
+            report << format("%s: %s", label, subskill) if subskill.level > 0
+          }
+        end
+      }
+      report.join("\n")
     end
   end
 end
