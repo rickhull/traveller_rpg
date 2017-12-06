@@ -28,7 +28,151 @@ module TravellerRPG
     end
   end
 
-  # per http://www.traveller-srd.com/core-rules/skills/
+  COMPLEX_SKILLS = {
+    'Animals' => {
+      'Handling' => '',
+      'Veterinary' => '',
+      'Training' => '',
+    },
+    'Art' => {
+      'Performer' => '',
+      'Holography' => '',
+      'Instrument' => '',
+      'Visual Media' => '',
+      'Write' => '',
+    },
+    'Athletics' => {
+      'Dexterity' => '',
+      'Endurance' => '',
+      'Strength' => '',
+    },
+    'Drive' => {
+      'Hovercraft' => '',
+      'Mole' => '',
+      'Track' => '',
+      'Walker' => '',
+      'Wheel' => '',
+    },
+    'Electronics' => {
+      'Comms' => '',
+      'Computers' => '',
+      'Remote Ops' => '',
+      'Sensors' => '',
+    },
+    'Engineer' => {
+      'Manoeuvre' => '',
+      'Jump Drive' => '',
+      'Life Support' => '',
+      'Power' => '',
+    },
+    'Flyer' => {
+      'Airship' => '',
+      'Grav' => '',
+      'Ornithopter' => '',
+      'Rotor' => '',
+      'Wing' => '',
+    },
+    'Gunner' => {
+      'Turret' => '',
+      'Ortillery' => '',
+      'Screen' => '',
+      'Capital' => '',
+    },
+    'Gun Combat' => {
+      'Archaic' => '',
+      'Energy' => '',
+      'Slug' => '',
+    },
+    'Heavy Weapons' => {
+      'Artillery' => '',
+      'Man Portable' => '',
+      'Vehicle' => '',
+    },
+    # language: [:anglic, :vilani, :zdetl, :oynprith],
+    'Language' => {
+      'Anglic' => '',
+      'Vilani' => '',
+      'Zdetl' => '',
+      'Oynprith' => '',
+    },
+    'Melee' => {
+      'Blade' => '',
+      'Bludgeon' => '',
+      'Natural' => '',
+      'Unarmed' => '',
+    },
+    'Pilot' => {
+      'Small Craft' => '',
+      'Spacecraft' => '',
+      'Capital' => '',
+    },
+    'Profession' => {
+      'Belter' => '',
+      'Biologicals' => '',
+      'Civil Engineering' => '',
+      'Construction' => '',
+      'Hydroponics' => '',
+      'Polymers' => '',
+    },
+    'Science' => {
+      'Archaeology' => '',
+      'Astronomy' => '',
+      'Biology' => '',
+      'Chemistry' => '',
+      'Cosmology' => '',
+      'Cybernetics' => '',
+      'Economics' => '',
+      'Genetics' => '',
+      'History' => '',
+      'Linguistics' => '',
+      'Philosophy' => '',
+      'Physics' => '',
+      'Planetology' => '',
+      'Psionicology' => '',
+      'Psychology' => '',
+      'Robotics' => '',
+      'Sophontology' => '',
+      'Xenology' => '',
+    },
+    'Seafarer' => {
+      'Ocean Ships' => '',
+      'Personal' => '',
+      'Sail' => '',
+      'Submarine' => '',
+    },
+    'Tactics' => {
+      'Military' => '',
+      'Naval' => '',
+    },
+  }
+
+  SIMPLE_SKILLS = {
+    'Admin' => '',
+    'Advocate' => '',
+    'Astrogation' => '',
+    'Broker' => '',
+    'Carouse' => '',
+    'Deception' => '',
+    'Diplomat' => '',
+    'Explosives' => '',
+    'Gambler' => '',
+    'Investigate' => '',
+    'Jack Of All Trades' => '',
+    'Leadership' => '',
+    'Mechanic' => '',
+    'Medic' => '',
+    'Navigation' => '',
+    'Persuade' => '',
+    'Recon' => '',
+    'Stealth' => '',
+    'Steward' => '',
+    'Streetwise' => '',
+    'Survival' => '',
+    'Vacc Suit' => '',
+  }
+
+###########
+
   SKILLS = {
     admin:  nil,
     advocate: nil,
