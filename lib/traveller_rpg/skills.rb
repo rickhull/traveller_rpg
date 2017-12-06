@@ -77,7 +77,6 @@ module TravellerRPG
       'Man Portable' => '',
       'Vehicle' => '',
     },
-    # language: [:anglic, :vilani, :zdetl, :oynprith],
     'Language' => {
       'Anglic' => '',
       'Vilani' => '',
