@@ -34,6 +34,10 @@ module TravellerRPG
       end
     end
 
+    def check?(level)
+      @level >= level
+    end
+
     def to_s
       @level.to_s
     end
