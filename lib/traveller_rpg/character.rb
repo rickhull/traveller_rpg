@@ -26,23 +26,36 @@ module TravellerRPG
           self[sym] += 1
         end
       end
+
+      def report
+        rpt = []
+        w = 'Social Status'.size + 2
+        self.members.each { |sym|
+          rpt << format("%s: %s", sym.to_s.capitalize.rjust(w, ' '), self[sym])
+        }
+        rpt.join("\n")
+      end
     end
 
     Description = Struct.new(:name, :gender, :age,
                              :appearance, :plot, :temperament) do
-      def self.new_with_hash(hsh)
-        self.new(hsh[:name], hsh[:gender], hsh[:age],
-                 hsh[:appearance], hsh[:plot], hsh[:temperament])
+      def merge(other)
+        self.class.new(other[:name]        || self.name,
+                       other[:gender]      || self.gender,
+                       other[:age]         || self.age,
+                       other[:appearance]  || self.appearance,
+                       other[:plot]        || self.plot,
+                       other[:temperament] || self.temperament)
       end
 
-      def merge(other)
-        other = self.class.new_with_hash(other) if other.is_a?(Hash)
-        self.class.new(other.name || self.name,
-                       other.gender || self.gender,
-                       other.age    || self.age,
-                       other.appearance || self.appearance,
-                       other.plot       || self.plot,
-                       other.temperament || self.temperament)
+      def report(short: false)
+        rpt = []
+        w = (short ? 'Gender' : 'Temperament').size + 2
+        self.members.each { |sym|
+          next if short and [:appearance, :plot, :temperament].include?(sym)
+          rpt << format("%s: %s", sym.to_s.capitalize.rjust(w, ' '), self[sym])
+        }
+        rpt.join("\n")
       end
     end
 
@@ -167,27 +180,9 @@ module TravellerRPG
     def report(desc: :short, stats: true, skills: true, stuff: true,
                log: false, credits: true)
       hsh = {}
-      if desc
-        hsh['Description'] = { 'Name'   => @desc.name,
-                               'Gender' => @desc.gender,
-                               'Age'    => @desc.age }
-        if desc == :long
-          hsh['Description'].merge! 'Appearance'  => @desc.appearance,
-                                    'Temperament' => @desc.temperament,
-                                    'Plot'        => @desc.plot
-        end
-      end
-      if stats
-        hsh['Characteristics'] = {
-          'Strength' => @stats.strength,
-          'Dexterity' => @stats.dexterity,
-          'Endurance' => @stats.endurance,
-          'Intelligence' => @stats.intelligence,
-          'Education' => @stats.education,
-          'Social Status' => @stats.social_status,
-        }
-      end
-      hsh['Skills'] = @skills if skills
+      hsh['Description'] = @desc.report(short: desc == :short) if desc
+      hsh['Characteristics'] = @stats.report if stats
+      hsh['Skills'] = @skills.report if skills
       hsh['Stuff'] = @stuff if stuff
       hsh['Log'] = @log if log
       if credits
@@ -199,17 +194,12 @@ module TravellerRPG
       report = []
       hsh.each { |section, tbl|
         report << "#{section}\n==="
-        report << "(none)" if tbl.empty?
-        if tbl.is_a?(Hash)
-          tbl.each { |label, val|
-            report << format("%s: %s", label.to_s.rjust(20, ' '), val.to_s)
-            if val.is_a?(ComplexSkill)
-              val.skills.each { |name, skill|
-                report << format("%s: %s",
-                                 [label, name].join(':').rjust(20, ' '),
-                                 skill.to_s) if skill.value > 0
-              }
-            end
+        if tbl.empty?
+          report << "(none)"
+        elsif tbl.is_a?(Hash)
+          width = tbl.keys.map(&:size).max + 2
+          tbl.each { |k, v|
+            report << format("%s: %s", k.to_s.rjust(width, ' '), v)
           }
         elsif tbl.is_a?(Array)
           report += tbl
