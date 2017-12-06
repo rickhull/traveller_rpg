@@ -11,25 +11,6 @@ module TravellerRPG
     TERM_YEARS = 4
     ADVANCED_EDUCATION = 8
 
-    #
-    # Examples -- but should not be used as actual defaults
-
-    # QUALIFICATION = [:default, 5]
-
-    # PERSONAL_SKILLS = Array.new(6) { :default }
-    # SERVICE_SKILLS = Array.new(6) { :default }
-    # ADVANCED_SKILLS = Array.new(6) { :default }
-
-    # RANKS = { 0 => ['Rookie', :default, 0] }
-    # SPECIALIST = {
-    #   default: {
-    #     skills: Array.new(6) { :default },
-    #     survival: [:default, 5],
-    #     advancement: [:default, 5],
-    #     ranks: RANKS,
-    #   }
-    # }
-
     EVENTS = {
       2 => 'Event #2',
       3 => 'Event #3',
@@ -80,25 +61,11 @@ module TravellerRPG
       @rank = rank
       @term_mandate = nil
       @title = nil
+      @assignment = nil
     end
 
-    # move status from :new to :active
-    # take on an assignment
-    # take any rank 0 title or skill
-    #
-    def activate(assignment = nil)
-      raise("invalid status: #{@status}") unless @status == :new
-      @status = :active
-      s = self.class::SPECIALIST
-      if assignment
-        raise(UnknownAssignment, assignment.inspect) unless s.key?(assignment)
-        @assignment = assignment
-      else
-        @assignment = TravellerRPG.choose("Choose a specialty:", *s.keys)
-      end
-      @title, skill, level = self.rank_benefit
-      @char.train(skill, level) if skill
-      self
+    def name
+      self.class.name.split('::').last
     end
 
     def officer?
@@ -119,6 +86,29 @@ module TravellerRPG
 
     def must_exit?
       @term_mandate == :must_exit
+    end
+
+    # move status from :new to :active
+    # take on an assignment
+    # take any rank 0 title or skill
+    #
+    def activate(asg = nil)
+      raise("invalid status: #{@status}") unless @status == :new
+      @status = :active
+      s = self.class::SPECIALIST
+      if asg
+        raise(UnknownAssignment, asg.inspect) unless s.key?(asg)
+        @assignment = asg
+      else
+        @assignment = TravellerRPG.choose("Choose a specialty:", *s.keys)
+      end
+      @title, skill, level = self.rank_benefit
+      @char.train(skill, level) if skill
+      self
+    end
+
+    def specialty
+      self.class::SPECIALIST.fetch(@assignment)
     end
 
     def qualify_check?(dm: 0)
@@ -189,6 +179,11 @@ module TravellerRPG
       # TODO: actually perform the mishap stuff
     end
 
+    # possibly nil
+    def rank_benefit
+      self.specialty.fetch(:ranks)[@rank]
+    end
+
     def advance_rank
       @rank += 1
       @char.log "Advanced career to rank #{@rank}"
@@ -245,7 +240,7 @@ module TravellerRPG
 
     def muster_roll(label)
       roll = TravellerRPG.roll('d6')
-      dm = @char.skill_check?(:gambler, 1) ? 1 : 0
+      dm = @char.skills.check?('Gambler', 1) ? 1 : 0
       puts "#{label} roll: #{roll} (DM #{dm})"
       self.class::MUSTER_OUT.fetch(roll + dm)
     end
@@ -276,19 +271,6 @@ module TravellerRPG
       self
     end
 
-    def name
-      self.class.name.split('::').last
-    end
-
-    def specialty
-      self.class::SPECIALIST.fetch(@assignment)
-    end
-
-    # possibly nil
-    def rank_benefit
-      self.specialty.fetch(:ranks)[@rank]
-    end
-
     def report(term: true, status: true, rank: true, spec: true)
       hsh = {}
       hsh['Term'] = @term if term
@@ -312,23 +294,42 @@ module TravellerRPG
     end
   end
 
+  class ExampleCareer < Career
+    #
+    # These are not present in a normal Career
+
+    STAT = :strength
+    STAT_CHECK = 5
+    TITLE = 'Rookie'
+    SKILL = 'Deception'
+
+    #
+    # These are necessary for a Career to function
+
+    QUALIFICATION = [STAT, STAT_CHECK]
+
+    PERSONAL_SKILLS = Array.new(6) { SKILL }
+    SERVICE_SKILLS = Array.new(6) { SKILL }
+    ADVANCED_SKILLS = Array.new(6) { SKILL }
+
+    SPECIALIST = {
+      'Specialist' => {
+        skills: Array.new(6) { SKILL },
+        survival: [STAT, STAT_CHECK],
+        advancement: [STAT, STAT_CHECK],
+        ranks: { 0 => [TITLE, SKILL] },
+      }
+    }
+  end
 
   #
   # MilitaryCareer adds Officer commission and parallel Officer ranks
 
   class MilitaryCareer < Career
-
     #
-    # Actually useful defaults
+    # Actually useful default
 
     COMMISSION = [:social_status, 8]
-
-    #
-    # Examples -- but should not be used as actual defaults
-
-    # AGE_PENALTY = 40
-    # OFFICER_SKILLS = Array.new(6) { 'Default' }
-    # OFFICER_RANKS = {}
 
     def initialize(char, **kwargs)
       super(char, **kwargs)
@@ -397,5 +398,42 @@ module TravellerRPG
         @char.train(skill, level)
       end
     end
+  end
+
+  class ExampleMilitaryCareer < Career
+    #
+    # These are not present in a normal Career or MilitaryCareer
+
+    STAT = :strength
+    STAT_CHECK = 5
+    TITLE = 'Rookie'
+    SKILL = 'Deception'
+    OFFICER_TITLE = 'Lieutenant'
+    OFFICER_SKILL = 'Tactics'
+
+    #
+    # These are necessary for a Career to function
+
+    QUALIFICATION = [STAT, STAT_CHECK]
+
+    PERSONAL_SKILLS = Array.new(6) { SKILL }
+    SERVICE_SKILLS = Array.new(6) { SKILL }
+    ADVANCED_SKILLS = Array.new(6) { SKILL }
+
+    SPECIALIST = {
+      'Specialist' => {
+        skills: Array.new(6) { SKILL },
+        survival: [STAT, STAT_CHECK],
+        advancement: [STAT, STAT_CHECK],
+        ranks: { 0 => [TITLE, SKILL] },
+      }
+    }
+
+    #
+    # These are necessary for a MilitaryCareer to function
+
+    AGE_PENALTY = 40
+    OFFICER_SKILLS = Array.new(6) { OFFICER_SKILL }
+    OFFICER_RANKS = { 0 => [OFFICER_TITLE, OFFICER_SKILL] }
   end
 end
