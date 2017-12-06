@@ -28,6 +28,22 @@ module TravellerRPG
     end
   end
 
+  def self.known_skill?(str)
+    return true if SIMPLE_SKILLS.key?(str) or COMPLEX_SKILLS.key?(str)
+    !!COMPLEX_SKILLS.dig(*str.split(':'))
+  end
+
+  def self.new_skill(str)
+    if SIMPLE_SKILLS.key?(str)
+      Skill.new(str)
+    elsif COMPLEX_SKILLS.key?(str)
+      subs = COMPLEX_SKILLS[str].keys
+      ComplexSkill.new(str, skills: subs.map { |s| Skill.new(s) })
+    else
+      raise("can't handle: #{str}")
+    end
+  end
+
   COMPLEX_SKILLS = {
     'Animals' => {
       'Handling' => '',
