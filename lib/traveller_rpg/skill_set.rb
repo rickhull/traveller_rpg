@@ -8,13 +8,9 @@ module TravellerRPG
       @skills = {}
     end
 
-    def known?(name)
-      TravellerRPG.skill?(*Skill.syms(name))
-    end
-
     # return the skill for name, or nil
     def [](name)
-      raise(UnknownSkill, name) unless self.known?(name)
+      raise(UnknownSkill, name) unless TravellerRPG.known_skill? name
       names = name.split(':')
       return unless (skill = @skills[names.first])
       return skill unless names.size == 2
@@ -36,14 +32,13 @@ module TravellerRPG
 
     # add named skill to @skills if needed; return named skill
     def provide(name)
-      syms = Skill.syms(name)
-      raise(UnknownSkill, name) unless TravellerRPG.skill?(*syms)
-      names = syms.map { |sym| Skill.name(sym) }
-      # make sure @skills has an entry
-      skill = (@skills[names.first] ||= TravellerRPG.skill(syms.first))
-      # drill into subskill as needed
-      skill = skill.fetch(names[1]) if names[1]
-      skill
+      name, rest = name.split(':')
+      @skills[name] ||= TravellerRPG.new_skill(name)
+      if rest
+        @skills[name][rest] or raise(UnknownSkill, name)
+      else
+        @skills[name]
+      end
     end
   end
 end

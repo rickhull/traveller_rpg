@@ -11,13 +11,6 @@ describe SkillSet do
       @skills = SkillSet.new
     end
 
-    describe "SkillSet#known?" do
-      it "must return false for unknown skills" do
-        @invalid.each { |s| @skills.known?(s).must_equal false }
-        @valid.each { |s| @skills.known?(s).must_equal true }
-      end
-    end
-
     describe "SkillSet#[]" do
       it "must raise for unknown skills" do
         @invalid.each { |s|
@@ -98,7 +91,8 @@ describe SkillSet do
 
       it "must raise for unknown skills" do
         @invalid.each { |s|
-          proc { @skills.bump(s) }.must_raise SkillSet::UnknownSkill
+          proc { @skills.bump(s) }.must_raise RuntimeError
+#          proc { @skills.bump(s) }.must_raise SkillSet::UnknownSkill
         }
       end
 
