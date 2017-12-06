@@ -1,4 +1,5 @@
 require 'traveller_rpg'
+require 'traveller_rpg/homeworld'
 require 'traveller_rpg/skill_set'
 
 module TravellerRPG
@@ -219,5 +220,25 @@ module TravellerRPG
       }
       report.join("\n")
     end
+
+    private
+
+    # gain background skills based on homeworld
+    def birth
+      return nil unless @log.empty?
+      self.log format("%s was born on %s (%s)",
+                      @desc.name,
+                      @homeworld.name,
+                      @homeworld.traits.join(' '))
+      skill_count = 3 + self.stats_dm(:education)
+      self.log format("Education %i qualifies for %i skills",
+                      @stats.education, skill_count)
+      skill_count.times {
+        skill = TravellerRPG.choose("Choose a skill:", *@homeworld.skills)
+        @skills.provide(skill)
+      }
+    end
+
+
   end
 end
