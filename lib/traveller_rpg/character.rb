@@ -86,33 +86,24 @@ module TravellerRPG
       @log = log
       @cash_rolls = cash_rolls # max 3 lifetime
       @credits = credits
-      self.birth
+      birth # private method
     end
 
     def stats_dm(stat_sym)
       self.class.stats_dm(@stats[stat_sym])
     end
 
-    # gain background skills based on homeworld
-    def birth
-      return nil unless @log.empty?
-      self.log format("%s was born on %s (%s)",
-                      @desc.name,
-                      @homeworld.name,
-                      @homeworld.traits.join(' '))
-      skill_count = 3 + self.stats_dm(:education)
-      self.log format("Education %i qualifies for %i skills",
-                      @stats.education, skill_count)
-      skill_count.times {
-        skill = TravellerRPG.choose("Choose a skill:", *@homeworld.skills)
-        self.train(skill, 0)
-      }
-    end
-
-    def train(skill, level = nil)
-      skill = Traveller.choose("Choose skill:", *skill) if skill.is_a?(Array)
-      return @stats.bump(skill, level) if skill.is_a?(Symbol)
-      @skills.bump(skill, level)
+    # handle an Array of strings (skill choice), String (skill), Symbol (stat)
+    # TODO: reconsider handling a choice here?
+    def train(thing, level = nil)
+      if thing.is_a?(Array)
+        unless thing.all? { |t| t.is_a?(String) }
+          raise "bad choices: #{thing.inspect}"
+        end
+        thing = TravellerRPG.choose("Choose skill:", *thing)
+      end
+      return @stats.bump(thing, level) if thing.is_a?(Symbol)
+      @skills.bump(thing, level)
     end
 
     def add_stuff(benefits)
@@ -137,20 +128,13 @@ module TravellerRPG
       self
     end
 
+    # convenience
     def name
       @desc.name
     end
 
     def age(years = nil)
       years ? @desc.age += years : @desc.age
-    end
-
-    def skill_check?(skill, val = 0)
-      @skills[skill] and @skills[skill] >= val
-    end
-
-    def skill_level(sym)
-      @skills[sym] and @skills[sym].clamp(0, 4)
     end
 
     def cash_roll(amount)
