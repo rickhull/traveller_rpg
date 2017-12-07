@@ -124,10 +124,10 @@ describe Character do
     describe "Character#train" do
       it "accepts a Symbol for a stat" do
         s = @char.stats.strength
-        @char.train(:strength)
+        capture_io { @char.train(:strength) }
         @char.stats.strength.must_equal s + 1
         d = @char.stats.dexterity
-        @char.train(:dexterity, d + 2)
+        capture_io { @char.train(:dexterity, d + 2) }
         @char.stats.dexterity.must_equal d + 2
       end
 
