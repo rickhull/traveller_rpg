@@ -371,7 +371,7 @@ module TravellerRPG
     }
 
     SPECIALIST = {
-      'support' => {
+      'Support' => {
         skills: ['Electronics', 'Mechanic', ['Drive', 'Flyer'],
                  'Medic', 'Heavy Weapons', 'Gun Combat'],
         survival: [:endurance, 5],
