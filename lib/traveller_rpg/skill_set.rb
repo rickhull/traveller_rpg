@@ -1,8 +1,32 @@
-require 'traveller_rpg/skills'
+require 'traveller_rpg/skill'
 
 module TravellerRPG
   class SkillSet
-    class UnknownSkill < RuntimeError; end
+    class UnknownSkill < KeyError; end
+
+    def self.split_skill!(str)
+      first, rest = str.split(':')
+      if rest
+        raise(UnknownSkill, str) unless COMPLEX_SKILLS.key?(first)
+        raise(UnknownSkill, str) unless COMPLEX_SKILLS[first].key?(rest)
+      elsif !SIMPLE_SKILLS.key?(first) and !COMPLEX_SKILLS.key?(first)
+        raise(UnknownSkill, str)
+      end
+      [first, rest]
+    end
+
+    def self.new_skill(str)
+      if SIMPLE_SKILLS.key?(str)
+        Skill.new(str, desc: SIMPLE_SKILLS[str])
+      elsif COMPLEX_SKILLS.key?(str)
+        subs = COMPLEX_SKILLS[str].keys.map { |s|
+          Skill.new(s, desc: COMPLEX_SKILLS[str][s])
+        }
+        ComplexSkill.new(str, skills: subs)
+      else
+        raise(UnknownSkill, str)
+      end
+    end
 
     def initialize
       @skills = {}
@@ -14,11 +38,9 @@ module TravellerRPG
 
     # return the skill for name, or nil
     def [](name)
-      raise(UnknownSkill, name) unless TravellerRPG.known_skill? name
-      names = name.split(':')
-      return unless (skill = @skills[names.first])
-      return skill unless names.size == 2
-      skill[names.last]
+      first, rest = SkillSet.split_skill!(name)
+      return unless @skills.key?(first)
+      rest ? @skills[first][rest] : @skills[first]
     end
 
     def level(name)
@@ -36,13 +58,9 @@ module TravellerRPG
 
     # add named skill to @skills if needed; return named skill
     def provide(name)
-      name, rest = name.split(':')
-      @skills[name] ||= TravellerRPG.new_skill(name)
-      if rest
-        @skills[name][rest] or raise(UnknownSkill, name)
-      else
-        @skills[name]
-      end
+      first, rest = SkillSet.split_skill!(name)
+      @skills[first] ||= SkillSet.new_skill(first)
+      rest ? @skills[first][rest] : @skills[first]
     end
 
     def empty?
@@ -76,5 +94,148 @@ module TravellerRPG
       }
       report.join("\n")
     end
+
+    COMPLEX_SKILLS = {
+      'Animals' => {
+        'Handling' => '',
+        'Veterinary' => '',
+        'Training' => '',
+      },
+      'Art' => {
+        'Performer' => '',
+        'Holography' => '',
+        'Instrument' => '',
+        'Visual Media' => '',
+        'Write' => '',
+      },
+      'Athletics' => {
+        'Dexterity' => '',
+        'Endurance' => '',
+        'Strength' => '',
+      },
+      'Drive' => {
+        'Hovercraft' => '',
+        'Mole' => '',
+        'Track' => '',
+        'Walker' => '',
+        'Wheel' => '',
+      },
+      'Electronics' => {
+        'Comms' => '',
+        'Computers' => '',
+        'Remote Ops' => '',
+        'Sensors' => '',
+      },
+      'Engineer' => {
+        'Manoeuvre' => '',
+        'Jump Drive' => '',
+        'Life Support' => '',
+        'Power' => '',
+      },
+      'Flyer' => {
+        'Airship' => '',
+        'Grav' => '',
+        'Ornithopter' => '',
+        'Rotor' => '',
+        'Wing' => '',
+      },
+      'Gunner' => {
+        'Turret' => '',
+        'Ortillery' => '',
+        'Screen' => '',
+        'Capital' => '',
+      },
+      'Gun Combat' => {
+        'Archaic' => '',
+        'Energy' => '',
+        'Slug' => '',
+      },
+      'Heavy Weapons' => {
+        'Artillery' => '',
+        'Man Portable' => '',
+        'Vehicle' => '',
+      },
+      'Language' => {
+        'Anglic' => '',
+        'Vilani' => '',
+        'Zdetl' => '',
+        'Oynprith' => '',
+      },
+      'Melee' => {
+        'Blade' => '',
+        'Bludgeon' => '',
+        'Natural' => '',
+        'Unarmed' => '',
+      },
+      'Pilot' => {
+        'Small Craft' => '',
+        'Spacecraft' => '',
+        'Capital' => '',
+      },
+      'Profession' => {
+        'Belter' => '',
+        'Biologicals' => '',
+        'Civil Engineering' => '',
+        'Construction' => '',
+        'Hydroponics' => '',
+        'Polymers' => '',
+      },
+      'Science' => {
+        'Archaeology' => '',
+        'Astronomy' => '',
+        'Biology' => '',
+        'Chemistry' => '',
+        'Cosmology' => '',
+        'Cybernetics' => '',
+        'Economics' => '',
+        'Genetics' => '',
+        'History' => '',
+        'Linguistics' => '',
+        'Philosophy' => '',
+        'Physics' => '',
+        'Planetology' => '',
+        'Psionicology' => '',
+        'Psychology' => '',
+        'Robotics' => '',
+        'Sophontology' => '',
+        'Xenology' => '',
+      },
+      'Seafarer' => {
+        'Ocean Ships' => '',
+        'Personal' => '',
+        'Sail' => '',
+        'Submarine' => '',
+      },
+      'Tactics' => {
+        'Military' => '',
+        'Naval' => '',
+      },
+    }
+
+    SIMPLE_SKILLS = {
+      'Admin' => '',
+      'Advocate' => '',
+      'Astrogation' => '',
+      'Broker' => '',
+      'Carouse' => '',
+      'Deception' => '',
+      'Diplomat' => '',
+      'Explosives' => '',
+      'Gambler' => '',
+      'Investigate' => '',
+      'Jack Of All Trades' => '',
+      'Leadership' => '',
+      'Mechanic' => '',
+      'Medic' => '',
+      'Navigation' => '',
+      'Persuade' => '',
+      'Recon' => '',
+      'Stealth' => '',
+      'Steward' => '',
+      'Streetwise' => '',
+      'Survival' => '',
+      'Vacc Suit' => '',
+    }
+
   end
 end

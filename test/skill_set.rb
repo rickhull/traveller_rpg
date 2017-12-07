@@ -4,6 +4,38 @@ require 'minitest/autorun'
 include TravellerRPG
 
 describe SkillSet do
+  describe SkillSet.method(:split_skill!) do
+    it "recognizes subskills" do
+      SkillSet.split_skill!('Animals:Handling').must_equal ['Animals',
+                                                                'Handling']
+    end
+
+    it "must accept a single string arg do" do
+      ['Admin', 'Animals', 'Animals:Handling'].each { |valid|
+        SkillSet.split_skill!(valid).must_be_kind_of Array
+      }
+    end
+
+    it "raises UnknownSkill for unknown skills" do
+      proc {
+        SkillSet.split_skill!('This:That')
+      }.must_raise SkillSet::UnknownSkill
+    end
+  end
+
+  describe SkillSet.method(:new_skill) do
+    it "does not recognize subskills" do
+      proc {
+        SkillSet.new_skill('Animals:Handling')
+      }.must_raise SkillSet::UnknownSkill
+    end
+
+    it "accepts a string to find a Skill or ComplexSkill" do
+      SkillSet.new_skill('Admin').must_be_kind_of TravellerRPG::Skill
+      SkillSet.new_skill('Animals').must_be_kind_of TravellerRPG::ComplexSkill
+    end
+  end
+
   describe "new instance" do
     before do
       @valid = %w{Admin Animals Animals:Handling}
@@ -71,11 +103,9 @@ describe SkillSet do
         @valid.each { |s|
           @skills.provide(s)
           @skills.check?(s, 0).must_equal true
-          capture_io do
-            # ComplexSkills won't go past 0, only their subskills
-            # Don't show the TravellerRPG.choose
-            @skills.bump(s)
-          end
+          # ComplexSkills won't go past 0, only their subskills
+          # Don't show the TravellerRPG.choose
+          capture_io { @skills.bump(s) }
           @skills.check?(s, 5).must_equal false
         }
       end
@@ -91,16 +121,13 @@ describe SkillSet do
 
       it "must raise for unknown skills" do
         @invalid.each { |s|
-          proc { @skills.bump(s) }.must_raise RuntimeError
-#          proc { @skills.bump(s) }.must_raise SkillSet::UnknownSkill
+          proc { @skills.bump(s) }.must_raise SkillSet::UnknownSkill
         }
       end
 
       it "must create untrained skills" do
         @valid.each { |s|
-          capture_io do
-            @skills.bump(s)
-          end
+          capture_io { @skills.bump(s) }
           @skills[s].wont_be_nil
         }
       end
@@ -119,10 +146,7 @@ describe SkillSet do
       it "must increment ComplexSkills" do
         @complex.each { |s|
           @skills[s].must_be_nil
-          capture_io do
-            # bump goes to subskill via TravellerRPG.choose
-            @skills.bump(s)
-          end
+          capture_io { @skills.bump(s) } # subskill via TravellerRPG.choose
           @skills[s].wont_be_nil
           @skills.level(s).must_equal 0
         }

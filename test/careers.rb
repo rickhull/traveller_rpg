@@ -1,6 +1,11 @@
 require 'traveller_rpg/careers'
 require 'traveller_rpg/character'
+require 'traveller_rpg/skill_set'
 require 'minitest/autorun'
+
+def TravellerRPG.known_skill?(str)
+  !!TravellerRPG::SkillSet.split_skill!(str) rescue false
+end
 
 ObjectSpace.each_object(Class).select { |klass|
   next unless klass < TravellerRPG::Career
@@ -110,7 +115,6 @@ ObjectSpace.each_object(Class).select { |klass|
               TravellerRPG::Character::Stats.members.must_include(skill)
             else
               skill.must_be_kind_of String
-              puts skill unless TravellerRPG.known_skill? skill
               TravellerRPG.known_skill?(skill).must_equal true
             end
           }
