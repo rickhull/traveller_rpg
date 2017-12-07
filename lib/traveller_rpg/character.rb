@@ -93,20 +93,6 @@ module TravellerRPG
       self.class.stats_dm(@stats[stat_sym])
     end
 
-    # handle an Array of strings (skill choice), String (skill), Symbol (stat)
-    # TODO: reconsider handling a choice here?
-    def train(thing, level = nil)
-      if thing.is_a?(Array)
-        unless thing.all? { |t| t.is_a?(String) }
-          raise "bad choices: #{thing.inspect}"
-        end
-        thing = TravellerRPG.choose("Choose skill:", *thing)
-      end
-      self.log "Train #{thing} " + (level ? "to #{level}" : "+1")
-      return @stats.bump(thing, level) if thing.is_a?(Symbol)
-      @skills.bump(thing, level)
-    end
-
     def benefit(item)
       if item.is_a?(Integer)
         if item != 0

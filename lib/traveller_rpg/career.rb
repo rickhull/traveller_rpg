@@ -102,9 +102,7 @@ module TravellerRPG
       else
         @assignment = TravellerRPG.choose("Choose assignment:", *s.keys)
       end
-      @title, skill, level = self.rank_benefit
-      @char.train(skill, level) if skill
-      self
+      self.take_rank_benefit
     end
 
     def specialty
@@ -144,7 +142,7 @@ module TravellerRPG
       @char.stats[:education] >= self.class::ADVANCED_EDUCATION
     end
 
-    # any skills obtained start at level 1
+    # any skills obtained start at level 1; always a bump (+1)
     def training_roll
       choices = [:personal, :service, :specialist]
       choices << :advanced if self.advanced_education?
@@ -152,15 +150,22 @@ module TravellerRPG
       choice = TravellerRPG.choose("Choose skills regimen:", *choices)
       roll = TravellerRPG.roll('d6')
       puts "Training roll: #{roll}"
-      @char.train \
-              case choice
-              when :personal then self.class::PERSONAL_SKILLS.fetch(roll - 1)
-              when :service  then self.class::SERVICE_SKILLS.fetch(roll - 1)
-              when :specialist
-                self.specialty.fetch(:skills).fetch(roll - 1)
-              when :advanced then self.class::ADVANCED_SKILLS.fetch(roll - 1)
-              when :officer  then self.class::OFFICER_SKILLS.fetch(roll - 1)
-              end
+      skill =
+        case choice
+        when :personal then self.class::PERSONAL_SKILLS.fetch(roll - 1)
+        when :service  then self.class::SERVICE_SKILLS.fetch(roll - 1)
+        when :specialist then self.specialty.fetch(:skills).fetch(roll - 1)
+        when :advanced then self.class::ADVANCED_SKILLS.fetch(roll - 1)
+        when :officer  then self.class::OFFICER_SKILLS.fetch(roll - 1)
+        end
+      skill = TravellerRPG.choose("Choose:", *skill) if skill.is_a?(Array)
+      if skill.is_a? Symbol
+        @char.stats.bump(skill)
+        @char.log "Trained characteristic #{skill} +1"
+      else
+        @char.skills.bump(skill)
+        @char.log "Trained #{skill} +1"
+      end
       self
     end
 
@@ -179,22 +184,31 @@ module TravellerRPG
       # TODO: actually perform the mishap stuff
     end
 
+    def advance_rank
+      @rank += 1
+      @char.log "Advanced career to rank #{@rank}"
+      self.take_rank_benefit
+    end
+
     # possibly nil
     def rank_benefit
       self.specialty.fetch(:ranks)[@rank]
     end
 
-    def advance_rank
-      @rank += 1
-      @char.log "Advanced career to rank #{@rank}"
+    def take_rank_benefit
+      label = self.officer? ? "officer rank" : "rank"
       title, skill, level = self.rank_benefit
       if title
-        @char.log "Awarded rank title: #{title}"
+        @char.log "Awarded #{label} title: #{title}"
         @title = title
       end
       if skill
-        @char.log "Achieved rank skill: #{skill} #{level}"
-        @char.train(skill, level)
+        @char.log "Achieved #{label} bonus: #{skill} #{level}"
+        if skill.is_a? Symbol
+          @char.stats.bump(skill, level)
+        else
+          @char.skills.bump(skill, level)
+        end
       end
       self
     end
@@ -279,7 +293,7 @@ module TravellerRPG
       hsh['Title'] = @title if @title
       if rank
         if self.officer?
-          hsh['Officer Rank'] = @officer_rank
+          hsh['Officer Rank'] = @officer
           hsh['Enlisted Rank'] = @rank
         else
           hsh['Rank'] = @rank
@@ -388,15 +402,7 @@ module TravellerRPG
       return super unless @officer
       @officer += 1
       @char.log "Advanced career to officer rank #{@officer}"
-      title, skill, level = self.rank_benefit
-      if title
-        @char.log "Awarded officer rank title: #{title}"
-        @title = title
-      end
-      if skill
-        @char.log "Achieved officer rank skill: #{skill} #{level}"
-        @char.train(skill, level)
-      end
+      self.take_rank_benefit
     end
   end
 

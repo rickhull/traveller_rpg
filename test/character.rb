@@ -121,40 +121,6 @@ describe Character do
       end
     end
 
-    describe "Character#train" do
-      it "accepts a Symbol for a stat" do
-        s = @char.stats.strength
-        capture_io { @char.train(:strength) }
-        @char.stats.strength.must_equal s + 1
-        d = @char.stats.dexterity
-        capture_io { @char.train(:dexterity, d + 2) }
-        @char.stats.dexterity.must_equal d + 2
-      end
-
-      it "accepts a String for a skill" do
-        trained = @char.skills.to_h.keys
-        name = trained.sample
-        skill = @char.skills[name]
-        level = skill.level
-        if skill.is_a?(ComplexSkill)
-          capture_io { @char.train(name) }
-          skill.level.must_equal level
-          skill.level.must_equal 0
-          skill.skills.values.any? { |s| s.level > 0 }.must_equal true
-        else
-          capture_io { @char.train(name) }
-          skill.level.must_equal level + 1
-        end
-      end
-
-      it "accepts an Array of strings (skill choices)" do
-        # these should not be present in background skills
-        choices = ['Gunner:Ortillery', 'Recon']
-        capture_io { @char.train(choices) }
-        choices.map { |s| @char.skills.level(s) }.compact.size.must_equal 1
-      end
-    end
-
     describe "Character#benefit" do
       it "accepts an Integer (credits) or a singular String" do
         @char.credits.must_equal 0
