@@ -14,9 +14,9 @@ module TravellerRPG
       1 => ['Navy', nil],
       2 => ['Army', nil],
       3 => ['Marines', nil],
-      4 => ['Merchant', :merchant_marine],
+      4 => ['Merchant', 'Merchant Marine'],
       5 => ['Scout', nil],
-      6 => ['Agent', :law_enforcement],
+      6 => ['Agent', 'Law Enforcement'],
     }
 
     def self.career_class(str)
@@ -123,14 +123,25 @@ module TravellerRPG
 
     def basic_training(career)
       return unless career.term.zero?
-      skills = career.class::SERVICE_SKILLS.flatten - @char.skills.keys
       if @careers.length > 0
-        skills =
-          [TravellerRPG.choose("Choose service skill:", *skills)]
+        skills = career.class::SERVICE_SKILLS.flatten.reject { |s|
+          @char.skills[s]
+        }
+        skills = [TravellerRPG.choose("Choose service skill:", *skills)]
+      else
+        # Take "all" SERVICE_SKILLS, but choose any choices
+        skills = []
+        career.class::SERVICE_SKILLS.each { |s|
+          if s.is_a?(Array)
+            skills << TravellerRPG.choose("Choose service skill:", *s)
+          else
+            skills << s unless @char.skills[s]
+          end
+        }
       end
       skills.each { |skill|
-        @char.train(skill, 0)
-        @char.log "Acquired basic training skill: #{skill} 0"
+        @char.skills.provide(skill)
+        @char.log "Acquired basic training skill: #{skill}"
       }
     end
 
