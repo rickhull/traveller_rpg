@@ -35,12 +35,12 @@ describe Character do
 
     describe Character::Stats.method(:roll) do
       it "returns a randomized set of Stats" do
-        @roll.strength.must_be :>=, 2
-        @roll.dexterity.must_be :<=, 12
-        @roll[:endurance].must_be :>=, 2
-        @roll[:intelligence].must_be :<=, 12
-        @roll['education'].must_be :>=, 2
-        @roll['social_status'].must_be :<=, 12
+        (2..12).must_include @roll.strength
+        (2..12).must_include @roll.dexterity
+        (2..12).must_include @roll[:endurance]
+        (2..12).must_include @roll[:intelligence]
+        (2..12).must_include @roll['education']
+        (2..12).must_include @roll['social_status']
       end
     end
 
