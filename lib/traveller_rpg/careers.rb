@@ -55,7 +55,7 @@ module TravellerRPG
       3 => [5000, 'Ship Share'],
       4 => [7500, 'Weapon'],
       5 => [10000, 'Combat Implant'],
-      6 => [25000, 'SOC +1 or Combat Implant'],
+      6 => [25000, ['SOC +1', 'Combat Implant']],
       7 => [50000, 'TAS Membership'],
     }
 
@@ -335,7 +335,7 @@ module TravellerRPG
       3 => [10_000, 'EDU +1'],
       4 => [10_000, 'Weapon'],
       5 => [10_000, 'Armour'],
-      6 => [20_000, 'END +1 or Combat Implant'],
+      6 => [20_000, ['END +1', 'Combat Implant']],
       7 => [30_000, 'SOC +1'],
     }
   end
@@ -400,7 +400,7 @@ module TravellerRPG
       3 => [5000, 'EDU +1'],
       4 => [10_000, 'Weapon'],
       5 => [20_000, 'TAS Membership'],
-      6 => [30_000, 'Armour or END +1'],
+      6 => [30_000, ['Armour', 'END +1']],
       7 => [40_000, 'SOC +2'],
     }
   end
@@ -459,12 +459,12 @@ module TravellerRPG
     }
 
     MUSTER_OUT = {
-      1 => [1000, 'Personal Vehicle or Ship Share'],
+      1 => [1000, ['Personal Vehicle', 'Ship Share']],
       2 => [5000, 'INT +1'],
-      3 => [5000, 'EDU +1 or two Ship Shares'],
+      3 => [5000, ['EDU +1', 'Two Ship Shares']],
       4 => [10_000, 'Weapon'],
       5 => [20_000, 'TAS Membership'],
-      6 => [50_000, "Ship's Boat or two Ship Shares"],
+      6 => [50_000, ["Ship's Boat", 'Two Ship Shares']],
       7 => [50_000, 'SOC +2'],
     }
   end
