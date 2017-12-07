@@ -185,10 +185,9 @@ module TravellerRPG
                       @stats.education, skill_count)
       skill_count.times {
         skill = TravellerRPG.choose("Choose a skill:", *@homeworld.skills)
+        self.log "Acquired background skill: #{skill}"
         @skills.provide(skill)
       }
     end
-
-
   end
 end
