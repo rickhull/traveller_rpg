@@ -157,7 +157,7 @@ module TravellerRPG
               when :personal then self.class::PERSONAL_SKILLS.fetch(roll - 1)
               when :service  then self.class::SERVICE_SKILLS.fetch(roll - 1)
               when :specialist
-                self.class::SPECIALIST.dig(@assignment, :skills, roll - 1)
+                self.specialty.fetch(:skills).fetch(roll - 1)
               when :advanced then self.class::ADVANCED_SKILLS.fetch(roll - 1)
               when :officer  then self.class::OFFICER_SKILLS.fetch(roll - 1)
               end
