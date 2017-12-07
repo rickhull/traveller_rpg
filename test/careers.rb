@@ -8,21 +8,19 @@ ObjectSpace.each_object(Class).select { |klass|
 
   describe klass do
     it "must have valid TERM_YEARS" do
-      defined?(klass::TERM_YEARS).wont_be_nil
-      klass::TERM_YEARS.must_equal 4
+      klass.const_get('TERM_YEARS').must_equal 4
     end
 
     it "must have valid ADVANCED_EDUCATION" do
-      defined?(klass::ADVANCED_EDUCATION).wont_be_nil
-      a = klass::ADVANCED_EDUCATION
-      # Note: it's always 8, at least so far...
-      (1..11).must_include a unless klass == TravellerRPG::Drifter
+      unless klass == TravellerRPG::Drifter
+        (1..11).must_include klass.const_get('ADVANCED_EDUCATION')
+      end
     end
 
     it "must have valid QUALIFICATION" do
       unless klass == TravellerRPG::Drifter
-        defined?(klass::QUALIFICATION).wont_be_nil
-        q = klass::QUALIFICATION
+        q = klass.const_get 'QUALIFICATION'
+        q.wont_be_nil
         q.must_be_kind_of Array
         q.size.must_equal 2
         stat, check = *q
@@ -34,8 +32,8 @@ ObjectSpace.each_object(Class).select { |klass|
     end
 
     it "must have valid PERSONAL_SKILLS" do
-      defined?(klass::PERSONAL_SKILLS).wont_be_nil
-      ps = klass::PERSONAL_SKILLS
+      ps = klass.const_get 'PERSONAL_SKILLS'
+      ps.wont_be_nil
       ps.must_be_kind_of Array
       ps.size.must_equal 6
       ps.flatten.each { |skill|
@@ -49,8 +47,8 @@ ObjectSpace.each_object(Class).select { |klass|
     end
 
     it "must have valid SERVICE_SKILLS" do
-      defined?(klass::SERVICE_SKILLS).wont_be_nil
-      ss = klass::SERVICE_SKILLS
+      ss = klass.const_get 'SERVICE_SKILLS'
+      ss.wont_be_nil
       ss.must_be_kind_of Array
       ss.size.must_equal 6
       ss.flatten.each { |skill|
@@ -65,8 +63,8 @@ ObjectSpace.each_object(Class).select { |klass|
 
     it "must have valid ADVANCED_SKILLS" do
       unless klass == TravellerRPG::Drifter
-        defined?(klass::ADVANCED_SKILLS).wont_be_nil
-        as = klass::ADVANCED_SKILLS
+        as = klass.const_get('ADVANCED_SKILLS')
+        as.wont_be_nil
         as.must_be_kind_of Array
         as.size.must_equal 6
         as.flatten.each { |skill|
@@ -82,8 +80,7 @@ ObjectSpace.each_object(Class).select { |klass|
 
     describe "SPECIALIST" do
       before do
-        defined?(klass::SPECIALIST).wont_be_nil
-        @specs = klass::SPECIALIST
+        @specs = klass.const_get('SPECIALIST')
       end
 
       it "must have valid SPECIALIST" do
