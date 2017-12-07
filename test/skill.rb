@@ -73,9 +73,7 @@ describe Skill do
 
     it "must clamp bad levels" do
       s = nil
-      _out, err = capture_io do
-        s = Skill.new(@name, level: @invalid_level)
-      end
+      _out, err = capture_io { s = Skill.new(@name, level: @invalid_level) }
       err.wont_be_empty
       s.name.must_equal @name
       s.level.must_equal s.class::MAX
@@ -94,9 +92,7 @@ describe Skill do
       end
 
       it "won't bump beyond MAX" do
-        _out, err = capture_io do
-          @skill.bump(@invalid_level)
-        end
+        _out, err = capture_io { @skill.bump(@invalid_level) }
         err.wont_be_empty
         @skill.level.must_equal @skill.class::MAX
       end
@@ -107,9 +103,7 @@ describe Skill do
       end
 
       it "won't bump beyond MAX without a level" do
-        _out, err = capture_io do
-          9.times { @skill.bump }
-        end
+        _out, err = capture_io { 9.times { @skill.bump } }
         err.wont_be_empty
         @skill.level.must_equal @skill.class::MAX
       end

@@ -2,7 +2,6 @@ require 'traveller_rpg'
 require 'traveller_rpg/careers'
 require 'traveller_rpg/skill'
 
-
 module TravellerRPG
   autoload :Generator, 'traveller_rpg/generator'
 

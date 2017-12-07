@@ -124,14 +124,10 @@ describe Character do
     describe "Character#benefit" do
       it "accepts an Integer (credits) or a singular String" do
         @char.credits.must_equal 0
-        capture_io do
-          @char.benefit(5)
-        end
+        capture_io { @char.benefit(5) }
         @char.credits.must_equal 5
         @char.stuff['Violin'].must_be_nil
-        capture_io do
-          @char.benefit('Violin')
-        end
+        capture_io { @char.benefit('Violin') }
         @char.stuff['Violin'].must_equal 1
       end
     end
@@ -144,9 +140,7 @@ describe Character do
 
       it "accumulates messages with an arg" do
         size = @char.log.size
-        capture_io do
-          @char.log "Stuff"
-        end
+        capture_io { @char.log "Stuff" }
         @char.log.size.must_equal size + 1
       end
     end
@@ -166,11 +160,7 @@ describe Character do
       it "tracks rolls for credits; ignored after 3 rolls" do
         @char.credits.must_equal 0
         @char.cash_rolls.must_equal 0
-        5.times {
-          capture_io do
-            @char.cash_roll(100)
-          end
-        }
+        5.times { capture_io { @char.cash_roll(100) } }
         @char.credits.wont_equal 500
         @char.credits.must_equal 300
         @char.cash_rolls.must_equal 5
