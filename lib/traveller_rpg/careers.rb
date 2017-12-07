@@ -4,7 +4,6 @@ require 'traveller_rpg/career'
 module TravellerRPG
   class Agent < Career
     QUALIFICATION   = [:intelligence, 6]
-    ADVANCED_EDUCATION = 8
     PERSONAL_SKILLS = ['Gun Combat', :dexterity, :endurance,
                        'Melee', :intelligence, 'Athletics']
     SERVICE_SKILLS  = ['Streetwise', 'Drive', 'Investigate',
@@ -19,9 +18,9 @@ module TravellerRPG
       6 => ['Director'],
     }
     SPECIALIST = {
-      law_enforcement: {
+      'Law Enforcement' => {
         skills:   ['Investigate', 'Recon', 'Streetwise',
-                   'Stealth', :melee, 'Advocate'],
+                   'Stealth', 'Melee', 'Advocate'],
         survival: [:endurance, 6],
         advancement: [:intelligence, 6],
         ranks: {
@@ -34,14 +33,14 @@ module TravellerRPG
           6 => ['Commissioner', :social_status],
         },
       },
-      intelligence: {
+      'Intelligence' => {
         skills: ['Investigate', 'Recon', 'Electronics:Comms',
                  'Stealth', 'Persuade', 'Deception'],
         survival: [:intelligence, 7],
         advancement: [:intelligence, 5],
         ranks: RANKS,
       },
-      corporate: {
+      'Corporate' => {
         skills: ['Investigate', 'Electronics:Computers', 'Stealth',
                  'Carouse', 'Deception', 'Streetwise'],
         survival: [:intelligence, 5],
@@ -70,7 +69,7 @@ module TravellerRPG
       4 => 'You complete a mission for your superiors, and are suitably ' +
            'rewarded.  Gain DM+1 to any one Benefit Roll from this career.',
       5 => 'You establish a network of contacts.  Gain d3 Contacts.',
-      6 => 'You are given advanced training in a specialist field. Roll ' +\
+      6 => 'You are given advanced training in a specialist field. Roll ' +
            'EDU 8+ to increase any existing skill by 1.',
       7 => 'Life Event. Roll on the Live Events Table.',
       8 => 'You go undercover to investigate an enemy.  Roll Deception 8+.' +
@@ -109,7 +108,7 @@ module TravellerRPG
 
   end
 
-  class Citizen < Career; end
+  # class Citizen < Career; end
 
   class Drifter < Career
     # QUALIFICATION = [:intelligence, 0]
@@ -120,9 +119,9 @@ module TravellerRPG
                       'Streetwise', 'Stealth', 'Survival']
     ADVANCED_SKILLS = []
     SPECIALIST = {
-      barbarian: {
+      'Barbarian' => {
         skills: ['Animals', 'Carouse', 'Melee:Blade', 'Stealth',
-                 ['Seafarer:Personal', 'Seafarer:Sails'], 'Survival'],
+                 ['Seafarer:Personal', 'Seafarer:Sail'], 'Survival'],
         survival: [:endurance, 7],
         advancement: [:strength, 7],
         ranks: {
@@ -132,7 +131,7 @@ module TravellerRPG
           6 => ['Warlord', nil, nil],
         },
       },
-      wanderer: {
+      'Wanderer' => {
         skills: ['Drive', 'Deception', 'Recon',
                  'Stealth', 'Streetwise', 'Survival'],
         survival: [:endurance, 7],
@@ -142,7 +141,7 @@ module TravellerRPG
           3 => [nil, 'Deception', 1],
         },
       },
-      scavenger: {
+      'Scavenger' => {
         skills: ['Pilot:Small Craft', 'Mechanic', 'Astrogation',
                  'Vacc Suit', 'Engineer', 'Gun Combat'],
         survival: [:dexterity, 7],
@@ -169,14 +168,13 @@ module TravellerRPG
     end
   end
 
-  class Entertainer < Career; end
-  class Merchant < Career; end
-  class Rogue < Career; end
-  class Scholar < Career; end
+  # class Entertainer < Career; end
+  # class Merchant < Career; end
+  # class Rogue < Career; end
+  # class Scholar < Career; end
 
   class Scout < Career
     QUALIFICATION   = [:intelligence, 5]
-    ADVANCED_EDUCATION = 8
     PERSONAL_SKILLS = [:strength, :dexterity, :endurance,
                        :intelligence, :education, 'Jack Of All Trades']
     SERVICE_SKILLS  = [['Pilot:Small Craft', 'Pilot:Spacecraft'], 'Survival',
@@ -190,21 +188,21 @@ module TravellerRPG
     }
 
     SPECIALIST = {
-      courier: {
+      'Courier' => {
         skills:   ['Electronics', 'Flyer', 'Pilot:Spacecraft',
                    'Engineer', 'Athletics', 'Astrogation'],
         survival: [:endurance, 5],
         advancement: [:education, 9],
         ranks: RANKS,
       },
-      surveyor: {
+      'Surveyor' => {
         skills: ['Electronics', 'Persuade', 'Pilot',
                  'Navigation', 'Diplomat', 'Streetwise'],
         survival: [:endurance, 6],
         advancement: [:intelligence, 8],
         ranks: RANKS,
       },
-      explorer: {
+      'Explorer' => {
         skills: ['Electronics', 'Pilot', 'Engineer',
                  'Science', 'Stealth', 'Recon'],
         survival: [:endurance, 7],
@@ -307,21 +305,21 @@ module TravellerRPG
     }
 
     SPECIALIST = {
-      support: {
+      'Support' => {
         skills: ['Mechanic', ['Drive', 'Flyer'], 'Profession',
                  'Explosives', 'Electronics:Comms', 'Medic'],
         survival: [:endurance, 5],
         advancement: [:education, 7],
         ranks: RANKS,
       },
-      infantry: {
+      'Infantry' => {
         skills: ['Gun Combat', 'Melee', 'Heavy Weapons',
                  'Stealth', 'Athletics', 'Recon'],
         survival: [:strength, 6],
         advancement: [:education, 6],
         ranks: RANKS,
       },
-      cavalry: {
+      'Cavalry' => {
         skills: ['Mechanic', 'Drive', 'Flyer', 'Recon',
                  'Heavy Weapons:Vehicle', 'Electronics:Sensors'],
         survival: [:intelligence, 7],
@@ -373,21 +371,21 @@ module TravellerRPG
     }
 
     SPECIALIST = {
-      support: {
+      'support' => {
         skills: ['Electronics', 'Mechanic', ['Drive', 'Flyer'],
                  'Medic', 'Heavy Weapons', 'Gun Combat'],
         survival: [:endurance, 5],
         advancement: [:education, 7],
         ranks: RANKS,
       },
-      star_marine: {
+      'Star Marine' => {
         skills: ['Vacc Suit', 'Athletics', 'Gunner',
                  'Melee:Blade', 'Electronics', 'Gun Combat'],
         survival: [:endurance, 6],
         advancement: [:education, 6],
         ranks: RANKS,
       },
-      ground_assault: {
+      'Ground Assault' => {
         skills: ['Vacc Suit', 'Heavy Weapons', 'Recon',
                  'Melee:Blade', 'Tactics:Military', 'Gun Combat'],
         survival: [:endurance, 7],
@@ -437,21 +435,21 @@ module TravellerRPG
       6 => ['Admiral', :social_status, 12], # TODO
     }
     SPECIALIST = {
-      line_crew: {
+      'Line Crew' => {
         skills: ['Electronics', 'Mechanic', 'Gun Combat',
                  'Flyer', 'Melee', 'Vacc Suit'],
         survival: [:intelligence, 5],
         advancement: [:education, 7],
         ranks: RANKS,
       },
-      engineer_gunner: {
+      'Engineer Gunner' => {
         skills: ['Engineer', 'Mechanic', 'Electronics',
                  'Engineer', 'Gunner', 'Flyer'],
         survival: [:intelligence, 6],
         advancement: [:education, 6],
         ranks: RANKS,
       },
-      flight: {
+      'Flight' => {
         skills: ['Pilot', 'Flyer', 'Gunner',
                  'Pilot:Small Craft', 'Astrogation', 'Electronics'],
         survival: [:dexterity, 7],
