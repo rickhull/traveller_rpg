@@ -137,14 +137,12 @@ describe Character do
         skill = @char.skills[name]
         level = skill.level
         if skill.is_a?(ComplexSkill)
-          capture_io do
-            @char.train(name)
-          end
+          capture_io { @char.train(name) }
           skill.level.must_equal level
           skill.level.must_equal 0
           skill.skills.values.any? { |s| s.level > 0 }.must_equal true
         else
-          @char.train(name)
+          capture_io { @char.train(name) }
           skill.level.must_equal level + 1
         end
       end
@@ -152,9 +150,7 @@ describe Character do
       it "accepts an Array of strings (skill choices)" do
         # these should not be present in background skills
         choices = ['Gunner:Ortillery', 'Recon']
-        capture_io do
-          @char.train(choices)
-        end
+        capture_io { @char.train(choices) }
         choices.map { |s| @char.skills.level(s) }.compact.size.must_equal 1
       end
     end
