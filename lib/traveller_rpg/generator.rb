@@ -29,7 +29,7 @@ module TravellerRPG
     end
 
     def self.gender
-      TravellerRPG.roll(dice: 1) > 3 ? 'M' : 'F'
+      TravellerRPG.roll('d6') > 3 ? 'M' : 'F'
     end
 
     def self.hair(tone: nil, body: nil, color: nil, length: nil)
