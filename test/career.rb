@@ -255,3 +255,65 @@ describe Career do
     end
   end
 end
+
+describe MilitaryCareer do
+  describe "new instance" do
+    before do
+      capture_io { @char = Generator.character }
+      @career = ExampleMilitaryCareer.new(@char)
+      @skill = @career.class::SKILL
+      @assignment = @career.class::SPECIALIST.keys.first
+      @title = @career.class::TITLE
+    end
+
+    it "must have attrs" do
+      @career.term.must_equal 0
+      @career.status.must_equal :new
+      @career.rank.must_equal 0
+      @career.title.must_be_nil
+      @career.assignment.must_be_nil
+    end
+
+    it "must have a name based on class" do
+      @career.name.must_equal 'ExampleMilitaryCareer'
+    end
+
+    it "must respond to predicate methods" do
+      @career.officer?.must_equal false
+      @career.active?.must_equal false
+      @career.finished?.must_equal false
+      @career.must_remain?.must_equal false
+      @career.must_exit?.must_equal false
+    end
+
+    describe "MilitaryCareer#report" do
+      it "must have multiple lines" do
+        @career.report.split("\n").size.must_be :>, 1
+      end
+    end
+
+    describe "MilitaryCareer#activate" do
+      it "must update status, assignment, title, skills" do
+        capture_io { @career.activate }
+        @career.assignment.wont_be_nil
+        @career.assignment.must_equal @assignment
+        @career.status.must_equal :active
+        @career.active?.must_equal true
+        @career.finished?.must_equal false
+        @career.title.must_equal @title
+        @char.skills.level(@skill).must_be :>=, 0
+      end
+
+      it "must not activate twice" do
+        capture_io { @career.activate }
+        proc { @career.activate }.must_raise RuntimeError
+      end
+
+      it "must reject an unknown assignment" do
+        proc {
+          capture_io { @career.activate :random }
+        }.must_raise Career::UnknownAssignment
+      end
+    end
+  end
+end
