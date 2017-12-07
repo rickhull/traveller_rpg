@@ -36,6 +36,8 @@ module TravellerRPG
         puts "\n", path.report, "\n"
         break if TravellerRPG.choose("Exit career mode?", :yes, :no) == :yes
       }
+      puts
+      puts character.log.join("\n")
       path
     end
 
