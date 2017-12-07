@@ -127,15 +127,24 @@ module TravellerRPG
         skills = career.class::SERVICE_SKILLS.flatten.reject { |s|
           @char.skills[s]
         }
+        return if skills.empty?
         skills = [TravellerRPG.choose("Choose service skill:", *skills)]
       else
         # Take "all" SERVICE_SKILLS, but choose any choices
         skills = []
-        career.class::SERVICE_SKILLS.each { |s|
-          if s.is_a?(Array)
-            skills << TravellerRPG.choose("Choose service skill:", *s)
+        career.class::SERVICE_SKILLS.each { |skill|
+          if skill.is_a?(Array)
+            skill = skill.reject { |s| @char.skills[s] }
+            case skill.size
+            when 0
+              return
+            when 1
+              skills << skill
+            else
+              skills << TravellerRPG.choose("Choose service skill:", *skill)
+            end
           else
-            skills << s unless @char.skills[s]
+            skills << skill unless @char.skills[skill]
           end
         }
       end
