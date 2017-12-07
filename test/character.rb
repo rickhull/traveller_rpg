@@ -159,23 +159,6 @@ describe Character do
       end
     end
 
-    describe "Character#add_stuff" do
-      it "accepts a Hash of sym => Numeric or sym => Array" do
-        @char.stuff.must_be_empty
-        capture_io do
-          @char.add_stuff('Foo' => 2, 'Bar' => [:this, :that])
-        end
-        @char.stuff.wont_be_empty
-        @char.stuff['Foo'].must_equal 2
-        @char.stuff['Bar'].must_equal [:this, :that]
-        capture_io do
-          @char.add_stuff('Foo' => 3, 'Bar' => [:the_other])
-        end
-        @char.stuff['Foo'].must_equal 5
-        @char.stuff['Bar'].must_equal [:this, :that, :the_other]
-      end
-    end
-
     describe "Character#benefit" do
       it "accepts an Integer (credits) or a singular String" do
         @char.credits.must_equal 0

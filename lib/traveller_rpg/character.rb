@@ -107,30 +107,20 @@ module TravellerRPG
       @skills.bump(thing, level)
     end
 
-    def add_stuff(benefits)
-      benefits.each { |sym, val|
-        self.log "Collecting #{sym} #{val}"
-        case @stuff[sym]
-        when Numeric, Array
-          self.log "Adding #{sym} #{val} to #{@stuff[sym]}"
-          @stuff[sym] += val
-        when NilClass
-          @stuff[sym] = val
-        else
-          raise("unexpected benefit: #{sym} #{val} (#{val.class})")
-        end
-      }
-    end
-
     def benefit(item)
       if item.is_a?(Integer)
         if item != 0
-          self.log "Acquired #{item} credits as a career benefit"
           @credits += item
+          self.log "Acquired #{item} credits as a career benefit"
         end
-      else
+      elsif item.is_a?(String)
+        @stuff[item] ||= 0
+        @stuff[item] += 1
         self.log "Acquired #{item} as a career benefit"
-        self.add_stuff(item => 1)
+      elsif item.is_a?(Array)
+        # TODO: should this be handled in Career#muster_out ?
+        item = TravellerRPG.choose("Choose benefit:", *item)
+        self.benefit(item)
       end
     end
 
