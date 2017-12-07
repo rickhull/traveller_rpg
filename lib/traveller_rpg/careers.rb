@@ -13,7 +13,7 @@ module TravellerRPG
     RANKS = {
       1 => ['Agent', 'Deception', 1],
       2 => ['Field Agent', 'Investigate', 1],
-      4 => ['Special Agent', 'Gun Combat', 1],
+      4 => ['Special Agent', 'Gun Combat'],
       5 => ['Assistant Director'],
       6 => ['Director'],
     }
@@ -184,7 +184,7 @@ module TravellerRPG
 
     RANKS = {
       1 => ['Scout', 'Vacc Suit', 1],
-      3 => ['Senior Scout', 'Pilot', 1],
+      3 => ['Senior Scout', 'Pilot'],
     }
 
     SPECIALIST = {
@@ -287,7 +287,7 @@ module TravellerRPG
     OFFICER_SKILLS = ['Tactics:Military', 'Leadership', 'Advocate',
                       'Diplomat', 'Electronics', 'Admin']
     RANKS = {
-      0 => ['Private', 'Gun Combat', 1],
+      0 => ['Private', 'Gun Combat'],
       1 => ['Lance Corporal', 'Recon', 1],
       2 => ['Corporal'],
       3 => ['Lance Sergeant', 'Leadership', 1],
@@ -353,8 +353,8 @@ module TravellerRPG
     OFFICER_SKILLS = ['Electronics', 'Tactics', 'Admin',
                       'Advocate', 'Vacc Suit', 'Leadership']
     RANKS = {
-      0 => ['Marine', 'Gun Combat', 1], # TODO "or Melee Blade"
-      1 => ['Lance Corporal', 'Gun Combat', 1], # TODO: any
+      0 => ['Marine', 'Gun Combat'], # TODO "or Melee Blade"
+      1 => ['Lance Corporal', 'Gun Combat'], # TODO: any
       2 => ['Corporal'],
       3 => ['Lance Sergeant', 'Leadership', 1],
       4 => ['Sergeant'],
@@ -364,7 +364,7 @@ module TravellerRPG
     OFFICER_RANKS = {
       1 => ['Lieutenant', 'Leadership', 1],
       2 => ['Captain'],
-      3 => ['Force Commander', 'Tactics', 1],
+      3 => ['Force Commander', 'Tactics'],
       4 => ['Lieutenant Colonel'],
       5 => ['Colonel', :social_status, 10],  # TODO
       6 => ['Brigadier'],
