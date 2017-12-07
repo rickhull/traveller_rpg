@@ -64,13 +64,11 @@ module TravellerRPG
       }
       @skills.each { |name, cpx|
         next unless cpx.is_a?(ComplexSkill)
-        sub_count = cpx.skills.values.select { |s| s.level > 0 }
-        if sub_count == 0
+        if cpx.skills.empty?
           report << format("%s: %s", name.rjust(width, ' '), cpx)
         else
-          report << "(#{cpx.name})"
+          report << "[#{cpx.name}]"
           cpx.skills.each { |subname, subskill|
-            next if subskill.level <= 0
             label = "- #{subname}".rjust(width, ' ')
             report << format("%s: %s", label, subskill)
           }
