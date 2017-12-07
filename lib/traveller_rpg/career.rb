@@ -100,7 +100,7 @@ module TravellerRPG
         raise(UnknownAssignment, asg.inspect) unless s.key?(asg)
         @assignment = asg
       else
-        @assignment = TravellerRPG.choose("Choose a specialty:", *s.keys)
+        @assignment = TravellerRPG.choose("Choose assignment:", *s.keys)
       end
       @title, skill, level = self.rank_benefit
       @char.train(skill, level) if skill
@@ -151,7 +151,7 @@ module TravellerRPG
       choices << :officer if self.officer?
       choice = TravellerRPG.choose("Choose skills regimen:", *choices)
       roll = TravellerRPG.roll('d6')
-      @char.log "Training roll: #{roll}"
+      puts "Training roll: #{roll}"
       @char.train \
               case choice
               when :personal then self.class::PERSONAL_SKILLS.fetch(roll - 1)
