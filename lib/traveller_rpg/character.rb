@@ -102,6 +102,7 @@ module TravellerRPG
         end
         thing = TravellerRPG.choose("Choose skill:", *thing)
       end
+      self.log "Train #{thing} " + (level ? "to #{level}" : "+1")
       return @stats.bump(thing, level) if thing.is_a?(Symbol)
       @skills.bump(thing, level)
     end
