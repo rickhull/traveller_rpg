@@ -82,7 +82,7 @@ ObjectSpace.each_object(Class).select { |klass|
 
     describe "SPECIALIST" do
       before do
-#        defined?(klass::SPECIALIST).wont_be_nil
+        defined?(klass::SPECIALIST).wont_be_nil
         @specs = klass::SPECIALIST
       end
 
