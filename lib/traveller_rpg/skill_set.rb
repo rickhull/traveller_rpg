@@ -49,16 +49,30 @@ module TravellerRPG
       @skills.empty?
     end
 
+    # LONGEST:
+    # Jack Of All Trades (18) = 18
+    # Heavy Weapons:Man Portable (13:12) = 26
+    # Profession:Civil Engineering (10:17) = 28
+
     def report
       return '(none)' if @skills.empty?
       report = []
-      width = @skills.keys.map(&:size).max + 2
-      @skills.each { |name, skill|
-        report << format("%s: %s", name.rjust(width, ' '), skill)
-        if skill.is_a? ComplexSkill
-          skill.skills.each { |subname, subskill|
-            label = [name, subname].join(':').rjust(width + 20, ' ')
-            report << format("%s: %s", label, subskill) if subskill.level > 0
+      width = 20
+      @skills.each { |name, simple|
+        next if simple.is_a?(ComplexSkill)
+        report << format("%s: %s", name.rjust(width, ' '), simple)
+      }
+      @skills.each { |name, cpx|
+        next unless cpx.is_a?(ComplexSkill)
+        sub_count = cpx.skills.values.select { |s| s.level > 0 }
+        if sub_count == 0
+          report << format("%s: %s", name.rjust(width, ' '), cpx)
+        else
+          report << "(#{cpx.name})"
+          cpx.skills.each { |subname, subskill|
+            next if subskill.level <= 0
+            label = "- #{subname}".rjust(width, ' ')
+            report << format("%s: %s", label, subskill)
           }
         end
       }
