@@ -117,6 +117,14 @@ describe Career do
         end
       end
 
+      describe "Career#advancement_roll" do
+        it "tries to do MilitaryCareer#commission_roll" do
+        end
+
+        it "will only advance a rank once per term" do
+        end
+      end
+
       describe "Career#training_roll" do
         it "must bump a skill or stat" do
           level = @char.skills.level(@skill)

@@ -142,6 +142,13 @@ module TravellerRPG
       @char.stats[:education] >= self.class::ADVANCED_EDUCATION
     end
 
+    def advancement_roll(dm: 0)
+      if self.advancement_check?(dm: dm)
+        self.advance_rank
+        self.training_roll
+      end
+    end
+
     # any skills obtained start at level 1; always a bump (+1)
     def training_roll
       choices = [:personal, :service, :specialist]
@@ -217,22 +224,11 @@ module TravellerRPG
                        self.name, @term, @char.age)
       self.training_roll
 
-      # TODO: DM?
       if self.survival_check?
         @char.log format("%s term %i completed successfully.",
                          self.name, @term)
         @char.age TERM_YEARS
-
-        # TODO: DM?
-        self.commission_roll if self.respond_to?(:commission_roll)
-
-        # TODO: DM?
-        if self.advancement_check?
-          self.advance_rank
-          self.training_roll
-        end
-
-        # TODO: DM?
+        self.advancement_roll # TODO: DM?
         self.event_roll
       else
         years = rand(TERM_YEARS) + 1
@@ -360,19 +356,18 @@ module TravellerRPG
       self.class.roll_check?('Commission', dm: dm, check: check)
     end
 
-    #
-    # Achieve an officer commission
-
-    def commission_roll(dm: 0)
-      return if @officer
-      if TravellerRPG.choose("Apply for commission?", :yes, :no) == :yes
+    def advancement_roll(dm: 0)
+      if !@officer and
+         TravellerRPG.choose("Apply for commission?", :yes, :no) == :yes
         if self.commission_check?
           @char.log "Became an officer!"
-          @officer = 0       # officer rank
-          self.advance_rank  # officers start at rank 1
+          @officer = 1
+          self.take_rank_benefit
         else
           @char.log "Commission was rejected"
         end
+      else
+        super(dm: dm)
       end
     end
 
