@@ -152,6 +152,12 @@ describe CareerPath do
         @char.skills.count(subskills: true).must_be :>, skill_count + 3
       end
 
+      it "rejects inactive careers" do
+        proc {
+          @path.basic_training(@career)
+        }.must_raise CareerPath::Ineligible
+      end
+
       it "provides up to 6 service skills for the first career" do
         capture_io { @path.basic_training(@career.activate) }
         ss = @career.class::SERVICE_SKILLS.flatten

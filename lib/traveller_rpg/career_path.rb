@@ -87,7 +87,7 @@ module TravellerRPG
       else
         @char.log "Did not qualify for #{career.name}"
         case TravellerRPG.choose("Choose fallback:", 'Drifter', 'Draft')
-        when 'Drifter' then enter TravellerRPG::Drifter.new(@char), asg
+        when 'Drifter' then enter 'Drifter'
         when 'Draft'   then self.draft
         end
       end
@@ -99,40 +99,21 @@ module TravellerRPG
       roll = TravellerRPG.roll('d6', label: "Draft")
       career, asg = self.class::DRAFT_CAREERS.fetch(roll)
       @char.log "Drafted: #{[career, asg].compact.join(', ')}"
-      enter self.career(career), asg
+      enter(career, asg)
     end
 
     def basic_training(career)
-      return career unless career.term.zero?
+      raise(Ineligible, "career has already started") unless career.term.zero?
+      raise(Ineligible, "career must be active") unless career.active?
       if @careers.length > 0
-        skills = career.class::SERVICE_SKILLS.flatten.reject { |s|
-          @char.skills[s]
-        }
-        return career if skills.empty?
-        skills = [TravellerRPG.choose("Choose service skill:", *skills)]
+        @char.provide_one(career.class::SERVICE_SKILLS.flatten,
+                          label: 'Basic Training')
       else
         # Take "all" SERVICE_SKILLS, but choose any choices
-        skills = []
-        career.class::SERVICE_SKILLS.each { |skill|
-          if skill.is_a?(Array)
-            skill = skill.reject { |s| @char.skills[s] }
-            case skill.size
-            when 0
-              return career
-            when 1
-              skills << skill.first
-            else
-              skills << TravellerRPG.choose("Choose service skill:", *skill)
-            end
-          else
-            skills << skill unless @char.skills[skill]
-          end
+        career.class::SERVICE_SKILLS.each { |s|
+          @char.provide_one(s, label: 'Basic Training')
         }
       end
-      skills.each { |skill|
-        @char.skills.provide(skill)
-        @char.log "Acquired basic training skill: #{skill}"
-      }
       career
     end
 
@@ -142,8 +123,9 @@ module TravellerRPG
 
     private
 
-    # activate a new career, with basic training
+    # ensure Career object; log; activate; basic_training; return Career
     def enter(career, asg = nil)
+      career = self.career(career) if career.is_a? String
       @char.log "Entering new career: #{career.name}"
       self.basic_training(career.activate(asg))
     end
