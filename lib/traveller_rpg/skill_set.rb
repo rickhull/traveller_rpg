@@ -5,9 +5,10 @@ module TravellerRPG
     class UnknownSkill < KeyError; end
 
     def self.choose(skills, label: nil)
+      return skills unless skills.respond_to? :first
       label = [label, 'skill'].compact.join(' ')
       return skills.first if skills.size < 2
-      TravellerRPG.choose("Choose #{label}:", *skills)
+      TravellerRPG.choose(["Choose", label].join(' ') + ':', *skills)
     end
 
     def self.split_skill!(str)
