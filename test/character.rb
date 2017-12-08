@@ -169,7 +169,7 @@ describe Character do
 
     describe "Character#birth" do
       it "is a private method" do
-        proc { @char.birth }.must_raise NoMethodError
+        proc { @char.birth @home }.must_raise NoMethodError
       end
 
       it "is performed at instantiation" do
@@ -178,12 +178,8 @@ describe Character do
         @char.skills.empty?.must_equal false
       end
 
-      it "is only performed once" do
-        log = @char.log
-        skills = @char.skills
-        @char.send(:birth)
-        @char.log.must_equal log
-        @char.skills.must_equal skills
+      it "raises when Character#log isn't empty" do
+        proc { @char.send(:birth, @home) }.must_raise RuntimeError
       end
     end
   end

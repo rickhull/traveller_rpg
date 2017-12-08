@@ -73,20 +73,18 @@ module TravellerRPG
       end
     end
 
-    attr_reader :desc, :stats, :homeworld, :skills,
-                :stuff, :credits, :cash_rolls
+    attr_reader :desc, :stats, :skills, :stuff, :credits, :cash_rolls
 
-    def initialize(desc:, stats:, homeworld:, skills: SkillSet.new,
-                   stuff: {}, log: [], credits: 0, cash_rolls: 0)
+    def initialize(desc:, stats:, skills: SkillSet.new, stuff: {},
+                   log: [], credits: 0, cash_rolls: 0, homeworld: nil)
       @desc = desc
       @stats = stats
-      @homeworld = homeworld
       @skills = skills
       @stuff = stuff
       @log = log
-      @cash_rolls = cash_rolls # max 3 lifetime
       @credits = credits
-      birth # private method
+      @cash_rolls = cash_rolls # max 3 lifetime
+      birth(homeworld) if homeworld
     end
 
     def stats_dm(stat_sym)
@@ -174,19 +172,18 @@ module TravellerRPG
     private
 
     # gain background skills based on homeworld
-    def birth
-      return nil unless @log.empty?
+    def birth(homeworld)
+      raise "log should be empty" unless @log.empty?
       self.log format("%s was born on %s (%s)",
                       @desc.name,
-                      @homeworld.name,
-                      @homeworld.traits.join(' '))
+                      homeworld.name,
+                      homeworld.traits.join(' '))
       skill_count = 3 + self.stats_dm(:education)
-      self.log format("Education %i qualifies for %i skills",
+      self.log format("Education %i qualifies for %i background skills",
                       @stats.education, skill_count)
-      skill_count.times {
-        skill = TravellerRPG.choose("Choose a skill:", *@homeworld.skills)
-        self.log "Acquired background skill: #{skill}"
+      homeworld.choose_skills(skill_count).each { |skill|
         @skills.provide(skill)
+        self.log "Acquired background skill: #{skill}"
       }
     end
   end
