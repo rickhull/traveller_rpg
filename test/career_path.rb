@@ -77,6 +77,40 @@ describe CareerPath do
       end
     end
 
+    describe "CareerPath#apply" do
+      it "accepts a String or a Career and returns an entered Career" do
+        career = nil
+        capture_io { career = @path.apply(@career) }
+        career.must_be_kind_of Career # maybe Drifter or Draft
+        career.active?.must_equal true
+        case career
+        when @career.class
+          # TODO: this can fail if CareerPath.draft_career?(@career.name)
+          # career.must_equal @career
+        when Drifter
+          # ok
+        else
+          CareerPath.draft_career?(career.name).must_equal true
+        end
+      end
+
+      it "activates a career and performs basic training" do
+        @career.active?.must_equal false
+        num_skills = @char.skills.count
+        capture_io { @path.apply @career }
+        @career.active?.must_equal true
+        @char.skills.count.must_be :>, num_skills
+      end
+
+      it "rejects ineligible careers" do
+        career = @path.career(@career.name)  # duplicate
+        capture_io { @path.send "run!", career.activate }
+        proc { @path.apply career }.must_raise CareerPath::Ineligible
+        # can't enter Scout a 2nd time, even if it's a new career
+        proc { @path.apply @career }.must_raise CareerPath::Ineligible
+      end
+    end
+
     describe "CareerPath#run" do
       it "returns a Career" do
         capture_io do
@@ -94,50 +128,6 @@ describe CareerPath do
         @char.cash_rolls.must_be :>, 0
         capture_io { @path.run @career }
         @path.careers.size.must_equal 2
-      end
-    end
-
-    describe "CareerPath#enter" do
-      it "accepts a Career and returns a Career" do
-        capture_io { @path.enter(@career).must_be_kind_of Career }
-      end
-
-      it "raises on a career name (string)" do
-        proc { @path.enter 'Drifter' }.must_raise StandardError
-      end
-
-      it "activates a career and performs basic training" do
-        @career.active?.must_equal false
-        num_skills = @char.skills.count
-        capture_io { @path.enter @career }
-        @career.active?.must_equal true
-        @char.skills.count.must_be :>, num_skills
-      end
-
-      it "rejects ineligible careers" do
-        career = @path.career(@career.name)  # duplicate
-        capture_io { @path.send "run!", career.activate }
-        proc { @path.enter career }.must_raise CareerPath::Ineligible
-        # can't enter Scout a 2nd time, even if it's a new career
-        proc { @path.enter @career }.must_raise CareerPath::Ineligible
-      end
-    end
-
-    describe "CareerPath#apply" do
-      it "accepts a String or a Career and returns an entered Career" do
-        career = nil
-        capture_io { career = @path.apply(@career) }
-        career.must_be_kind_of Career # maybe Drifter or Draft
-        career.active?.must_equal true
-        case career
-        when @career.class
-          # TODO: this can fail if CareerPath.draft_career?(@career.name)
-          # career.must_equal @career
-        when Drifter
-          # ok
-        else
-          CareerPath.draft_career?(career.name).must_equal true
-        end
       end
     end
 

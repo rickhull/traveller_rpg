@@ -67,7 +67,7 @@ module TravellerRPG
       when String
         cls = CareerPath.career_class(career)
       end
-      cls == TravellerRPG::Drifter or !@careers.any? { |c| cls === c }
+      !@careers.any? { |c| cls === c }
     end
 
     # Run career to completion; keep running terms while possible
@@ -83,20 +83,14 @@ module TravellerRPG
       raise(Ineligible, career.name) unless self.eligible?(career)
       if career.qualify_check?(dm: -1 * @careers.size)
         @char.log "Qualified for #{career.name}"
-        self.enter(career, asg)
+        enter career, asg
       else
         @char.log "Did not qualify for #{career.name}"
         case TravellerRPG.choose("Choose fallback:", 'Drifter', 'Draft')
-        when 'Drifter' then self.enter TravellerRPG::Drifter.new(@char), asg
+        when 'Drifter' then enter TravellerRPG::Drifter.new(@char), asg
         when 'Draft'   then self.draft
         end
       end
-    end
-
-    def enter(career, asg = nil)
-      raise(Ineligible, career.name) unless self.eligible?(career)
-      @char.log "Entering new career: #{career.name}"
-      enter! career, asg
     end
 
     # return an active career, no qualification check, that has completed basic
@@ -105,7 +99,7 @@ module TravellerRPG
       roll = TravellerRPG.roll('d6', label: "Draft")
       career, asg = self.class::DRAFT_CAREERS.fetch(roll)
       @char.log "Drafted: #{[career, asg].compact.join(', ')}"
-      enter! self.career(career), asg
+      enter self.career(career), asg
     end
 
     def basic_training(career)
@@ -149,7 +143,8 @@ module TravellerRPG
     private
 
     # activate a new career, with basic training
-    def enter!(career, asg = nil)
+    def enter(career, asg = nil)
+      @char.log "Entering new career: #{career.name}"
       self.basic_training(career.activate(asg))
     end
 
