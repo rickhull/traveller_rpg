@@ -152,15 +152,13 @@ describe ComplexSkill do
     end
 
     it "must bump specialties" do
-      out, err = capture_io do
-        5.times { @skill.bump }
-      end
+      out, err = capture_io { Skill::MAX.times { @skill.bump } }
       out.wont_be_empty
       err.must_be_empty
       @skill.level.must_equal 0
       @skill.skills.values.reduce(0) { |memo, skill|
         memo + skill.level
-      }.must_equal 5
+      }.must_equal Skill::MAX
     end
   end
 
