@@ -148,8 +148,7 @@ module TravellerRPG
       choices << :advanced if self.advanced_education?
       choices << :officer if self.officer?
       choice = TravellerRPG.choose("Choose skills regimen:", *choices)
-      roll = TravellerRPG.roll('d6')
-      puts "Training roll: #{roll}"
+      roll = TravellerRPG.roll('d6', label: 'Training')
       skill =
         case choice
         when :personal then self.class::PERSONAL_SKILLS.fetch(roll - 1)
