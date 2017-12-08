@@ -6,8 +6,8 @@ module TravellerRPG
 
     def self.choose(skills, label: nil)
       return skills.first if skills.size < 2
-      label = [label, 'skill'].compact.join(' ')
-      TravellerRPG.choose(["Choose", label].join(' ') + ':', *skills)
+      label = ['Choose', label, 'skill'].compact.join(' ') + ':'
+      TravellerRPG.choose(label, *skills)
     end
 
     def self.split_skill!(str)
