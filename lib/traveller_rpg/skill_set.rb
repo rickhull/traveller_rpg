@@ -4,6 +4,12 @@ module TravellerRPG
   class SkillSet
     class UnknownSkill < KeyError; end
 
+    def self.choose(skills, label: nil)
+      label = [label, 'skill'].compact.join(' ')
+      return skills.first if skills.size < 2
+      TravellerRPG.choose("Choose #{label}:", *skills)
+    end
+
     def self.split_skill!(str)
       first, rest = str.split(':')
       if rest
@@ -34,6 +40,10 @@ module TravellerRPG
 
     def to_h
       @skills
+    end
+
+    def empty?
+      @skills.empty?
     end
 
     def count(subskills: false)
@@ -71,10 +81,6 @@ module TravellerRPG
       first, rest = SkillSet.split_skill!(name)
       @skills[first] ||= SkillSet.new_skill(first)
       rest ? @skills[first][rest] : @skills[first]
-    end
-
-    def empty?
-      @skills.empty?
     end
 
     # LONGEST:

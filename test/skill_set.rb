@@ -4,6 +4,34 @@ require 'minitest/autorun'
 include TravellerRPG
 
 describe SkillSet do
+  describe SkillSet.method(:choose) do
+    it "takes an array and returns a member" do
+      SkillSet.choose(['Art']).must_equal 'Art'
+      capture_io { SkillSet.choose(%w{Art Art Art}).must_equal 'Art' }
+    end
+
+    it "must return a given a String" do
+      SkillSet.choose('Art').must_equal 'Art'
+    end
+
+    it "has an (optional, additional) label" do
+      out, err = capture_io { SkillSet.choose('Art', label: '') }
+      out.must_be_empty
+      err.must_be_empty
+
+      out, err = capture_io do
+        SkillSet.choose(%w{Medic Stealth Broker}, label: '')
+      end
+      out.wont_be_empty
+      err.must_be_empty
+    end
+
+    it "only chooses for 2 or more choices" do
+      out = capture_io { SkillSet.choose(%w{Art Art Art}).must_equal 'Art' }
+      out.wont_be_empty
+    end
+  end
+
   describe SkillSet.method(:split_skill!) do
     it "recognizes subskills" do
       SkillSet.split_skill!('Animals:Handling').must_equal ['Animals',
