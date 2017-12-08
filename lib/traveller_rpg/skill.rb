@@ -2,7 +2,7 @@ require 'traveller_rpg'
 
 module TravellerRPG
   class Skill
-    MAX = 5
+    MAX = 4
 
     def self.name(*syms)
       syms.map { |sym|
