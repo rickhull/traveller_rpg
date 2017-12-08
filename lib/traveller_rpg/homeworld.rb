@@ -31,16 +31,38 @@ module TravellerRPG
 
     attr_reader :name, :traits, :skills
 
-    def initialize(name) # TODO: allow trait initialization
+    def initialize(name, traits = {})
       @name = name
-      sample_num = rand(TRAIT_MAX - TRAIT_MIN + 1) + TRAIT_MIN
       @skills = []
-      @traits = self.class::TRAITS.keys.sample(sample_num).map { |t|
-        k = TRAITS[t].keys.sample
-        @skills += TRAITS[t][k]
-        k
-      }
+
+      # TODO: def @skills.choose(count)
+
+      if traits.empty?
+        trait_count = rand(TRAIT_MAX - TRAIT_MIN + 1) + TRAIT_MIN
+        @traits = self.class::TRAITS.keys.sample(trait_count).map { |t|
+          k = TRAITS[t].keys.sample
+          @skills += TRAITS[t][k]
+          k
+        }
+      else
+        @traits = []
+        traits.each { |type, trait|
+          @skills += TRAITS.fetch(type).fetch(trait)
+          @traits << trait
+        }
+      end
       @skills.uniq!
+    end
+
+    def choose_skills(count)
+      s = @skills.dup
+      if @skills.size > count
+        Array.new(count) {
+          s.delete TravellerRPG.choose("Choose background skill:", *s)
+        }
+      else
+        s
+      end
     end
   end
 end
