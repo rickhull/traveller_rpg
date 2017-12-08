@@ -6,8 +6,8 @@ module TravellerRPG
   class Character
     Stats = Struct.new(:strength, :dexterity, :endurance,
                        :intelligence, :education, :social_status) do
-      def self.roll(spec = '2d6')
-        self.new(*Array.new(6) { TravellerRPG.roll spec })
+      def self.roll
+        self.new(*Array.new(6) { TravellerRPG.roll '2d6' })
       end
 
       def self.empty
