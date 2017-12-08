@@ -168,17 +168,14 @@ module TravellerRPG
       self
     end
 
-    def event_roll(dm: 0)
-      roll = TravellerRPG.roll('2d6')
-      clamped = (roll + dm).clamp(2, 12)
-      puts "Event roll: #{roll} (DM #{dm}) = #{clamped}"
-      @char.log "Event: #{self.class::EVENTS.fetch(clamped)}"
+    def event_roll
+      roll = TravellerRPG.roll('2d6', label: 'Event')
+      @char.log "Event: #{self.class::EVENTS.fetch(roll)}"
       # TODO: actually perform the event stuff
     end
 
     def mishap_roll
-      roll = TravellerRPG.roll('d6')
-      puts "Mishap roll: #{roll}"
+      roll = TravellerRPG.roll('d6', label: 'Mishap')
       @char.log "Mishap: #{self.class::MISHAPS.fetch(roll)}"
       # TODO: actually perform the mishap stuff
     end

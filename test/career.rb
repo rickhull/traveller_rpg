@@ -126,10 +126,14 @@ describe Career do
       end
 
       describe "Career#event_roll" do
-        it "must accept a DM and log an event" do
+        it "must log an event" do
           size = @char.log.size
-          capture_io { @career.event_roll(dm: 1) }
+          capture_io { @career.event_roll }
           @char.log.size.must_equal size + 1
+        end
+
+        it "must not accept a DM" do
+          proc { @career.event_roll(dm: 0) }.must_raise ArgumentError
         end
 
         it "must process an event" do
@@ -313,6 +317,12 @@ describe MilitaryCareer do
         proc {
           capture_io { @career.activate :random }
         }.must_raise Career::UnknownAssignment
+      end
+    end
+
+    describe "MilitaryCareer#run_term" do
+      it "must not allow commission and advancement in same term" do
+        # TODO
       end
     end
   end
