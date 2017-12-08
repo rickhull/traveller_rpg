@@ -9,10 +9,12 @@ module TravellerRPG
     \z    # end str
   }x
 
-  def self.roll(str = nil, faces: 6, dice: 2, count: 1)
+  def self.roll(str = nil, faces: 6, dice: 2, count: 1, label: nil)
     return self.roll_str(str) if str
     rolln = -> (f, d) { Array.new(d) { rand(f) + 1 } }
-    (Array.new(count) { rolln.(faces, dice).sum }.sum.to_f / count).round
+    val = (Array.new(count) { rolln.(faces, dice).sum }.sum.to_f / count).round
+    puts "#{label} roll: #{val}" if label
+    val
   end
 
   def self.roll_str(str)
