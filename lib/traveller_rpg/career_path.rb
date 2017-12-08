@@ -54,11 +54,6 @@ module TravellerRPG
       self.class.career_class(career_name).new(@char)
     end
 
-    def finished
-      @careers
-    end
-    alias_method :completed, :finished
-
     def eligible?(career)
       case career
       when Career
