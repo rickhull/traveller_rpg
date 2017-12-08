@@ -91,6 +91,17 @@ module TravellerRPG
       self.class.stats_dm(@stats[stat_sym])
     end
 
+    def provide_one(skill, label: nil)
+      if skill.is_a?(Array)
+        skill = SkillSet.choose(skill.reject { |s| @skills[s] },
+                                label: label) or return
+      end
+      unless @skills[skill]
+        self.log "#{label}: #{skill} 0"
+        @skills.provide skill
+      end
+    end
+
     def benefit(item)
       if item.is_a?(Integer)
         if item != 0

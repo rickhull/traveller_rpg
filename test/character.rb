@@ -121,6 +121,21 @@ describe Character do
       end
     end
 
+    describe "Character#provide_one" do
+      it "takes skill names and returns a Skill or ComplexSkill" do
+        complex_skill = 'Athletics'
+        skill = nil
+        capture_io { skill = @char.provide_one(complex_skill) }
+        skill.must_be_kind_of ComplexSkill
+        skill.level.must_equal 0
+        @char.provide_one(complex_skill).must_be_nil
+        @char.provide_one(Array.new(rand(2) + 2, 'Athletics')).must_be_nil
+        capture_io do
+          @char.provide_one(%w{Admin Broker Recon}).must_be_kind_of Skill
+        end
+      end
+    end
+
     describe "Character#benefit" do
       it "accepts an Integer (credits) or a singular String" do
         @char.credits.must_equal 0
