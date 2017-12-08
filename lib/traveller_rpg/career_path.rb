@@ -101,13 +101,10 @@ module TravellerRPG
       raise(Ineligible, "career has already started") unless career.term.zero?
       raise(Ineligible, "career must be active") unless career.active?
       if @careers.length > 0
-        @char.provide_one(career.class::SERVICE_SKILLS.flatten,
-                          label: 'Basic Training')
+        @char.basic_training(career.class::SERVICE_SKILLS.flatten)
       else
         # Take "all" SERVICE_SKILLS, but choose any choices
-        career.class::SERVICE_SKILLS.each { |s|
-          @char.provide_one(s, label: 'Basic Training')
-        }
+        career.class::SERVICE_SKILLS.each { |s| @char.basic_training(s) }
       end
       career
     end

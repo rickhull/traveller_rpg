@@ -91,13 +91,16 @@ module TravellerRPG
       self.class.stats_dm(@stats[stat_sym])
     end
 
-    def provide_one(skill, label: nil)
+    # accepts an array of strings or a single string
+    # choose from the array; provide a single skill
+    # return nil if no skill was trained
+    def basic_training(skill, label: nil)
       if skill.is_a?(Array)
         skill = SkillSet.choose(skill.reject { |s| @skills[s] },
-                                label: label) or return
+                                label: 'basic training') or return
       end
       unless @skills[skill]
-        self.log "#{label}: #{skill} 0"
+        self.log "Basic Training: #{skill} 0"
         @skills.provide skill
       end
     end
@@ -193,8 +196,8 @@ module TravellerRPG
       self.log format("Education %i provides up to %i background skills",
                       @stats.education, skill_count)
       homeworld.choose_skills(skill_count).each { |skill|
-        @skills.provide(skill)
-        self.log "Learned background skill: #{skill} 0"
+        self.log "Background skill: #{skill} 0"
+        @skills.provide skill
       }
     end
   end

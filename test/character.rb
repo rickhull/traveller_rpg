@@ -108,10 +108,7 @@ describe Character do
     before do
       @desc = Character::Description.new('Bob', 'M', 18, 'A', 'P', 'T')
       @stats = Character::Stats.roll
-      @home = Homeworld.new('Earth')
-      capture_io do
-        @char = Character.new(desc: @desc, stats: @stats, homeworld: @home)
-      end
+      capture_io { @char = Character.new(desc: @desc, stats: @stats) }
     end
 
     describe "Character#stats_dm" do
@@ -121,18 +118,45 @@ describe Character do
       end
     end
 
-    describe "Character#provide_one" do
-      it "takes skill names and returns a Skill or ComplexSkill" do
-        complex_skill = 'Athletics'
+    describe "Character#basic_training" do
+      it "takes a skill name and returns a Skill trained to 0" do
         skill = nil
-        capture_io { skill = @char.provide_one(complex_skill) }
-        skill.must_be_kind_of ComplexSkill
+        simple_skill = 'Admin'
+        capture_io { skill = @char.basic_training(simple_skill) }
+        skill.must_be_kind_of Skill
         skill.level.must_equal 0
-        @char.provide_one(complex_skill).must_be_nil
-        @char.provide_one(Array.new(rand(2) + 2, 'Athletics')).must_be_nil
-        capture_io do
-          @char.provide_one(%w{Admin Broker Recon}).must_be_kind_of Skill
-        end
+        skill.name.must_equal simple_skill
+      end
+
+      it "take an array of skill names and chooses one" do
+        skill = nil
+        simple_skills = %w{Advocate Broker}
+        capture_io { skill = @char.basic_training(simple_skills) }
+        skill.must_be_kind_of Skill
+        skill.level.must_equal 0
+        simple_skills.must_include skill.name
+      end
+
+      it "works with ComplexSkills too" do
+        capture_io { @char.basic_training('Art').must_be_kind_of ComplexSkill }
+      end
+
+      it "won't choose a trained skill" do
+        trained, untrained = 'Admin', 'Broker'
+        capture_io { @char.basic_training trained } # train Admin
+        skill = nil
+        capture_io { skill = @char.basic_training [trained, untrained] }
+        skill.must_be_kind_of Skill
+        skill.level.must_equal 0
+        skill.name.must_equal untrained
+      end
+
+      it "returns nil if nothing was trained" do
+        trained, untrained = 'Admin', 'Broker'
+        capture_io { @char.basic_training trained } # train Admin
+        @char.basic_training(trained).must_be_nil
+        capture_io { @char.basic_training(untrained).must_be_kind_of Skill }
+        @char.basic_training([trained, untrained]).must_be_nil
       end
     end
 
@@ -150,7 +174,11 @@ describe Character do
     describe "Character#log" do
       it "returns the log with no arg" do
         @char.log.must_be_kind_of Array
+        @char.log.must_be_empty
+        capture_io { @char.log "test" }
         @char.log.wont_be_empty
+        @char.log.size.must_equal 1
+        @char.log.first.must_equal "test"
       end
 
       it "accumulates messages with an arg" do
@@ -183,6 +211,13 @@ describe Character do
     end
 
     describe "Character#birth" do
+      before do
+        @home = Homeworld.new('Earth')
+        capture_io do
+          @char = Character.new(desc: @desc, stats: @stats, homeworld: @home)
+        end
+      end
+
       it "is a private method" do
         proc { @char.birth @home }.must_raise NoMethodError
       end
