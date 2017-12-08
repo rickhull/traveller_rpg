@@ -174,16 +174,16 @@ module TravellerRPG
     # gain background skills based on homeworld
     def birth(homeworld)
       raise "log should be empty" unless @log.empty?
+      skill_count = 3 + self.stats_dm(:education)
       self.log format("%s was born on %s (%s)",
                       @desc.name,
                       homeworld.name,
                       homeworld.traits.join(' '))
-      skill_count = 3 + self.stats_dm(:education)
-      self.log format("Education %i qualifies for %i background skills",
+      self.log format("Education %i provides up to %i background skills",
                       @stats.education, skill_count)
-      homeworld.choose_skills(skill_count).each { |skill|
+      homeworld.skills.choose(skill_count).each { |skill|
         @skills.provide(skill)
-        self.log "Acquired background skill: #{skill}"
+        self.log "Learned background skill: #{skill} 0"
       }
     end
   end
