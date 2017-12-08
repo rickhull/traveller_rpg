@@ -246,6 +246,7 @@ module TravellerRPG
         self.mishap_roll
         @status = :mishap
       end
+      self
     end
 
     def retirement_bonus
