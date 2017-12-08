@@ -95,10 +95,11 @@ describe CareerPath do
       end
 
       it "activates a career and performs basic training" do
+        career = nil
         @career.active?.must_equal false
         num_skills = @char.skills.count
-        capture_io { @path.apply @career }
-        @career.active?.must_equal true
+        capture_io { career = @path.apply @career }
+        career.active?.must_equal true
         @char.skills.count.must_be :>, num_skills
       end
 
