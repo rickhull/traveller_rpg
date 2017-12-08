@@ -35,8 +35,6 @@ module TravellerRPG
       @name = name
       @skills = []
 
-      # TODO: def @skills.choose(count)
-
       if traits.empty?
         trait_count = rand(TRAIT_MAX - TRAIT_MIN + 1) + TRAIT_MIN
         @traits = self.class::TRAITS.keys.sample(trait_count).map { |t|
@@ -51,18 +49,23 @@ module TravellerRPG
           @traits << trait
         }
       end
+
       @skills.uniq!
+      def @skills.choose(count)
+        s = self.dup
+        return s if s.size < count
+        Array.new(count) {
+          s.delete TravellerRPG.choose("Choose background skill:", *s)
+        }
+      end
     end
 
     def choose_skills(count)
       s = @skills.dup
-      if @skills.size > count
-        Array.new(count) {
-          s.delete TravellerRPG.choose("Choose background skill:", *s)
-        }
-      else
-        s
-      end
+      return s if s.size <= count
+      Array.new(count) {
+        s.delete TravellerRPG.choose("Choose background skill:", *s)
+      }
     end
   end
 end
