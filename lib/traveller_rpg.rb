@@ -9,18 +9,25 @@ module TravellerRPG
     \z    # end str
   }x
 
-  def self.roll(str = nil, faces: 6, dice: 2, count: 1, label: nil)
-    return self.roll_str(str) if str
-    rolln = -> (f, d) { Array.new(d) { rand(f) + 1 } }
-    val = (Array.new(count) { rolln.(faces, dice).sum }.sum.to_f / count).round
-    puts "#{label} roll: #{val}" if label
+  def self.roll(spec = 'd6', label: nil)
+    matches = spec.match(ROLL_RGX) or raise("bad roll spec: #{spec}")
+    self.roll_int(dice: matches[1].empty? ? 1 : matches[1].to_i,
+                  faces: matches[2].to_i, label: label)
+  end
+
+  # this is the fastest, but won't print individual die values
+  def self.roll_int(dice: 1, faces: 6, label: nil)
+    val = 0
+    dice.times { val += rand(faces) + 1 }
+    puts "#{label} roll (#{dice}d#{faces}): #{val}" if label
     val
   end
 
-  def self.roll_str(str)
-    matches = str.match(ROLL_RGX) or raise("bad roll: #{str}")
-    dice, faces = matches[1], matches[2]
-    self.roll(dice: dice.empty? ? 1 : dice.to_i, faces: faces.to_i)
+  def self.roll_ary(dice: 1, faces: 6, label: nil)
+    ary = Array.new(dice) { rand(faces) + 1 }
+    puts format("%s roll (%id%i): %s = %i",
+                label, dice, faces, ary.join(' '), ary.sum) if label
+    ary.sum
   end
 
   def self.choose(msg, *args)
