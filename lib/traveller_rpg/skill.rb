@@ -58,6 +58,7 @@ module TravellerRPG
 
     attr_reader :skills
 
+    # accept subskills as array, store as hash keyed by subskill name
     def initialize(name, desc: '', skills: [])
       @skill = Skill.new(name, desc: desc)
       @skills = skills.reduce({}) { |memo, s| memo.merge(s.name => s) }
