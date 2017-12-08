@@ -5,30 +5,36 @@ include TravellerRPG
 
 describe SkillSet do
   describe SkillSet.method(:choose) do
-    it "takes an array and returns a member" do
-      SkillSet.choose(['Art']).must_equal 'Art'
-      capture_io { SkillSet.choose(%w{Art Art Art}).must_equal 'Art' }
+    before do
+      @one = %w{Art}
+      @two = %w{Art Art}
+      @three = %w{Art Art Art}
+      @four = %w{Art Medic Stealth Broker}
     end
 
-    it "must return a given a String" do
-      SkillSet.choose('Art').must_equal 'Art'
+    it "takes an array and returns a member" do
+      SkillSet.choose(@one).must_equal 'Art'
+      capture_io { SkillSet.choose(@two).must_equal 'Art' }
     end
 
     it "has an (optional, additional) label" do
-      out, err = capture_io { SkillSet.choose('Art', label: '') }
-      out.must_be_empty
+      out, err = capture_io { SkillSet.choose(@one, label: '') }
+      out.must_be_empty # no choice needed -- no label
       err.must_be_empty
 
-      out, err = capture_io do
-        SkillSet.choose(%w{Medic Stealth Broker}, label: '')
-      end
+      out, err = capture_io { SkillSet.choose(@four, label: '') }
       out.wont_be_empty
       err.must_be_empty
     end
 
     it "only chooses for 2 or more choices" do
-      out = capture_io { SkillSet.choose(%w{Art Art Art}).must_equal 'Art' }
+      out, err = capture_io { SkillSet.choose(@one) }
+      out.must_be_empty
+      err.must_be_empty
+
+      out, err = capture_io { SkillSet.choose(@four) }
       out.wont_be_empty
+      err.must_be_empty
     end
   end
 
