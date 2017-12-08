@@ -147,13 +147,13 @@ describe CareerPath do
       it "accepts a Career, provides Character Skills, returns that Career" do
         skill_count = @char.skills.count(subskills: true)
         capture_io do
-          @path.basic_training(@career).must_equal @career
+          @path.basic_training(@career.activate).must_equal @career
         end
         @char.skills.count(subskills: true).must_be :>, skill_count + 3
       end
 
       it "provides up to 6 service skills for the first career" do
-        capture_io { @path.basic_training(@career) }
+        capture_io { @path.basic_training(@career.activate) }
         ss = @career.class::SERVICE_SKILLS.flatten
         if ss.size == 6
           # all present
@@ -171,7 +171,7 @@ describe CareerPath do
         career = nil
         capture_io { career = @path.run @career }
         skill_count = @char.skills.count
-        capture_io { @path.basic_training @path.career 'Drifter' }
+        capture_io { @path.basic_training @path.career('Drifter').activate }
         case career
         when Drifter
           Drifter::SERVICE_SKILLS.flatten.size.must_equal 6 # sanity check
