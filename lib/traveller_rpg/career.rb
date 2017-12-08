@@ -118,14 +118,14 @@ module TravellerRPG
 
     def survival_check?(dm: 0)
       stat, check = self.specialty.fetch(:survival)
-      @char.log "#{self.name} #{@assignment} survival: #{stat} #{check}+"
+      @char.log "#{self.name}/#{@assignment} survival: #{stat} #{check}+"
       dm += @char.stats_dm(stat)
       self.class.roll_check?('Survival', dm: dm, check: check)
     end
 
     def advancement_check?(dm: 0)
       stat, check = self.specialty.fetch(:advancement)
-      @char.log "#{self.name} #{@assignment} advancement: #{stat} #{check}+"
+      @char.log "#{self.name}/#{@assignment} advancement: #{stat} #{check}+"
       dm += @char.stats_dm(stat)
       roll = TravellerRPG.roll('2d6')
       if roll <= @term
