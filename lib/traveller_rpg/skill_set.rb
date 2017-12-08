@@ -36,6 +36,16 @@ module TravellerRPG
       @skills
     end
 
+    def count(subskills: false)
+      return @skills.size unless subskills
+      count = 0
+      @skills.values.each { |skill|
+        count += 1
+        count += skill.skills.size if skill.respond_to? :skills
+      }
+      count
+    end
+
     # return the skill for name, or nil
     def [](name)
       first, rest = SkillSet.split_skill!(name)

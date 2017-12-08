@@ -43,6 +43,25 @@ describe SkillSet do
       @skills = SkillSet.new
     end
 
+    describe "SkillSet#count" do
+      it "does not count subskills by default" do
+        @skills.count.must_equal 0
+        @skills.provide 'Animals'
+        @skills.count.must_equal 1
+        @skills.provide 'Admin'
+        @skills.count.must_equal 2
+      end
+
+      it "optionally counts subskills" do
+        @skills.count.must_equal 0
+        @skills.provide 'Animals'
+        animals_subskills = @skills['Animals'].skills.size
+        @skills.count(subskills: true).must_equal animals_subskills + 1
+        @skills.provide 'Admin'
+        @skills.count(subskills: true).must_equal animals_subskills + 2
+      end
+    end
+
     describe "SkillSet#[]" do
       it "must raise for unknown skills" do
         @invalid.each { |s|
