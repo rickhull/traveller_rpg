@@ -181,7 +181,7 @@ module TravellerRPG
                       homeworld.traits.join(' '))
       self.log format("Education %i provides up to %i background skills",
                       @stats.education, skill_count)
-      homeworld.skills.choose(skill_count).each { |skill|
+      homeworld.choose_skills(skill_count).each { |skill|
         @skills.provide(skill)
         self.log "Learned background skill: #{skill} 0"
       }
