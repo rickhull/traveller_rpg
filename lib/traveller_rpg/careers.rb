@@ -148,7 +148,7 @@ module TravellerRPG
         advancement: [:endurance, 7],
         ranks: {
           1 => [nil, 'Vacc Suit', 1],
-          3 => [nil, 'Mechanic', 1],
+          3 => [nil, ['Profession:Belter', 'Mechanic'], 1],
         },
       },
     }

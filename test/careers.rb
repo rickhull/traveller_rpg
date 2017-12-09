@@ -163,15 +163,27 @@ ObjectSpace.each_object(Class).select { |klass|
               title.must_be_kind_of String
             end
 
-            if skill.nil?
+            case skill
+            when NilClass
               title.wont_be_nil
+            when String
+              TravellerRPG.known_skill?(skill).must_equal true
+            when Symbol
+              TravellerRPG::Character::Stats.members.must_include(skill)
+            when Array
+              skill.each { |s|
+                s.must_be_kind_of skill.first.class
+                case s
+                when String
+                  TravellerRPG.known_skill?(s).must_equal true
+                when Symbol
+                  TravellerRPG::Character::Stats.members.must_include(s)
+                else
+                  raise "unexpected rank skill choice: #{s}"
+                end
+              }
             else
-              if skill.is_a? String
-                TravellerRPG.known_skill?(skill).must_equal true
-              else
-                skill.must_be_kind_of Symbol
-                TravellerRPG::Character::Stats.members.must_include(skill)
-              end
+              raise "unexpected rank skill: #{skill.inspect}"
             end
           }
         }

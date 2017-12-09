@@ -206,6 +206,9 @@ module TravellerRPG
         @title = title
       end
       if skill
+        if skill.is_a?(Array)
+          skill = TravellerRPG.choose("Choose rank bonus:", *skill)
+        end
         @char.log "Achieved #{label} bonus: #{skill} #{level}"
         if skill.is_a? Symbol
           @char.stats.bump(skill, level)
