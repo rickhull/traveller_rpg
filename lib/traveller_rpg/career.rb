@@ -363,17 +363,21 @@ module TravellerRPG
 
     def advancement_roll(dm: 0)
       if !@officer and
-         TravellerRPG.choose("Apply for commission?", :yes, :no) == :yes
-        if self.commission_check?
+         (@term == 1 or @char.stats[:social_status] > 9) and true
+         # TravellerRPG.choose("Apply for commission?", :yes, :no) == :yes
+        comm_dm = @term > 1 ? dm - 1 : dm
+        if self.commission_check?(dm: comm_dm)
           @char.log "Became an officer!"
           @officer = 1
           self.take_rank_benefit
+          # skip normal advancement after successful commission
+          return self
         else
           @char.log "Commission was rejected"
         end
-      else
-        super(dm: dm)
       end
+      # perform normal advancement unless commission was obtained
+      super(dm: dm)
     end
 
     #
