@@ -11,37 +11,18 @@ module TravellerRPG
     TERM_YEARS = 4
     ADVANCED_EDUCATION = 8
 
-    EVENTS = {
-      2 => 'Event #2',
-      3 => 'Event #3',
-      4 => 'Event #4',
-      5 => 'Event #5',
-      6 => 'Event #6',
-      7 => 'Event #7',
-      8 => 'Event #8',
-      9 => 'Event #9',
-      10 => 'Event #10',
-      11 => 'Event #11',
-      12 => 'Event #12',
-    }
-    MISHAPS = {
-      1 => 'Mishap #1',
-      2 => 'Mishap #2',
-      3 => 'Mishap #3',
-      4 => 'Mishap #4',
-      5 => 'Mishap #5',
-      6 => 'Mishap #6',
-    }
+    #
+    # Needed to function
 
-    MUSTER_OUT = {
-      1 => [0, 'Default'],
-      2 => [0, 'Default'],
-      3 => [5, 'Default'],
-      4 => [5, 'Default'],
-      5 => [10, 'Default'],
-      6 => [10, 'Default'],
-      7 => [5000, 'Default'], # Gambler DM +1
-    }
+    # QUALIFICATION
+    # PERSONAL_SKILLS
+    # SERVICE_SKILLS
+    # ADVANCED_SKILLS
+    # SPECIALIST
+    # EVENTS
+    # MISHAPS
+    # CREDITS
+    # BENEFITS
 
     def self.roll_check?(label, dm:, check:, roll: nil)
       roll ||= TravellerRPG.roll('2d6')
@@ -248,11 +229,9 @@ module TravellerRPG
       @term >= 5 ? @term * 2000 : 0
     end
 
-    def muster_roll(label)
-      roll = TravellerRPG.roll('d6')
+    def muster_roll
       dm = @char.skills.check?('Gambler', 1) ? 1 : 0
-      puts "#{label} roll: #{roll} (DM #{dm})"
-      self.class::MUSTER_OUT.fetch(roll + dm)
+      TravellerRPG.roll('d6', label: 'Muster', dm: dm)
     end
 
     def muster_out(dm: 0)
@@ -275,9 +254,12 @@ module TravellerRPG
       end
 
       # Collect "muster out" benefits
-      @char.log "Cash rolls: #{cash_rolls}  Benefit rolls: #{benefit_rolls}"
-      cash_rolls.times { @char.cash_roll self.muster_roll('Cash').first }
-      benefit_rolls.times { @char.benefit self.muster_roll('Benefit').last }
+      cash_rolls.times {
+        @char.cash_roll self.class::CREDITS.fetch(self.muster_roll)
+      }
+      benefit_rolls.times {
+        @char.benefit self.class::BENEFITS.fetch(self.muster_roll)
+      }
       @char.benefit self.retirement_bonus
       @status = :finished
       self
