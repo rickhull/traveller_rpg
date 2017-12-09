@@ -259,7 +259,8 @@ module TravellerRPG
       @char.log "Muster out: #{self.name}"
       raise(Error, "career has not started") unless @term > 0
       cash_rolls = @term.clamp(0, 3 - @char.cash_rolls)
-      benefit_rolls = @term
+      total_ranks = self.officer? ? self.rank + self.enlisted_rank : self.rank
+      benefit_rolls = @term + ((total_ranks + 1) / 2).clamp(0, 3)
 
       case @status
       when :active
@@ -274,6 +275,7 @@ module TravellerRPG
       end
 
       # Collect "muster out" benefits
+      @char.log "Cash rolls: #{cash_rolls}  Benefit rolls: #{benefit_rolls}"
       cash_rolls.times { @char.cash_roll self.muster_roll('Cash').first }
       benefit_rolls.times { @char.benefit self.muster_roll('Benefit').last }
       @char.benefit self.retirement_bonus
