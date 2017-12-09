@@ -1,0 +1,287 @@
+Agent:
+  qualification:
+    intelligence: 6
+  personal:
+    - Gun Combat
+    - dexterity
+    - endurance
+    - Melee
+    - intelligence
+    - Athletics
+  service:
+    - Streetwise
+    - Drive
+    - Investigate
+    - Flyer
+    - Recon
+    - Gun Combat
+  advanced:
+    - Advocate
+    - Language
+    - Explosives
+    - Medic
+    - Vacc Suit
+    - Electronics
+  specialist:
+    Law Enforcement:
+      survival:
+        endurance: 6
+      advancement:
+        intelligence: 6
+      skills:
+        - Investigate
+        - Recon
+        - Streetwise
+        - Stealth
+        - Melee
+        - Advocate
+      ranks:
+        0:
+          title: Rookie
+        1:
+          title: Corporal
+          skill: Streetwise
+          level: 1
+        2:
+          title: Sergeant
+        3:
+          title: Detective
+        4:
+          title: Lieutenant
+          skill: Investigate
+          level: 1
+        5:
+          title: Chief
+          skill: Admin
+          level: 1
+        6:
+          title: Commissioner
+          stat: social_status
+
+    Intelligence:
+      survival:
+        intelligence: 7
+      advancement:
+        intelligence: 5
+      skills:
+        - Investigate
+        - Recon
+        - Electronics:Comms
+        - Stealth
+        - Persuade
+        - Deception
+      ranks:
+        1:
+          title: Agent
+          skill: Deception
+          level: 1
+        2:
+          title: Field Agent
+          skill: Investigate
+          level: 1
+        4:
+          title: Special Agent
+          skill: Gun Combat
+          level: 1
+        5:
+          title: Director
+        6:
+          title: Spymaster
+
+    Corporate:
+      survival:
+        intelligence: 5
+      advancement:
+        intelligence: 7
+      skills:
+        - Investigate
+        - Electronics:Computers
+        - Stealth
+        - Carouse
+        - Deception
+        - Streetwise
+      ranks:
+        1:
+          title: Agent
+          skill: Deception
+          level: 1
+        2:
+          title: Field Agent
+          skill: Investigate
+          level: 1
+        4:
+          title: Special Agent
+          skill: Gun Combat
+          level: 1
+        5:
+          title: Director
+        6:
+          title: Spymaster
+
+  events:
+    2:
+      text: |
+        Disaster! Roll on the Mishap Table, but you are not ejected from
+        this career.
+      script:
+        - mishap
+    3:
+      text: |
+        An investigation takes on a dangerous turn.  Roll Investigate 8+ or
+        Streetwise 8+. If you fail, roll on the  Mishap Table.  If you
+        succeed, increase one skill of
+        Deception, Jack-of-all-Trades, Persuade, or Tactics.
+      script:
+        - check:
+            choose:
+              investigate: 8
+              streetwise: 8
+            success:
+              choose:
+                - Deception
+                - Jack Of All Trades
+                - Persuade
+                - Tactics
+            failure: mishap
+    4:
+      text: |
+        You complete a mission for your superiors, and are suitably rewarded.
+        Gain DM+1 to any one Benefit Roll from this career.
+      script:
+        - dm:
+            benefit: 1
+    5:
+      text: |
+        You establish a network of contacts.  Gain d3 Contacts.
+      script:
+        - roll: d3
+        - contacts
+    6:
+      text: |
+        You are given advanced training in a specialist field. Roll EDU 8+
+        to increase any existing skill by 1
+      script:
+        - check:
+            education: 8
+            success: bump_any_skill
+    7:
+      text: |
+        Life Event. Roll on the Live Events Table.
+      script:
+        - life_event
+
+    8:
+      text: |
+        You go undercover to investigate an enemy.  Roll Deception 8+
+        If you succeed, roll immediately on the Rogue or Citizen Events
+        Table and make one roll on any Specialist skill table for that
+        career. If you fail, roll immediately on the Rogue or Citizen
+        Mishap Table
+      script:
+        - check:
+            Deception: 8
+          success: rogue_or_citizen_events_specialist
+          failure: rogue_or_citizen_mishap
+    9:
+      text: |
+        You go above and beyond the call of duty.  Gain DM+2 to your
+        next Advancement check.
+      script:
+        - dm:
+            advancement: 2
+    10:
+      text: |
+        You are given spcialist training in vehicles.  Gain one of
+        Drive 1, Flyer 1, Pilot 1, or Gunner 1.
+      script:
+        - choose:
+            - Drive 1
+            - Flyer 1
+            - Pilot 1
+            - Gunner 1
+    11:
+      text: |
+        You are befriended by a senior agent. Either increase Investigate
+        by 1 or DM+4 to an Advancement roll thanks to their aid.
+      script:
+        - choose:
+            - bump: intelligence
+            - dm:
+                advancement: 4
+    12:
+      text: |
+        Your efforts uncover a major conspiracy against your employers.
+        You are automatically promoted.
+      script:
+        - advancement
+
+  mishaps:
+   1:
+     text: |
+       Severely injured in action.  Roll twice on the Injury table or take a
+       level 2 Injury.
+     script:
+       - choose:
+           - two_injuries
+           - injury_two
+   2:
+     text: |
+       A criminal offers you a deal.  Accept the deal to leave career.
+       Refuse, and you must roll twice on the Injury Table and take
+       the lower result.  Gain an Enemy and one level in any skill.
+     script:
+       - Enemy
+       - bump_any_skill
+   3:
+     text: |
+       An investigation goes critically wrong, ruining your career.
+       Roll Advocate 8+; Succeed == keep benefit this term.
+       Fail, lost benefit as normal.  A roll of 2 mandates Prisoner career
+       next term.
+     script:
+       - check:
+           Advocate: 8
+           success: benefit
+           fail: nothing
+           2: Prisoner
+   4:
+     text: |
+       You learn something you should not know, and people want to
+       kill you for it.  Gain an Enemy and Deception 1.
+     script:
+       - Enemy
+       - Deception 1
+   5:
+     text: |
+       Your work comes home with you, and someone gets hurt.  Choose a
+       Contact, Ally, or Family Member, and roll twice on the Injury Table
+       for them, taking the lower result.
+     script:
+       - choose:
+           - Contact
+           - Ally
+           - Family Member
+       - worst_of_two_injuries
+   6:
+     text: |
+       Injured. Roll on the Injury table.
+     script:
+       - injury
+
+  credits:
+    - 1000
+    - 2000
+    - 5000
+    - 7500
+    - 10_000
+    - 25_000
+    - 50_000
+
+  benefits:
+    - Scientific Equipment
+    - intelligence
+    - Ship Share
+    - Weapon
+    - Combat Implant
+    - [ social_status, Combat Implant ]
+    - TAS Membership

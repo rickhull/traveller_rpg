@@ -2,112 +2,6 @@ require 'traveller_rpg'
 require 'traveller_rpg/career'
 
 module TravellerRPG
-  class Agent < Career
-    QUALIFICATION   = [:intelligence, 6]
-    PERSONAL_SKILLS = ['Gun Combat', :dexterity, :endurance,
-                       'Melee', :intelligence, 'Athletics']
-    SERVICE_SKILLS  = ['Streetwise', 'Drive', 'Investigate',
-                       'Flyer', 'Recon', 'Gun Combat']
-    ADVANCED_SKILLS = ['Advocate', 'Language', 'Explosives',
-                       'Medic', 'Vacc Suit', 'Electronics']
-    RANKS = {
-      1 => ['Agent', 'Deception', 1],
-      2 => ['Field Agent', 'Investigate', 1],
-      4 => ['Special Agent', 'Gun Combat'],
-      5 => ['Assistant Director'],
-      6 => ['Director'],
-    }
-    SPECIALIST = {
-      'Law Enforcement' => {
-        skills:   ['Investigate', 'Recon', 'Streetwise',
-                   'Stealth', 'Melee', 'Advocate'],
-        survival: [:endurance, 6],
-        advancement: [:intelligence, 6],
-        ranks: {
-          0 => ['Rookie'],
-          1 => ['Corporal', 'Streetwise', 1],
-          2 => ['Sergeant'],
-          3 => ['Detective'],
-          4 => ['Lieutenant', 'Investigate', 1],
-          5 => ['Chief', 'Admin', 1],
-          6 => ['Commissioner', :social_status],
-        },
-      },
-      'Intelligence' => {
-        skills: ['Investigate', 'Recon', 'Electronics:Comms',
-                 'Stealth', 'Persuade', 'Deception'],
-        survival: [:intelligence, 7],
-        advancement: [:intelligence, 5],
-        ranks: RANKS,
-      },
-      'Corporate' => {
-        skills: ['Investigate', 'Electronics:Computers', 'Stealth',
-                 'Carouse', 'Deception', 'Streetwise'],
-        survival: [:intelligence, 5],
-        advancement: [:intelligence, 7],
-        ranks: RANKS,
-      },
-    }
-
-    MUSTER_OUT = {
-      1 => [1000, 'Scientific Equipment'],
-      2 => [2000, 'INT +1'],
-      3 => [5000, 'Ship Share'],
-      4 => [7500, 'Weapon'],
-      5 => [10000, 'Combat Implant'],
-      6 => [25000, ['SOC +1', 'Combat Implant']],
-      7 => [50000, 'TAS Membership'],
-    }
-
-    EVENTS = {
-      2 => 'Disaster! Roll on the Mishap Table, but you are not ejected ' +
-           'from this career.',
-      3 => 'An investigation takes on a dangerous turn.  Roll ' +
-           'Investigate 8+ or Streetwise 8+. If you fail, roll on the ' +
-           'Mishap Table.  If you suceed, increase one skill of ' +
-           'Deception, Jack-of-all-Trades, Persuade, or Tactics.',
-      4 => 'You complete a mission for your superiors, and are suitably ' +
-           'rewarded.  Gain DM+1 to any one Benefit Roll from this career.',
-      5 => 'You establish a network of contacts.  Gain d3 Contacts.',
-      6 => 'You are given advanced training in a specialist field. Roll ' +
-           'EDU 8+ to increase any existing skill by 1.',
-      7 => 'Life Event. Roll on the Live Events Table.',
-      8 => 'You go undercover to investigate an enemy.  Roll Deception 8+.' +
-           'If you succeed, roll immediately on the Rogue or Citizen Events ' +
-           'Table and make one roll on any Specialist skill table for that ' +
-           'career. If you fail, roll immediately on the Rogue or Citizen ' +
-           'Mishap Table',
-      9 => 'You go above and beyond the call of duty.  Gain DM+2 to your ' +
-           'next Advancement check',
-      10 => 'You are given spcialist training in vehicles.  Gain one of ' +
-            'Drive 1, Flyer 1, Pilot 1, or Gunner 1.',
-      11 => 'You are befriended by a senior agent. Either increase ' +
-            'Investigate by 1 or DM+4 to an Advancement roll thanks to ' +
-            'their aid.',
-      12 => 'Your efforts uncover a major conspiracy against your ' +
-            'employers. You are automatically promoted.',
-    }
-
-    MISHAPS = {
-      1 => 'Severely injured in action.  Roll twice on the Injury table ' +
-           'or take a level 2 Injury.',
-      2 => 'A criminal offers you a deal.  Accept the deal to leave career; ' +
-           'Refuse, and you must roll twice on the Injury Table and take ' +
-           'the lower result.  Gain an Enemy and one level in any skill.',
-      3 => 'An investigation goes critically wrong, ruining your career. ' +
-           'Roll Advocate 8+; Succeed == keep benefit this term; ' +
-           'Fail, lost benefit as normal.  A roll of 2 mandates ' +
-           'Prisoner career next term',
-      4 => 'You learn something you should not know, and people want to ' +
-           'kill you for it.  Gain an Enemy and Deception 1',
-      5 => 'Your work comes home with you, and someone gets hurt. ' +
-           'Choose a Contact, Ally, or Family Member, and roll twice on the ' +
-           'Injury Table for them, taking the lower result.',
-      6 => 'Injured. Roll on the Injury table.',
-    }
-
-  end
-
   # class Citizen < Career; end
 
   class Drifter < Career
@@ -468,4 +362,155 @@ module TravellerRPG
       7 => [50_000, 'SOC +2'],
     }
   end
+
+  module Careers
+    require 'yaml'
+
+    def self.load(file_name)
+      hsh = YAML.load_file(self.find(file_name))
+      raise "unexpected object: #{hsh.inspect}" unless hsh.is_a?(Hash)
+      hsh
+    end
+
+    def self.find(file_name)
+      path = File.join(__dir__, 'careers', file_name)
+      files = Dir["#{path}*"].grep /\.ya?ml\z/
+      case files.size
+      when 0
+        raise "can't find #{file_name}"
+      when 1
+        files[0]
+      else
+        # prefer .yaml to .yml -- otherwise give up
+        files.grep(/\.yaml\z/).first or
+          raise "#{file_name} matches #{files.inspect}"
+      end
+    end
+
+    def self.qualification(hsh)
+      q = hsh.fetch('qualification')
+      raise "unexpected: #{q}" unless q.is_a?(Hash) and q.size == 1
+      [q.keys.first, q.values.first]
+    end
+
+    def self.personal_skills(hsh)
+      p = hsh.fetch('personal')
+      raise "bad personal: #{p}" unless p.is_a?(Array) and p.size == 6
+      p
+    end
+
+    def self.service_skills(hsh)
+      svc = hsh.fetch('service')
+      raise "unexpected: #{svc}" unless svc.is_a?(Array) and svc.size ==  6
+      svc
+    end
+
+    def self.advanced_skills(hsh)
+      adv = hsh.fetch('advanced')
+      raise "unexpected: #{adv}" unless adv.is_a?(Array) and adv.size == 6
+      adv
+    end
+
+    def self.specialist(hsh)
+      res = {}
+      hsh.fetch('specialist').each { |asg, cfg|
+        res[asg] = assign = {}
+        srv = cfg.fetch('survival')
+        raise("bad survivall #{srv}") unless srv.is_a?(Hash) and srv.size == 1
+        assign[:survival] = [srv.keys.first, srv.values.first]
+
+        adv = cfg.fetch('advancement')
+        raise("bad adv: #{adv}") unless adv.is_a?(Hash) and adv.size == 1
+        assign[:advancement] = [srv.keys.first, srv.values.first]
+
+        skl = cfg.fetch('skills')
+        raise("bad skills: #{skl}") unless skl.is_a?(Array) and skl.size == 6
+        assign[:skills] = skl
+
+        rnk = cfg.fetch('ranks')
+        raise("bad ranks: #{rnk}") unless rnk.is_a?(Hash) and rnk.size < 8
+        assign[:ranks] =
+          [rnk['title'], rnk['skill'] || rnk['stat'], rnk['level']]
+      }
+      res
+    end
+
+    def self.events(hsh)
+      e = hsh.fetch('events')
+      raise "unexpected: #{e}" unless e.is_a?(Hash) and e.size == 11
+      e
+    end
+
+    # TODO: make mishaps an array, like other d6 tables
+    def self.mishaps(hsh)
+      m = hsh.fetch('mishaps')
+      raise "unexpected: #{m}" unless m.is_a?(Hash) and m.size == 6
+      m
+    end
+
+    def self.credits(hsh)
+      c = hsh.fetch('credits')
+      creds = {}
+      raise "unexpected: #{c}" unless c.is_a?(Array) and c.size == 7
+      c.each.with_index { |credits, idx|
+        raise "credits #{credits} is not an int" unless credits.is_a? Integer
+        creds[idx + 1] = credits
+      }
+      creds
+    end
+
+    def self.benefits(hsh)
+      b = hsh.fetch('benefits')
+      bens = {}
+      raise "unexpected: #{b}" unless b.is_a?(Array) and b.size == 7
+      b.each.with_index { |benefits, idx|
+        case benefits
+        when String
+          # ok
+        when Array
+          raise "unexpected: #{benefits}" unless benefits.all? { |b|
+            b.is_a?(String)
+          }
+        else
+          raise "unexpected: #{benefits.inspect}"
+        end
+        bens[idx + 1] = benefits
+      }
+      bens
+    end
+
+    def self.generate_classes(file_name)
+      scope = TravellerRPG
+      self.load(file_name).each { |name, cfg|
+        # inherit from Career
+        c = Class.new(TravellerRPG::Career)
+
+        # create class constants
+        c.const_set('QUALIFICATION', self.qualification(cfg))
+        c.const_set('PERSONAL_SKILLS', self.personal_skills(cfg))
+        c.const_set('SERVICE_SKILLS', self.service_skills(cfg))
+        c.const_set('ADVANCED_SKILLS', self.advanced_skills(cfg))
+        c.const_set('SPECIALIST', self.specialist(cfg))
+        c.const_set('EVENTS', self.events(cfg))
+        c.const_set('MISHAPS', self.mishaps(cfg))
+        c.const_set('CREDITS', self.credits(cfg))
+        c.const_set('BENEFITS', self.benefits(cfg))
+
+        # set class e.g. TravellerRPG::Agent
+        scope.const_set(name, c)
+      }
+    end
+  end
+end
+
+if __FILE__ == $0
+  require 'traveller_rpg/generator'
+
+  include TravellerRPG
+  char = Generator.character
+  TravellerRPG::Careers.generate_classes('base')
+  agent = TravellerRPG::Agent.new(char)
+  agent.activate('Intelligence')
+  agent.run_term
+  puts agent.report
 end
