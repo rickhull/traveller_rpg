@@ -109,16 +109,16 @@ module TravellerRPG
       if item.is_a?(Integer)
         if item != 0
           @credits += item
-          self.log "Acquired #{item} credits as a career benefit"
+          self.log "Career benefit: #{item} credits"
         end
       elsif item.is_a?(String)
         @stuff[item] ||= 0
         @stuff[item] += 1
-        self.log "Acquired #{item} as a career benefit"
+        self.log "Career benefit: #{item}"
       elsif item.is_a?(Array)
-        # TODO: should this be handled in Career#muster_out ?
-        item = TravellerRPG.choose("Choose benefit:", *item)
-        self.benefit(item)
+        self.benefit TravellerRPG.choose("Choose benefit:", *item)
+      else
+        raise "unexpected benefit: #{benefit.inspect}"
       end
     end
 
@@ -142,9 +142,9 @@ module TravellerRPG
       @cash_rolls += 1
       if @cash_rolls <= 3
         @credits += amount
-        self.log "Acquired #{amount} credits from cash roll ##{@cash_rolls}"
+        self.log "Cash roll ##{@cash_rolls}: #{amount} credits"
       else
-        self.log "Ignoring cash roll ##{@cash_rolls}"
+        self.log "Cash roll ##{@cash_rolls}: Ignored"
       end
       self
     end
