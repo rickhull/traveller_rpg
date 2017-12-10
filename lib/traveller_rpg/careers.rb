@@ -364,7 +364,20 @@ module TravellerRPG
   end
 
   module Careers
+    class Error < RuntimeError; end
+    class StatError < Error; end
+    class UnknownStat < StatError; end
+    class StatCheckError < StatError; end
+    class SkillError < Error; end
+    class UnknownSkill < SkillError; end
+    class RankError < Error; end
+    class EventError < Error; end
+    class MishapError < Error; end
+    class CreditError < Error; end
+    class BenefitError < Error; end
+
     require 'yaml'
+    require 'traveller_rpg/character'
 
     def self.load(file_name)
       hsh = YAML.load_file(self.find(file_name))
@@ -387,73 +400,104 @@ module TravellerRPG
       end
     end
 
-    def self.qualification(hsh)
-      q = hsh.fetch('qualification')
-      raise "unexpected: #{q}" unless q.is_a?(Hash) and q.size == 1
-      [q.keys.first, q.values.first]
+    def self.stat?(str)
+      Character::Stats.members.include? str.to_sym
     end
 
-    def self.personal_skills(hsh)
-      p = hsh.fetch('personal')
-      raise "bad personal: #{p}" unless p.is_a?(Array) and p.size == 6
-      p
+    def self.skill?(str)
+      !!TravellerRPG::SkillSet.split_skill!(str) rescue false
     end
 
-    def self.service_skills(hsh)
-      svc = hsh.fetch('service')
-      raise "unexpected: #{svc}" unless svc.is_a?(Array) and svc.size ==  6
-      svc
+    def self.known(str)
+      return :stat if self.stat?(str)
+      return :skill if self.skill?(str)
+      :unknown
     end
 
-    def self.advanced_skills(hsh)
-      adv = hsh.fetch('advanced')
-      raise "unexpected: #{adv}" unless adv.is_a?(Array) and adv.size == 6
-      adv
+    def self.stat_check?(hsh)
+      hsh.is_a?(Hash) and
+        hsh.size == 1 and
+        self.stat?(hsh.keys.first) and
+        (0..15).include? hsh.values.first
+    end
+
+    def self.fetch_stat_check!(hsh, key)
+      val = hsh.fetch(key)
+      raise(StatCheckError, val.inspect) unless self.stat_check?(val)
+      val.to_a.first
+    end
+
+    def self.fetch_skills!(hsh, key, stats_allowed: true)
+      val = hsh.fetch(key)
+      raise(SkillError, val.inspect) unless val.is_a?(Array) and val.size == 6
+      val.flatten.each { |v|
+        if stats_allowed
+          raise(SkillError, "unknown: #{v}") if self.known(v) == :unknown
+        else
+          raise(UnknownSkill, v) unless self.skill?(v)
+        end
+      }
+      val
     end
 
     def self.specialist(hsh)
-      res = {}
+      result = {}
       hsh.fetch('specialist').each { |asg, cfg|
-        res[asg] = assign = {}
-        srv = cfg.fetch('survival')
-        raise("bad survivall #{srv}") unless srv.is_a?(Hash) and srv.size == 1
-        assign[:survival] = [srv.keys.first, srv.values.first]
+        result[asg] = {}
+        result[asg][:survival] = self.fetch_stat_check!(cfg, 'survival')
+        result[asg][:advancement] = self.fetch_stat_check!(cfg, 'advancement')
+        result[asg][:skills] = self.fetch_skills!(cfg, 'skills')
 
-        adv = cfg.fetch('advancement')
-        raise("bad adv: #{adv}") unless adv.is_a?(Hash) and adv.size == 1
-        assign[:advancement] = [srv.keys.first, srv.values.first]
-
-        skl = cfg.fetch('skills')
-        raise("bad skills: #{skl}") unless skl.is_a?(Array) and skl.size == 6
-        assign[:skills] = skl
-
-        rnk = cfg.fetch('ranks')
-        raise("bad ranks: #{rnk}") unless rnk.is_a?(Hash) and rnk.size < 8
-        assign[:ranks] =
-          [rnk['title'], rnk['skill'] || rnk['stat'], rnk['level']]
+        r = cfg.fetch('ranks')
+        raise(RankError, r.inspect) unless r.is_a? Hash and r.size <= 7
+        r.each { |rank, h|
+          raise(RankError, h.inspect) unless h.is_a? Hash and h.size <= 4
+          raise(RankError, h.inspect) if (h.keys & %w{title skill stat}).empty?
+          if h.key? 'skill' and !self.skill? h['skill']
+            raise(UnknownSkill, h['skill'])
+          end
+          if h.key? 'stat' and !self.stat? h['stat']
+            raise(UnknownStat, h['stat'])
+          end
+          if h.key? 'level' and !(h.key? 'skill' or h.key? 'stat')
+            raise(RankError, "level without a skill/stat")
+          end
+        }
+        result[asg][:ranks] = r
       }
-      res
+      result
     end
 
     def self.events(hsh)
       e = hsh.fetch('events')
-      raise "unexpected: #{e}" unless e.is_a?(Hash) and e.size == 11
+      raise(EventError, e.inspect) unless e.is_a?(Hash) and e.size == 11
+      e.values.each { |hsh|
+        raise(EventError, hsh.inspect) unless hsh.is_a?(Hash)
+        text = hsh.fetch('text')
+        raise(EventError, "text is empty") if text.empty?
+        # TODO: validate hsh.fetch('script')
+      }
       e
     end
 
-    # TODO: make mishaps an array, like other d6 tables
     def self.mishaps(hsh)
       m = hsh.fetch('mishaps')
-      raise "unexpected: #{m}" unless m.is_a?(Hash) and m.size == 6
+      raise(MishapError, m.inspect) unless m.is_a?(Hash) and m.size == 6
+      m.values.each { |hsh|
+        raise(MishapError, hsh.inspect) unless hsh.is_a?(Hash)
+        text = hsh.fetch('text')
+        raise(MishapError, "text is empty") if text.empty?
+        # TODO: validate hsh.fetch('script')
+      }
       m
     end
 
     def self.credits(hsh)
       c = hsh.fetch('credits')
+      raise(CreditError, c.inspect) unless c.is_a?(Array) and c.size == 7
       creds = {}
-      raise "unexpected: #{c}" unless c.is_a?(Array) and c.size == 7
       c.each.with_index { |credits, idx|
-        raise "credits #{credits} is not an int" unless credits.is_a? Integer
+        raise(CreditError, credits) unless credits.is_a? Integer
         creds[idx + 1] = credits
       }
       creds
@@ -461,21 +505,12 @@ module TravellerRPG
 
     def self.benefits(hsh)
       b = hsh.fetch('benefits')
-      bens = {}
       raise "unexpected: #{b}" unless b.is_a?(Array) and b.size == 7
-      b.each.with_index { |benefits, idx|
-        case benefits
-        when String
-          # ok
-        when Array
-          raise "unexpected: #{benefits}" unless benefits.all? { |b|
-            b.is_a?(String)
-          }
-        else
-          raise "unexpected: #{benefits.inspect}"
-        end
-        bens[idx + 1] = benefits
+      b.flatten.each { |ben|
+        raise(BenefitError, ben.inspect) if !ben.is_a?(String) or ben.empty?
       }
+      bens = {}
+      b.each.with_index { |benefits, idx| bens[idx + 1] = benefits }
       bens
     end
 
@@ -486,10 +521,11 @@ module TravellerRPG
         c = Class.new(TravellerRPG::Career)
 
         # create class constants
-        c.const_set('QUALIFICATION', self.qualification(cfg))
-        c.const_set('PERSONAL_SKILLS', self.personal_skills(cfg))
-        c.const_set('SERVICE_SKILLS', self.service_skills(cfg))
-        c.const_set('ADVANCED_SKILLS', self.advanced_skills(cfg))
+        c.const_set('QUALIFICATION',
+                    self.fetch_stat_check!(cfg, 'qualification'))
+        c.const_set('PERSONAL_SKILLS', self.fetch_skills!(cfg, 'personal'))
+        c.const_set('SERVICE_SKILLS', self.fetch_skills!(cfg, 'service'))
+        c.const_set('ADVANCED_SKILLS', self.fetch_skills!(cfg, 'advanced'))
         c.const_set('SPECIALIST', self.specialist(cfg))
         c.const_set('EVENTS', self.events(cfg))
         c.const_set('MISHAPS', self.mishaps(cfg))
@@ -505,12 +541,13 @@ end
 
 if __FILE__ == $0
   require 'traveller_rpg/generator'
+  require 'traveller_rpg/career_path'
 
   include TravellerRPG
+  Careers.generate_classes('base')
   char = Generator.character
-  TravellerRPG::Careers.generate_classes('base')
-  agent = TravellerRPG::Agent.new(char)
-  agent.activate('Intelligence')
-  agent.run_term
-  puts agent.report
+  path = CareerPath.new(char)
+  path.run('Agent')
+  # agent = TravellerRPG::Agent.new(char)
+  # agent.activate('Intelligence')
 end
