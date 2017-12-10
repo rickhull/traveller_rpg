@@ -11,6 +11,17 @@ module TravellerRPG
     TERM_YEARS = 4
     ADVANCED_EDUCATION = 8
 
+    EVENTS = Array.new(11) { |i|
+      "Event #{i+2}"
+    }.each.with_index.reduce({}) { |memo, (s,idx)|
+      memo.merge(idx + 2 => { 'text' => s })
+    }
+    MISHAPS = Array.new(6) { |i|
+      "Mishap #{i+1}"
+    }.each.with_index.reduce({}) { |memo, (s,idx)|
+      memo.merge(idx + 1 => { 'text' => s })
+    }
+
     #
     # Needed to function
 
