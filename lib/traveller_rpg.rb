@@ -12,7 +12,7 @@ module TravellerRPG
   def self.roll(spec = 'd6', label: nil, dm: 0)
     matches = spec.match(ROLL_RGX) or raise("bad roll spec: #{spec}")
     roll = self.roll_int(dice: matches[1].empty? ? 1 : matches[1].to_i,
-                         faces: matches[2].to_i, label: label)
+                         faces: matches[2].to_i)
     puts "#{label} roll (#{spec}): #{roll} (DM #{dm})" if label
     roll + dm
   end
