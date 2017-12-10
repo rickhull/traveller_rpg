@@ -157,15 +157,15 @@ module TravellerRPG
     end
 
     def event_roll
-      roll = TravellerRPG.roll('2d6', label: 'Event')
-      @char.log "Event: #{self.class::EVENTS.fetch(roll)}"
-      # TODO: actually perform the event stuff
+      ev = self.class::EVENTS.fetch TravellerRPG.roll('2d6', label: 'Event')
+      @char.log "Event: #{ev.fetch('text')}"
+      # TODO: actually perform the event stuff in ev['script']
     end
 
     def mishap_roll
-      roll = TravellerRPG.roll('d6', label: 'Mishap')
-      @char.log "Mishap: #{self.class::MISHAPS.fetch(roll)}"
-      # TODO: actually perform the mishap stuff
+      mh = self.class::MISHAPS.fetch TravellerRPG.roll('d6', label: 'Mishap')
+      @char.log "Mishap: #{mh.fetch('text')}"
+      # TODO: actually perform the mishap stuff in mh['script']
     end
 
     def advance_rank
@@ -180,8 +180,10 @@ module TravellerRPG
     end
 
     def take_rank_benefit
+      rb = self.rank_benefit or return self
       label = self.officer? ? "officer rank" : "rank"
-      title, skill, level = self.rank_benefit
+      title, skill, stat, level =
+                          rb.values_at('title', 'skill', 'stat', 'level')
       if title
         @char.log "Awarded #{label} title: #{title}"
         @title = title
@@ -191,11 +193,14 @@ module TravellerRPG
           skill = TravellerRPG.choose("Choose rank bonus:", *skill)
         end
         @char.log "Achieved #{label} bonus: #{skill} #{level}"
-        if skill.is_a? Symbol
-          @char.stats.bump(skill, level)
-        else
-          @char.skills.bump(skill, level)
+        @char.skills.bump(skill, level)
+      end
+      if stat
+        if stat.is_a?(Array)
+          stat = TravellerRPG.choose("Choose rank bonus:", *stat)
         end
+        @char.log "Achieved #{label} bonus: #{stat} #{level}"
+        @char.stats.bump(stat, level)
       end
       self
     end
@@ -229,12 +234,13 @@ module TravellerRPG
       @term >= 5 ? @term * 2000 : 0
     end
 
+    # returns the roll value with DM applied
     def muster_roll
       dm = @char.skills.check?('Gambler', 1) ? 1 : 0
       TravellerRPG.roll('d6', label: 'Muster', dm: dm)
     end
 
-    def muster_out(dm: 0)
+    def muster_out
       @char.log "Muster out: #{self.name}"
       raise(Error, "career has not started") unless @term > 0
       cash_rolls = @term.clamp(0, 3 - @char.cash_rolls)
