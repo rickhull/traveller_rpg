@@ -32,6 +32,7 @@ module TravellerRPG
       else
         self.level += 1
       end
+      self
     end
 
     def check?(level)
