@@ -146,13 +146,13 @@ module TravellerRPG
         when :officer  then self.class::OFFICER_SKILLS.fetch(roll - 1)
         end
       skill = TravellerRPG.choose("Choose:", *skill) if skill.is_a?(Array)
-      if skill.is_a? Symbol
-        @char.stats.bump(skill)
-        @char.log "Trained characteristic #{skill} +1"
-      else
+      # the "skill" could be a stat e.g. endurance
+      if @char.skills.known?(skill)
         @char.skills.bump(skill)
-        @char.log "Trained #{skill} +1"
+      else
+        @char.stats.bump(skill)
       end
+      @char.log "Trained #{skill} +1"
       self
     end
 
@@ -274,7 +274,7 @@ module TravellerRPG
     def report(term: true, status: true, rank: true, spec: true)
       hsh = {}
       hsh['Term'] = @term if term
-      hsh['Status'] = @status if status
+      hsh['Status'] = @status.to_s.capitalize if status
       hsh['Specialty'] = @assignment if spec
       hsh['Title'] = @title if @title
       if rank
@@ -287,8 +287,7 @@ module TravellerRPG
       end
       report = ["Career: #{self.name}", "==="]
       hsh.each { |label, val|
-        val = val.to_s.capitalize if val.is_a? Symbol
-        report << format("%s: %s", label.to_s.rjust(15, ' '), val.to_s)
+        report << format("%s: %s", label.to_s.rjust(15, ' '), val)
       }
       report.join("\n")
     end

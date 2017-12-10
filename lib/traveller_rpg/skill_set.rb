@@ -83,6 +83,10 @@ module TravellerRPG
       rest ? @skills[first][rest] : @skills[first]
     end
 
+    def known?(name)
+      !!self.class.split_skill!(name) rescue false
+    end
+
     # LONGEST:
     # Jack Of All Trades (18) = 18
     # Heavy Weapons:Man Portable (13:12) = 26
