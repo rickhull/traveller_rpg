@@ -91,6 +91,7 @@ module TravellerRPG
     end
 
     def qualify_check?(dm: 0)
+      return true if self.class::QUALIFICATION == false
       stat, check = self.class::QUALIFICATION
       @char.log "#{self.name} qualification: #{stat} #{check}+"
       dm += @char.stats_dm(stat)
@@ -120,6 +121,7 @@ module TravellerRPG
     end
 
     def advanced_education?
+      return false if self.class::ADVANCED_SKILLS == false
       @char.stats[:education] >= self.class::ADVANCED_EDUCATION
     end
 

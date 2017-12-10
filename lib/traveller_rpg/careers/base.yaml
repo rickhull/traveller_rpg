@@ -120,13 +120,13 @@ Agent:
 
   events:
     2:
-      text: |
+      text: >-
         Disaster! Roll on the Mishap Table, but you are not ejected from
         this career.
       script:
         - mishap
     3:
-      text: |
+      text: >-
         An investigation takes on a dangerous turn.  Roll Investigate 8+ or
         Streetwise 8+. If you fail, roll on the  Mishap Table.  If you
         succeed, increase one skill of
@@ -144,20 +144,20 @@ Agent:
                 - Tactics
             failure: mishap
     4:
-      text: |
+      text: >-
         You complete a mission for your superiors, and are suitably rewarded.
         Gain DM+1 to any one Benefit Roll from this career.
       script:
         - dm:
             benefit: 1
     5:
-      text: |
+      text: >-
         You establish a network of contacts.  Gain d3 Contacts.
       script:
         - roll: d3
         - contacts
     6:
-      text: |
+      text: >-
         You are given advanced training in a specialist field. Roll EDU 8+
         to increase any existing skill by 1
       script:
@@ -165,13 +165,13 @@ Agent:
             education: 8
             success: bump_any_skill
     7:
-      text: |
+      text: >-
         Life Event. Roll on the Live Events Table.
       script:
         - life_event
 
     8:
-      text: |
+      text: >-
         You go undercover to investigate an enemy.  Roll Deception 8+
         If you succeed, roll immediately on the Rogue or Citizen Events
         Table and make one roll on any Specialist skill table for that
@@ -183,14 +183,14 @@ Agent:
           success: rogue_or_citizen_events_specialist
           failure: rogue_or_citizen_mishap
     9:
-      text: |
+      text: >-
         You go above and beyond the call of duty.  Gain DM+2 to your
         next Advancement check.
       script:
         - dm:
             advancement: 2
     10:
-      text: |
+      text: >-
         You are given spcialist training in vehicles.  Gain one of
         Drive 1, Flyer 1, Pilot 1, or Gunner 1.
       script:
@@ -200,7 +200,7 @@ Agent:
             - Pilot 1
             - Gunner 1
     11:
-      text: |
+      text: >-
         You are befriended by a senior agent. Either increase Investigate
         by 1 or DM+4 to an Advancement roll thanks to their aid.
       script:
@@ -209,7 +209,7 @@ Agent:
             - dm:
                 advancement: 4
     12:
-      text: |
+      text: >-
         Your efforts uncover a major conspiracy against your employers.
         You are automatically promoted.
       script:
@@ -217,7 +217,7 @@ Agent:
 
   mishaps:
    1:
-     text: |
+     text: >-
        Severely injured in action.  Roll twice on the Injury table or take a
        level 2 Injury.
      script:
@@ -225,7 +225,7 @@ Agent:
            - two_injuries
            - injury_two
    2:
-     text: |
+     text: >-
        A criminal offers you a deal.  Accept the deal to leave career.
        Refuse, and you must roll twice on the Injury Table and take
        the lower result.  Gain an Enemy and one level in any skill.
@@ -233,7 +233,7 @@ Agent:
        - Enemy
        - bump_any_skill
    3:
-     text: |
+     text: >-
        An investigation goes critically wrong, ruining your career.
        Roll Advocate 8+; Succeed == keep benefit this term.
        Fail, lost benefit as normal.  A roll of 2 mandates Prisoner career
@@ -245,14 +245,14 @@ Agent:
            fail: nothing
            2: Prisoner
    4:
-     text: |
+     text: >-
        You learn something you should not know, and people want to
        kill you for it.  Gain an Enemy and Deception 1.
      script:
        - Enemy
        - Deception 1
    5:
-     text: |
+     text: >-
        Your work comes home with you, and someone gets hurt.  Choose a
        Contact, Ally, or Family Member, and roll twice on the Injury Table
        for them, taking the lower result.
@@ -263,7 +263,7 @@ Agent:
            - Family Member
        - worst_of_two_injuries
    6:
-     text: |
+     text: >-
        Injured. Roll on the Injury table.
      script:
        - injury
@@ -285,3 +285,177 @@ Agent:
     - Combat Implant
     - [ social_status, Combat Implant ]
     - TAS Membership
+
+Drifter:
+  qualification: false
+  personal:
+    - strength
+    - endurance
+    - dexterity
+    - Language
+    - Profession
+    - Jack Of All Trades
+  service:
+    - Athletics
+    - Melee:Unarmed
+    - Recon
+    - Streetwise
+    - Stealth
+    - Survival
+  advanced: false
+  specialist:
+    Barbarian:
+      survival:
+        endurance: 7
+      advancement:
+        strength: 7
+      skills:
+        - Animals
+        - Carouse
+        - Melee:Blade
+        - Stealth
+        - [ 'Seafarer:Personal', 'Seafarer:Sail' ]
+        - Survival
+      ranks:
+        1:
+          skill: Survival
+          level: 1
+        2:
+          title: Warrior
+          skill: Melee:Blade
+          level: 1
+        4:
+          title: Chieftain
+          skill: Leadership
+          level: 1
+        6:
+          title: Warlord
+
+    Wanderer:
+      survival:
+        endurance: 7
+      advancement:
+        intelligence: 7
+      skills:
+        - Drive
+        - Deception
+        - Recon
+        - Stealth
+        - Streetwise
+        - Survival
+      ranks:
+        1:
+          skill: Streetwise
+          level: 1
+        3:
+          skill: Deception
+          level: 1
+
+    Scavenger:
+      survival:
+        dexterity: 7
+      advancement:
+        endurance: 7
+      skills:
+        - Pilot:Small Craft
+        - Mechanic
+        - Astrogation
+        - Vacc Suit
+        - Profession
+        - Gun Combat
+      ranks:
+        1:
+          skill: Vacc Suit
+          level: 1
+        3:
+          skill: [ 'Profession:Belter', Mechanic]
+          level: 1
+
+  events:
+    2:
+      text: >-
+        Disaster! Roll on the Mishap Table, but you are not ejected from this
+        career.
+      script: false
+    3:
+      text: >-
+        A patron offers you a chance at a job.  If you accept, you gain DM +4
+        to your next Qualificatio nroll, but you owe that patron a favour.
+    4:
+      text: >-
+        You pick up a few useful skills here and there.  Gain one level of
+        Jack Of All Trades, Survival, Streetwise, or Melee.
+    5:
+      text: >-
+        You manage to scavenge something of use.  Gain DM +1 to any one
+        Benefit roll.
+    6:
+      text: >-
+        You encounter something unusual.  Go to the Life Events Table and have
+        an Unusual Event.
+    7:
+      text: >-
+        Life Event.  Roll on the Life Events Table.
+    8:
+      text: >-
+        You are attacekd by enemies.  Gain an Enemy if you do not have one
+        already, and roll either Melee 8+, Gun Combat 8+ or Stealth 8+ to
+        avoid a roll on the Injury Table
+    9:
+      text: >-
+        You are offered a chance to take part in a risky but rewarding
+        adventure. TODO
+    10:
+      text: >-
+        Life on the edge hones your abilities.  Increase any skill you
+        already have by one level.
+    11:
+      text: >-
+        You are forcibly drafted.  Roll for the Draft next term.
+    12:
+      text: >-
+        You thrive on adversity.  You are automatically promoted.
+  mishaps:
+    1:
+      text: >-
+        Severely injured (this is the same as a result of 2 on the Injury
+        Table).  Alternatively, roll twice on the Injury Table and take
+        the lower result.
+    2:
+      text: >-
+        Injured.  Roll on the Injury Table.
+    3:
+      text: >-
+        You run afoul of a criminal gang, corrupt bureaucrat or other foe.
+        Gain an Enemy.
+    4:
+      text: >-
+        You suffer from a life-threatening illness.  Reduce END by 1.
+    5:
+      text: >-
+        Betrayed by a friend. One of your Contacts or Allies betrays you,
+        ending yoru career.  That Contact or Ally becomes a Rival or Enemy.
+        If you have no Contacts or Allies, then you are betrayed by someone
+        you never saw coming still gain a Rival or Enemy.  In addition,
+        roll 2D6.  If you roll 2, you must take the Prisoner career.
+    6:
+      text: >-
+        You do not know what happened to you.  There is a gap in your memory.
+
+  credits:
+    - 0
+    - 0
+    - 1000
+    - 2000
+    - 3000
+    - 4000
+    - 8000
+
+  benefits:
+    - Contact
+    - Weapon
+    - Ally
+    - Weapon
+    - EDU +1
+    - Ship Share
+    - Two Ship Shares

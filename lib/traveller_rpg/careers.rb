@@ -4,64 +4,6 @@ require 'traveller_rpg/career'
 module TravellerRPG
   # class Citizen < Career; end
 
-  class Drifter < Career
-    # QUALIFICATION = [:intelligence, 0]
-    ADVANCED_EDUCATION = 99
-    PERSONAL_SKILLS = [:strength, :endurance, :dexterity,
-                       'Language', 'Profession', 'Jack Of All Trades']
-    SERVICE_SKILLS = ['Athletics', 'Melee:Unarmed', 'Recon',
-                      'Streetwise', 'Stealth', 'Survival']
-    ADVANCED_SKILLS = []
-    SPECIALIST = {
-      'Barbarian' => {
-        skills: ['Animals', 'Carouse', 'Melee:Blade', 'Stealth',
-                 ['Seafarer:Personal', 'Seafarer:Sail'], 'Survival'],
-        survival: [:endurance, 7],
-        advancement: [:strength, 7],
-        ranks: {
-          1 => [nil, 'Survival', 1],
-          2 => ['Warrior', 'Melee:Blade', 1],
-          4 => ['Chieftain', 'Leadership', 1],
-          6 => ['Warlord', nil, nil],
-        },
-      },
-      'Wanderer' => {
-        skills: ['Drive', 'Deception', 'Recon',
-                 'Stealth', 'Streetwise', 'Survival'],
-        survival: [:endurance, 7],
-        advancement: [:intelligence, 7],
-        ranks: {
-          1 => [nil, 'Streetwise', 1],
-          3 => [nil, 'Deception', 1],
-        },
-      },
-      'Scavenger' => {
-        skills: ['Pilot:Small Craft', 'Mechanic', 'Astrogation',
-                 'Vacc Suit', 'Engineer', 'Gun Combat'],
-        survival: [:dexterity, 7],
-        advancement: [:endurance, 7],
-        ranks: {
-          1 => [nil, 'Vacc Suit', 1],
-          3 => [nil, ['Profession:Belter', 'Mechanic'], 1],
-        },
-      },
-    }
-
-    MUSTER_OUT = {
-      1 => [0, 'Contact'],
-      2 => [0, 'Weapon'],
-      3 => [1000, 'Ally'],
-      4 => [2000, 'Weapon'],
-      5 => [3000, 'EDU +1'],
-      6 => [4000, 'Ship Share'],
-      7 => [8000, 'Ship Share x2'],
-    }
-
-    def qualify_check?(dm: 0)
-      true
-    end
-  end
-
   # class Entertainer < Career; end
   # class Merchant < Career; end
   # class Rogue < Career; end
@@ -423,12 +365,14 @@ module TravellerRPG
 
     def self.fetch_stat_check!(hsh, key)
       val = hsh.fetch(key)
+      return false if val == false # Drifter['qualification']
       raise(StatCheckError, val.inspect) unless self.stat_check?(val)
       val.to_a.first
     end
 
     def self.fetch_skills!(hsh, key, stats_allowed: true)
       val = hsh.fetch(key)
+      return false if val == false # Drifter['advanced']
       raise(SkillError, val.inspect) unless val.is_a?(Array) and val.size == 6
       val.flatten.each { |v|
         if stats_allowed
@@ -454,10 +398,22 @@ module TravellerRPG
           raise(RankError, h.inspect) unless h.is_a? Hash and h.size <= 4
           raise(RankError, h.inspect) if (h.keys & %w{title skill stat}).empty?
           if h.key? 'skill' and !self.skill? h['skill']
-            raise(UnknownSkill, h['skill'])
+            if h['skill'].is_a? Array
+              h['skill'].each { |skill|
+                raise(UnknownSkill, skill) unless self.skill? skill
+              }
+            else
+              raise(UnknownSkill, h['skill'])
+            end
           end
           if h.key? 'stat' and !self.stat? h['stat']
-            raise(UnknownStat, h['stat'])
+            if h['stat'].is_a? Array
+              h['stat'].each { |stat|
+                raise(UnknownStat, stat) unless self.stat? stat
+              }
+            else
+              raise(UnknownStat, h['stat'])
+            end
           end
           if h.key? 'level' and !(h.key? 'skill' or h.key? 'stat')
             raise(RankError, "level without a skill/stat")
@@ -548,6 +504,7 @@ if __FILE__ == $0
   char = Generator.character
   path = CareerPath.new(char)
   path.run('Agent')
+  puts path.report
   # agent = TravellerRPG::Agent.new(char)
   # agent.activate('Intelligence')
 end
