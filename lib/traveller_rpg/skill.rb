@@ -42,7 +42,7 @@ module TravellerRPG
       @level.to_s
     end
 
-    private
+    protected
 
     def level=(val)
       @level = val.clamp(0, MAX)

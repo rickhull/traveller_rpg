@@ -84,7 +84,7 @@ module TravellerRPG
       @log = log
       @credits = credits
       @cash_rolls = cash_rolls # max 3 lifetime
-      birth(homeworld) if homeworld
+      self.birth(homeworld) if homeworld
     end
 
     def stats_dm(stat_sym)
@@ -183,7 +183,7 @@ module TravellerRPG
       report.join("\n")
     end
 
-    private
+    protected
 
     # gain background skills based on homeworld
     def birth(homeworld)

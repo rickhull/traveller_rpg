@@ -78,11 +78,11 @@ module TravellerRPG
       raise(Ineligible, career.name) unless self.eligible?(career)
       if career.qualify_check?(dm: -1 * @careers.size)
         @char.log "Qualified for #{career.name}"
-        enter career, asg
+        self.enter career, asg
       else
         @char.log "Did not qualify for #{career.name}"
         case TravellerRPG.choose("Choose fallback:", 'Drifter', 'Draft')
-        when 'Drifter' then enter 'Drifter'
+        when 'Drifter' then self.enter 'Drifter'
         when 'Draft'   then self.draft
         end
       end
@@ -94,7 +94,7 @@ module TravellerRPG
       roll = TravellerRPG.roll('d6', label: "Draft")
       career, asg = self.class::DRAFT_CAREERS.fetch(roll)
       @char.log "Drafted: #{[career, asg].compact.join(', ')}"
-      enter(career, asg)
+      self.enter(career, asg)
     end
 
     def basic_training(career)
@@ -113,7 +113,7 @@ module TravellerRPG
       [@char.report, @careers.map(&:report).join("\n\n")].join("\n\n")
     end
 
-    private
+    protected
 
     # ensure Career object; log; activate; basic_training; return Career
     def enter(career, asg = nil)
