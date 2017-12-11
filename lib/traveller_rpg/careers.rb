@@ -220,7 +220,7 @@ module TravellerRPG
 
     def self.find(file_name)
       path = File.join(__dir__, 'careers', file_name)
-      files = Dir["#{path}*"].grep /\.ya?ml\z/
+      files = Dir["#{path}*"].grep %r{\.ya?ml\z}
       case files.size
       when 0
         raise "can't find #{file_name}"
@@ -325,11 +325,11 @@ module TravellerRPG
     def self.events(hsh)
       e = hsh.fetch('events')
       raise(EventError, e.inspect) unless e.is_a?(Hash) and e.size == 11
-      e.values.each { |hsh|
-        raise(EventError, hsh.inspect) unless hsh.is_a?(Hash)
-        text = hsh.fetch('text')
+      e.values.each { |h|
+        raise(EventError, h.inspect) unless h.is_a?(Hash)
+        text = h.fetch('text')
         raise(EventError, "text is empty") if text.empty?
-        # TODO: validate hsh.fetch('script')
+        # TODO: validate h.fetch('script')
       }
       e
     end
@@ -337,11 +337,11 @@ module TravellerRPG
     def self.mishaps(hsh)
       m = hsh.fetch('mishaps')
       raise(MishapError, m.inspect) unless m.is_a?(Hash) and m.size == 6
-      m.values.each { |hsh|
-        raise(MishapError, hsh.inspect) unless hsh.is_a?(Hash)
-        text = hsh.fetch('text')
+      m.values.each { |h|
+        raise(MishapError, h.inspect) unless h.is_a?(Hash)
+        text = h.fetch('text')
         raise(MishapError, "text is empty") if text.empty?
-        # TODO: validate hsh.fetch('script')
+        # TODO: validate h.fetch('script')
       }
       m
     end
