@@ -154,18 +154,18 @@ describe CareerPath do
 
       it "rejects inactive careers" do
         proc {
-          @path.basic_training(@career)
+          @path.basic_training(@career)      # @career.status == :new
         }.must_raise CareerPath::Ineligible
       end
 
       it "provides up to 6 service skills for the first career" do
         capture_io { @path.basic_training(@career.activate) }
-        ss = @career.class::SERVICE_SKILLS.flatten
+        ss = @career.service_skills(choose: false)
         if ss.size == 6
           # all present
           ss.each { |s| @char.skills[s].wont_be_nil }
         elsif ss.size > 6
-          ss.size.must_be :<=, 9
+          ss.size.must_be :<=, 9  # sanity check
           # at least 6 of these are known
           ss.select { |s| @char.skills[s] }.size.must_be :>=, 6
         else
