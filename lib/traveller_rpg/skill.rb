@@ -66,10 +66,9 @@ module TravellerRPG
     end
 
     def bump(level = nil)
-      raise(ArgumentError, "level must be nil, not #{level}") unless level.nil?
       name =
         TravellerRPG.choose("Choose #{@skill.name} specialty:", *@skills.keys)
-      @skills[name].bump
+      @skills[name].bump level
     end
 
     def fetch(name)
