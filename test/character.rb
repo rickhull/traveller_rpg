@@ -119,44 +119,30 @@ describe Character do
     end
 
     describe "Character#basic_training" do
-      it "takes a skill name and returns a Skill trained to 0" do
-        skill = nil
-        simple_skill = 'Admin'
-        capture_io { skill = @char.basic_training(simple_skill) }
-        skill.must_be_kind_of Skill
-        skill.level.must_equal 0
-        skill.name.must_equal simple_skill
+      it "accepts a String and returns self" do
+        ['Admin', 'Art'].each { |skill|
+          capture_io { @char.basic_training(skill).must_equal @char }
+        }
       end
 
-      it "take an array of skill names and chooses one" do
-        skill = nil
-        simple_skills = %w{Advocate Broker}
-        capture_io { skill = @char.basic_training(simple_skills) }
-        skill.must_be_kind_of Skill
-        skill.level.must_equal 0
-        simple_skills.must_include skill.name
+      it "trains an untrained skill to 0" do
+        ['Admin', 'Art'].each { |skill|
+          @char.skills.level(skill).must_be_nil
+          capture_io { @char.basic_training(skill) }
+          @char.skills.level(skill).must_equal 0
+        }
       end
 
-      it "works with ComplexSkills too" do
-        capture_io { @char.basic_training('Art').must_be_kind_of ComplexSkill }
-      end
+      it "does nothing for a trained skill" do
+        ['Admin', 'Art'].each { |skill|
+          @char.skills.level(skill).must_be_nil
+          capture_io { @char.basic_training(skill) }
+          @char.skills.level(skill).must_equal 0
 
-      it "won't choose a trained skill" do
-        trained, untrained = 'Admin', 'Broker'
-        capture_io { @char.basic_training trained } # train Admin
-        skill = nil
-        capture_io { skill = @char.basic_training [trained, untrained] }
-        skill.must_be_kind_of Skill
-        skill.level.must_equal 0
-        skill.name.must_equal untrained
-      end
-
-      it "returns nil if nothing was trained" do
-        trained, untrained = 'Admin', 'Broker'
-        capture_io { @char.basic_training trained } # train Admin
-        @char.basic_training(trained).must_be_nil
-        capture_io { @char.basic_training(untrained).must_be_kind_of Skill }
-        @char.basic_training([trained, untrained]).must_be_nil
+          # 2nd time
+          capture_io { @char.basic_training(skill) }
+          @char.skills.level(skill).must_equal 0
+        }
       end
     end
 

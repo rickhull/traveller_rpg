@@ -94,7 +94,7 @@ module TravellerRPG
     # accepts an array of strings or a single string
     # choose from the array; provide a single skill
     # return nil if no skill was trained
-    def basic_training(skill, label: nil)
+    def basic_training(skill)
       unless @skills[skill]
         self.log "Basic Training: #{skill} 0"
         @skills.provide skill
