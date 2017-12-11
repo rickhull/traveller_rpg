@@ -95,14 +95,11 @@ module TravellerRPG
     # choose from the array; provide a single skill
     # return nil if no skill was trained
     def basic_training(skill, label: nil)
-      if skill.is_a?(Array)
-        skill = SkillSet.choose(skill.reject { |s| @skills[s] },
-                                label: 'basic training') or return
-      end
       unless @skills[skill]
         self.log "Basic Training: #{skill} 0"
         @skills.provide skill
       end
+      self
     end
 
     def benefit(item)
@@ -120,6 +117,7 @@ module TravellerRPG
       else
         raise "unexpected benefit: #{benefit.inspect}"
       end
+      self
     end
 
     def log(msg = nil)
@@ -199,6 +197,7 @@ module TravellerRPG
         self.log "Background skill: #{skill} 0"
         @skills.provide skill
       }
+      self
     end
   end
 end
