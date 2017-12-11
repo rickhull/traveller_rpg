@@ -165,11 +165,9 @@ module TravellerRPG
             TravellerRPG.choose("Choose:", *s.fetch('choose')) : s
         }
       else
-        ary = []
         self.class::SERVICE_SKILLS.reduce([]) { |ary, s|
           ary + (s.is_a?(Hash) ? s.fetch('choose') : [s])
         }
-        ary
       end
     end
 
