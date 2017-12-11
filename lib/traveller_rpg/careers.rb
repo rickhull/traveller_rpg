@@ -415,5 +415,7 @@ module TravellerRPG
         scope.const_set(name, c)
       }
     end
+
+    self.generate_classes('base')
   end
 end
