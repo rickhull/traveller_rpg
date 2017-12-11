@@ -4,12 +4,6 @@ module TravellerRPG
   class SkillSet
     class UnknownSkill < KeyError; end
 
-    def self.choose(skills, label: nil)
-      return skills.first if skills.size < 2
-      label = ['Choose', label, 'skill'].compact.join(' ') + ':'
-      TravellerRPG.choose(label, *skills)
-    end
-
     def self.split_skill!(str)
       first, rest = str.split(':')
       if rest

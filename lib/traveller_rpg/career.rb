@@ -101,23 +101,38 @@ module TravellerRPG
       self.class::SPECIALIST.fetch(@assignment)
     end
 
+    def stat_check(hsh)
+      return hsh if hsh == false
+      case hsh['choose']
+      when Hash
+        s = TravellerRPG.choose("Choose stat check:",
+                                *hsh['choose'].keys)
+        [s, hsh['choose'][s]]
+      when NilClass
+        s = hsh.keys.first
+        [s, hsh[s]]
+      else
+        raise("unexpected choose: #{hsh['choose']}")
+      end
+    end
+
     def qualify_check?(dm: 0)
-      return true if self.class::QUALIFICATION == false
-      stat, check = self.class::QUALIFICATION
+      stat, check = self.stat_check(self.class::QUALIFICATION)
+      return true if stat == false
       @char.log "#{self.name} qualification: #{stat} #{check}+"
       dm += @char.stats_dm(stat)
       self.class.roll_check?('Qualify', dm: dm, check: check)
     end
 
     def survival_check?(dm: 0)
-      stat, check = self.specialty.fetch(:survival)
+      stat, check = self.stat_check(self.specialty.fetch(:survival))
       @char.log "#{self.name} [#{@assignment}] survival: #{stat} #{check}+"
       dm += @char.stats_dm(stat)
       self.class.roll_check?('Survival', dm: dm, check: check)
     end
 
     def advancement_check?(dm: 0)
-      stat, check = self.specialty.fetch(:advancement)
+      stat, check = self.stat_check(self.specialty.fetch(:advancement))
       @char.log "#{self.name} [#{@assignment}] advancement: #{stat} #{check}+"
       dm += @char.stats_dm(stat)
       roll = TravellerRPG.roll('2d6')
@@ -143,22 +158,39 @@ module TravellerRPG
       end
     end
 
+    def service_skills(choose: false)
+      if choose
+        self.class::SERVICE_SKILLS.map { |s|
+          s.is_a?(Hash) ?
+            TravellerRPG.choose("Choose:", *s.fetch('choose')) : s
+        }
+      else
+        ary = []
+        self.class::SERVICE_SKILLS.reduce([]) { |ary, s|
+          ary + (s.is_a?(Hash) ? s.fetch('choose') : [s])
+        }
+        ary
+      end
+    end
+
     # any skills obtained start at level 1; always a bump (+1)
     def training_roll
-      choices = [:personal, :service, :specialist]
-      choices << :advanced if self.advanced_education?
-      choices << :officer if self.officer?
+      choices = %w{Personal Service Specialist}
+      choices << 'Advanced' if self.advanced_education?
+      choices << 'Officer' if self.officer?
       choice = TravellerRPG.choose("Choose skills regimen:", *choices)
-      roll = TravellerRPG.roll('d6', label: 'Training')
+      roll = TravellerRPG.roll('d6', label: "#{choice} training")
       skill =
         case choice
-        when :personal then self.class::PERSONAL_SKILLS.fetch(roll - 1)
-        when :service  then self.class::SERVICE_SKILLS.fetch(roll - 1)
-        when :specialist then self.specialty.fetch(:skills).fetch(roll - 1)
-        when :advanced then self.class::ADVANCED_SKILLS.fetch(roll - 1)
-        when :officer  then self.class::OFFICER_SKILLS.fetch(roll - 1)
+        when 'Personal' then self.class::PERSONAL_SKILLS.fetch(roll - 1)
+        when 'Service'  then self.class::SERVICE_SKILLS.fetch(roll - 1)
+        when 'Specialist' then self.specialty.fetch(:skills).fetch(roll - 1)
+        when 'Advanced' then self.class::ADVANCED_SKILLS.fetch(roll - 1)
+        when 'Officer'  then self.class::OFFICER_SKILLS.fetch(roll - 1)
         end
-      skill = TravellerRPG.choose("Choose:", *skill) if skill.is_a?(Array)
+      if skill.is_a?(Hash)
+        skill = TravellerRPG.choose("Choose:", *skill.fetch('choose'))
+      end
       # the "skill" could be a stat e.g. endurance
       if @char.skills.known?(skill)
         @char.skills.bump(skill)
@@ -202,15 +234,17 @@ module TravellerRPG
         @title = title
       end
       if skill
-        if skill.is_a?(Array)
-          skill = TravellerRPG.choose("Choose rank bonus:", *skill)
+        if skill.is_a?(Hash)
+          skill = TravellerRPG.choose("Choose rank bonus:",
+                                      *skill.fetch('choose'))
         end
         @char.log "Achieved #{label} bonus: #{skill} #{level}"
         @char.skills.bump(skill, level)
       end
       if stat
-        if stat.is_a?(Array)
-          stat = TravellerRPG.choose("Choose rank bonus:", *stat)
+        if stat.is_a?(Hash)
+          stat = TravellerRPG.choose("Choose rank bonus:",
+                                     *stat.fetch('choose'))
         end
         @char.log "Achieved #{label} bonus: #{stat} #{level}"
         @char.stats.bump(stat, level)
@@ -277,7 +311,16 @@ module TravellerRPG
         @char.cash_roll self.class::CREDITS.fetch(self.muster_roll)
       }
       benefit_rolls.times {
-        @char.benefit self.class::BENEFITS.fetch(self.muster_roll)
+        b = self.class::BENEFITS.fetch(self.muster_roll)
+        case b
+        when Array
+          b.each { |ben| @char.benefit ben }
+        when Hash
+          choice = TravellerRPG.choose("Choose benefit:", *b.fetch('choose'))
+          @char.benefit choice
+        else
+          @char.benefit b
+        end
       }
       @char.benefit self.retirement_bonus
       @status = :finished
