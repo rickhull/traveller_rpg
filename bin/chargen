@@ -3,5 +3,7 @@
 require 'traveller_rpg/generator'
 require 'traveller_rpg/career_path'
 
-TravellerRPG::CareerPath.run(%w{Agent Army Marines Navy Scout},
-                             character: TravellerRPG::Generator.character)
+include TravellerRPG
+
+careers = %w{Agent Citizen Entertainer Merchant Noble Rogue Scholar Scout}
+CareerPath.run(careers, character: Generator.character)
