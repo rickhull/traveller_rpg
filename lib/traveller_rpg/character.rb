@@ -113,7 +113,7 @@ module TravellerRPG
         @stuff[item] += 1
         self.log "Career benefit: #{item}"
       elsif item.is_a?(Array)
-        self.benefit TravellerRPG.choose("Choose benefit:", *item)
+        items.each { |i| self.benefit i }
       else
         raise "unexpected benefit: #{benefit.inspect}"
       end
