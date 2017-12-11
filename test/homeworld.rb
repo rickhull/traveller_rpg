@@ -11,9 +11,10 @@ describe Homeworld do
         economy: :agricultural,
         wealth: :poor,
         population: :low_population,
-        environment: :lunar,
+        environment: :ice_capped,
       }
       @specified = Homeworld.new('Locale', @traits)
+      @num_skills = 7
     end
 
     it "generates traits" do
@@ -36,14 +37,16 @@ describe Homeworld do
       skills.size.must_be :>=, @generated.traits.size
 
       @specified.skills.must_include 'Animals'
-      @specified.skills.size.must_equal 8
+      @specified.skills.size.must_equal @num_skills
     end
 
     it "must choose skills" do
-      @specified.skills.size.must_equal 8 # sanity check
+      @specified.skills.size.must_equal @num_skills # sanity check
       out, _err = capture_io { @specified.choose_skills(5).size.must_equal 5 }
       out.wont_be_empty
-      out, _err = capture_io { @specified.choose_skills(10).size.must_equal 8 }
+      out, _err = capture_io do
+        @specified.choose_skills(10).size.must_equal @num_skills
+      end
       out.must_be_empty
     end
   end
