@@ -2,115 +2,6 @@ require 'traveller_rpg'
 require 'traveller_rpg/career'
 
 module TravellerRPG
-  # class Citizen < Career; end
-
-  # class Entertainer < Career; end
-  # class Merchant < Career; end
-  # class Rogue < Career; end
-  # class Scholar < Career; end
-
-  class Scout < Career
-    QUALIFICATION   = [:intelligence, 5]
-    PERSONAL_SKILLS = [:strength, :dexterity, :endurance,
-                       :intelligence, :education, 'Jack Of All Trades']
-    SERVICE_SKILLS  = [['Pilot:Small Craft', 'Pilot:Spacecraft'], 'Survival',
-                       'Mechanic', 'Astrogation', 'Vacc Suit', 'Gun Combat']
-    ADVANCED_SKILLS = ['Medic', 'Navigation', 'Engineer',
-                       'Explosives', 'Science', 'Jack Of All Trades']
-
-    RANKS = {
-      1 => ['Scout', 'Vacc Suit', 1],
-      3 => ['Senior Scout', 'Pilot'],
-    }
-
-    SPECIALIST = {
-      'Courier' => {
-        skills:   ['Electronics', 'Flyer', 'Pilot:Spacecraft',
-                   'Engineer', 'Athletics', 'Astrogation'],
-        survival: [:endurance, 5],
-        advancement: [:education, 9],
-        ranks: RANKS,
-      },
-      'Surveyor' => {
-        skills: ['Electronics', 'Persuade', 'Pilot',
-                 'Navigation', 'Diplomat', 'Streetwise'],
-        survival: [:endurance, 6],
-        advancement: [:intelligence, 8],
-        ranks: RANKS,
-      },
-      'Explorer' => {
-        skills: ['Electronics', 'Pilot', 'Engineer',
-                 'Science', 'Stealth', 'Recon'],
-        survival: [:endurance, 7],
-        advancement: [:education, 7],
-        ranks: RANKS,
-      },
-    }
-
-    MUSTER_OUT = {
-      1 => [20000, 'Ship Share'],
-      2 => [20000, 'INT +1'],
-      3 => [30000, 'EDU +1'],
-      4 => [30000, 'Weapon'],
-      5 => [50000, 'Weapon'],
-      6 => [50000, 'Scout Ship'],
-      7 => [50000, 'Scout Ship'],
-    }
-
-    # Weapon: Select any weapon up to 1000 creds and TL12
-    # If this benefit is rolled more than once, take a different weapon
-    # or one level in the appropriate Melee or Gun Combat skill
-
-    # Scout Ship: Receive a scout ship in exchange for performing periodic
-    #             scout missions
-
-    # Ship share: Accumulate these to redeem for a ship.  They are worth
-    #             roughly 1M creds but cannot be redeemed for creds.
-
-
-    EVENTS = {
-      2 => 'Disaster! Roll on the mishap table but you are not ejected ' +
-           'from career.',
-      3 => 'Ambush! Choose Pilot 8+ to escape or Persuade 10+ to bargain. ' +
-           'Gain an Enemy either way',
-      4 => 'Survey an alien world.  Choose Animals, Survival, Recon, or ' +
-           'Life Sciences 1',
-      5 => 'You perform an exemplary service.  Gain a benefit roll with +1 DM',
-      6 => 'You spend several years exploring the star system; ' +
-           'Choose Atrogation, Navigation, Pilot (small craft) or Mechanic 1',
-      7 => 'Life event.  Roll on the Life Events table',
-      8 => 'Gathered intelligence on an alien race.  Roll Sensors 8+ or ' +
-           'Deception 8+.  Gain an ally in the Imperium and +2 DM to your ' +
-           'next Advancement roll on success.  Roll on the mishap table on ' +
-           'failure, but you are not ejected from career.',
-      9 => 'You rescue disaster survivors.  Roll either Medic 8+ or ' +
-           'Engineer 8+.  Gain a Contact and +2 DM on next Advancement roll ' +
-           'or else gain an Enemy',
-      10 => 'You spend a great deal of time on the fringes of known space. ' +
-            'Roll Survival 8+ or Pilot 8+.  Gain a Contact in an alien race ' +
-            'and one level in any skill, or else roll on the Mishap table.',
-      11 => 'You serve as a courier for an important message for the ' +
-            'Imperium.  Gain one level of diplomat or take +4 DM to your ' +
-            'next Advancement roll.',
-      12 => 'You make an important discovery for the Imperium.  Gain a ' +
-            'career rank.',
-    }
-
-    MISHAPS = {
-      1 => 'Severely injured in action.  Roll twice on the Injury table ' +
-           'or take a level 2 Injury.',
-      2 => 'Suffer psychological damage. Reduce Intelligence or Social ' +
-           'Standing by 1',
-      3 => 'Your ship is damaged, and you have to hitch a ride back to ' +
-           'your nearest scout base.  Gain 1d6 Contacts and 1d3 Enemies.',
-      4 => 'You inadvertently cause a conflict between the Imperium and ' +
-           'a minor world or race.  Gain a Rival and Diplomat 1.',
-      5 => 'You have no idea what happened to you.  Your ship was found ' +
-           'drifting on the fringes of friendly space',
-      6 => 'Injured.  Roll on the Injury table.',
-    }
-  end
-
   class Army < MilitaryCareer
     QUALIFICATION = [:endurance, 5]
     AGE_PENALTY = 30
@@ -357,31 +248,66 @@ module TravellerRPG
     end
 
     def self.stat_check?(hsh)
-      hsh.is_a?(Hash) and
-        hsh.size == 1 and
-        self.stat?(hsh.keys.first) and
-        (0..15).include? hsh.values.first
+      return false unless hsh.is_a?(Hash) and hsh.size == 1
+      if hsh['choose']
+        hsh['choose'].all? { |k, v| self.stat_check?(k => v) }
+      else
+        hsh.all? { |k, v| self.stat?(k) and (0..15).include? v }
+      end
     end
 
     def self.fetch_stat_check!(hsh, key)
-      val = hsh.fetch(key)
-      return false if val == false # Drifter['qualification']
+      raise(StatCheckError, "#{key} not found: #{hsh}") unless hsh.key? key
+      val = hsh[key] or return false # e.g. Drifter
       raise(StatCheckError, val.inspect) unless self.stat_check?(val)
-      val.to_a.first
+      val
     end
 
     def self.fetch_skills!(hsh, key, stats_allowed: true)
       val = hsh.fetch(key)
       return false if val == false # Drifter['advanced']
       raise(SkillError, val.inspect) unless val.is_a?(Array) and val.size == 6
-      val.flatten.each { |v|
-        if stats_allowed
-          raise(SkillError, "unknown: #{v}") if self.known(v) == :unknown
+      val.each { |v|
+        case v
+        when Hash
+          raise(SkillError, v) unless v['choose'].is_a?(Array)
+          vals = v['choose']
         else
-          raise(UnknownSkill, v) unless self.skill?(v)
+          vals = [v]
         end
+        vals.each { |vv|
+          if stats_allowed
+            raise(SkillError, "unknown: #{vv}") if self.known(vv) == :unknown
+          else
+            raise(UnknownSkill, vv) unless self.skill?(vv)
+          end
+        }
       }
       val
+    end
+
+    def self.fetch_ranks!(hsh)
+      r = hsh['ranks'] or raise(RankError, "no rank: #{hsh}")
+      raise(RankError, r.inspect) unless r.is_a? Hash and r.size <= 7
+      r.each { |rank, h|
+        raise(RankError, h.inspect) unless h.is_a? Hash and h.size <= 4
+        raise(RankError, h.inspect) if (h.keys & %w{title skill stat}).empty?
+        if h.key? 'skill' and !self.skill? h['skill']
+          raise(UnknownSkill, h['skill']) unless h['skill'].is_a?(Hash)
+          a = h['skill']['choose']
+          raise(RankError, "choose: #{h['skill']}") unless a.is_a?(Array)
+          a.each { |sk| raise(UnknownSkill, sk) unless self.skill? sk }
+        end
+        if h.key? 'stat' and !self.stat? h['stat']
+          raise(UnknownStat, h['stat']) unless h['stat'].is_a? Hash
+          a = h['stat']['choose']
+          raise(RankError, "choose: #{h['stat']}") unless a.is_a?(Array)
+          a.each { |stat| raise(UnknownStat, stat) unless self.stat? stat }
+        end
+        if h.key? 'level' and !(h.key? 'skill' or h.key? 'stat')
+          raise(RankError, "level without a skill/stat")
+        end
+      }
     end
 
     def self.specialist(hsh)
@@ -391,35 +317,7 @@ module TravellerRPG
         result[asg][:survival] = self.fetch_stat_check!(cfg, 'survival')
         result[asg][:advancement] = self.fetch_stat_check!(cfg, 'advancement')
         result[asg][:skills] = self.fetch_skills!(cfg, 'skills')
-
-        r = cfg.fetch('ranks')
-        raise(RankError, r.inspect) unless r.is_a? Hash and r.size <= 7
-        r.each { |rank, h|
-          raise(RankError, h.inspect) unless h.is_a? Hash and h.size <= 4
-          raise(RankError, h.inspect) if (h.keys & %w{title skill stat}).empty?
-          if h.key? 'skill' and !self.skill? h['skill']
-            if h['skill'].is_a? Array
-              h['skill'].each { |skill|
-                raise(UnknownSkill, skill) unless self.skill? skill
-              }
-            else
-              raise(UnknownSkill, h['skill'])
-            end
-          end
-          if h.key? 'stat' and !self.stat? h['stat']
-            if h['stat'].is_a? Array
-              h['stat'].each { |stat|
-                raise(UnknownStat, stat) unless self.stat? stat
-              }
-            else
-              raise(UnknownStat, h['stat'])
-            end
-          end
-          if h.key? 'level' and !(h.key? 'skill' or h.key? 'stat')
-            raise(RankError, "level without a skill/stat")
-          end
-        }
-        result[asg][:ranks] = r
+        result[asg][:ranks] = self.fetch_ranks!(cfg)
       }
       result
     end
@@ -459,15 +357,32 @@ module TravellerRPG
       creds
     end
 
+    def self.benefit_type(item)
+      raise(BenefitError, item.inspect) if !item.is_a?(String) or item.empty?
+      k = self.known(item)
+      k == :unknown ? :item : k
+    end
+
     def self.benefits(hsh)
       b = hsh.fetch('benefits')
-      raise "unexpected: #{b}" unless b.is_a?(Array) and b.size == 7
-      b.flatten.each { |ben|
-        raise(BenefitError, ben.inspect) if !ben.is_a?(String) or ben.empty?
+      raise(BenefitError, b) unless b.is_a?(Array) and b.size == 7
+      benefits = {}
+      b.each.with_index { |item, idx|
+        case item
+        when String
+          self.benefit_type(item)
+        when Hash
+          ary = item['choose'] or raise(BenefitError, ary)
+          raise(BenefitError, ary) unless ary.is_a?(Array) and ary.size < 5
+          ary.each { |a| self.benefit_type a }
+        when Array
+          item.each { |a| self.benefit_type a }
+        else
+          raise(BenefitError, item)
+        end
+        benefits[idx + 1] = item
       }
-      bens = {}
-      b.each.with_index { |benefits, idx| bens[idx + 1] = benefits }
-      bens
+      benefits
     end
 
     def self.generate_classes(file_name)
@@ -476,35 +391,29 @@ module TravellerRPG
         # inherit from Career
         c = Class.new(TravellerRPG::Career)
 
-        # create class constants
-        c.const_set('QUALIFICATION',
-                    self.fetch_stat_check!(cfg, 'qualification'))
-        c.const_set('PERSONAL_SKILLS', self.fetch_skills!(cfg, 'personal'))
-        c.const_set('SERVICE_SKILLS', self.fetch_skills!(cfg, 'service'))
-        c.const_set('ADVANCED_SKILLS', self.fetch_skills!(cfg, 'advanced'))
-        c.const_set('SPECIALIST', self.specialist(cfg))
-        c.const_set('EVENTS', self.events(cfg))
-        c.const_set('MISHAPS', self.mishaps(cfg))
-        c.const_set('CREDITS', self.credits(cfg))
-        c.const_set('BENEFITS', self.benefits(cfg))
+        begin
+          # create class constants
+          c.const_set('QUALIFICATION',
+                      self.fetch_stat_check!(cfg, 'qualification'))
+          c.const_set('PERSONAL_SKILLS', self.fetch_skills!(cfg, 'personal'))
+          c.const_set('SERVICE_SKILLS', self.fetch_skills!(cfg, 'service'))
+          c.const_set('ADVANCED_SKILLS', self.fetch_skills!(cfg, 'advanced'))
+          c.const_set('SPECIALIST', self.specialist(cfg))
 
+          # TODO: Events and mishaps are tedious to write.
+          #       Currently Career::EVENTS and ::MISHAPS provides defaults.
+          #       These should be mandatory once defined for each career.
+          c.const_set('EVENTS', self.events(cfg)) if cfg['events']
+          c.const_set('MISHAPS', self.mishaps(cfg)) if cfg['mishaps']
+          c.const_set('CREDITS', self.credits(cfg))
+          c.const_set('BENEFITS', self.benefits(cfg))
+        rescue => e
+          warn ["Career: #{name}", e.class, e].join("\n")
+          raise
+        end
         # set class e.g. TravellerRPG::Agent
         scope.const_set(name, c)
       }
     end
   end
-end
-
-if __FILE__ == $0
-  require 'traveller_rpg/generator'
-  require 'traveller_rpg/career_path'
-
-  include TravellerRPG
-  Careers.generate_classes('base')
-  char = Generator.character
-  path = CareerPath.new(char)
-  path.run('Agent')
-  puts path.report
-  # agent = TravellerRPG::Agent.new(char)
-  # agent.activate('Intelligence')
 end

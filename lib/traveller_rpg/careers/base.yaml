@@ -1,6 +1,7 @@
 Agent:
   qualification:
     intelligence: 6
+  advanced_education: 8
   personal:
     - Gun Combat
     - dexterity
@@ -22,6 +23,24 @@ Agent:
     - Medic
     - Vacc Suit
     - Electronics
+  credits:
+    - 1000
+    - 2000
+    - 5000
+    - 7500
+    - 10000
+    - 25000
+    - 50000
+  benefits:
+    - Scientific Equipment
+    - intelligence
+    - Ship Share
+    - Weapon
+    - Combat Implant
+    - choose:
+        - social_status
+        - Combat Implant
+    - TAS Membership
   specialist:
     Law Enforcement:
       survival:
@@ -268,23 +287,124 @@ Agent:
      script:
        - injury
 
+
+Citizen:
+  advanced_education: 10
+  qualification:
+    education: 5
+  personal:
+    - education
+    - intelligence
+    - Carouse
+    - Gambler
+    - Drive
+    - Jack Of All Trades
+  service:
+    - Drive
+    - Flyer
+    - Streetwise
+    - Melee
+    - Steward
+    - Profession
+  advanced:
+    - Art
+    - Advocate
+    - Diplomat
+    - Language
+    - Electronics:Computers
+    - Medic
   credits:
-    - 1000
     - 2000
     - 5000
-    - 7500
-    - 10_000
-    - 25_000
-    - 50_000
-
+    - 10000
+    - 10000
+    - 10000
+    - 50000
+    - 100000
   benefits:
-    - Scientific Equipment
-    - intelligence
     - Ship Share
-    - Weapon
-    - Combat Implant
-    - [ social_status, Combat Implant ]
+    - Ally
+    - intelligence
+    - Gun
+    - education
+    - Two Ship Shares
     - TAS Membership
+  specialist:
+    Coporate:
+      survival:
+        social_status: 6
+      advancement:
+        intelligence: 6
+      skills:
+        - Advocate
+        - Admin
+        - Broker
+        - Electronics:Computers
+        - Diplomat
+        - Leadership
+      ranks:
+        2:
+          title: Manager
+          skill: Admin
+          level: 1
+        4:
+          title: Senior Manager
+          skill: Advocate
+          level: 1
+        6:
+          title: Director
+          stat: social_status
+    Worker:
+      survival:
+        endurance: 4
+      advancement:
+        education: 8
+      skills:
+        - Drive
+        - Mechanic
+        - Electronics
+        - Engineer
+        - Profession
+        - Science
+      ranks:
+        2:
+          title: Technician
+          skill: Profession
+          level: 1
+        4:
+          title: Craftsman
+          skill: Mechanic
+          level: 1
+        6:
+          title: Master Technician
+          skill: Engineer
+          level: 1
+    Colonist:
+      survival:
+        intelligence: 7
+      advancement:
+        endurance: 5
+      skills:
+        - Animals
+        - Athletics
+        - Jack Of All Trades
+        - Drive
+        - Survival
+        - Recon
+      ranks:
+        2:
+          title: Settler
+          skill: Survival
+          level: 1
+        4:
+          title: Explorer
+          skill: Navigation
+          level: 1
+        6:
+          skill: Gun Combat
+          level: 1
+
+
 
 Drifter:
   qualification: false
@@ -303,6 +423,22 @@ Drifter:
     - Stealth
     - Survival
   advanced: false
+  credits:
+    - 0
+    - 0
+    - 1000
+    - 2000
+    - 3000
+    - 4000
+    - 8000
+  benefits:
+    - Contact
+    - Weapon
+    - Ally
+    - Weapon
+    - education
+    - Ship Share
+    - Two Ship Shares
   specialist:
     Barbarian:
       survival:
@@ -314,7 +450,9 @@ Drifter:
         - Carouse
         - Melee:Blade
         - Stealth
-        - [ 'Seafarer:Personal', 'Seafarer:Sail' ]
+        - choose:
+            - Seafarer:Personal
+            - Seafarer:Sail
         - Survival
       ranks:
         1:
@@ -368,7 +506,10 @@ Drifter:
           skill: Vacc Suit
           level: 1
         3:
-          skill: [ 'Profession:Belter', Mechanic]
+          skill:
+            choose:
+              - Profession:Belter
+              - Mechanic
           level: 1
 
   events:
@@ -442,20 +583,800 @@ Drifter:
       text: >-
         You do not know what happened to you.  There is a gap in your memory.
 
+Entertainer:
+  advanced_education: 10
+  qualification:
+    choose:
+      dexterity: 5
+      intelligence: 5
+  personal:
+    - dexterity
+    - intelligence
+    - social_status
+    - Language
+    - Carouse
+    - Jack Of All Trades
+  service:
+    - Art
+    - Carouse
+    - Deception
+    - Drive
+    - Persuade
+    - Steward
+  advanced:
+    - Advocate
+    - Broker
+    - Deception
+    - Science
+    - Streetwise
+    - Diplomat
   credits:
     - 0
     - 0
-    - 1000
-    - 2000
-    - 3000
-    - 4000
-    - 8000
-
+    - 10000
+    - 10000
+    - 40000
+    - 40000
+    - 80000
   benefits:
     - Contact
-    - Weapon
-    - Ally
-    - Weapon
-    - EDU +1
+    - social_status
+    - Contact
+    - social_status
+    - intelligence
+    - [ Ship Share, Ship Share ]
+    - [ social_status, education ]
+  specialist:
+    Artist:
+      survival:
+        social_status: 6
+      advancement:
+        intelligence: 6
+      skills:
+        - Art
+        - Carouse
+        - Electronics:Computers
+        - Gambler
+        - Persuade
+        - Profession
+      ranks:
+        1:
+          skill: Art
+          level: 1
+        3:
+          skill: Investigate
+          level: 1
+        5:
+          title: Famous Artist
+          stat: social_status
+
+    Journalist:
+      survival:
+        education: 7
+      advancement:
+        intelligence: 5
+      skills:
+        - choose:
+            - Art:Holography
+            - Art:Write
+        - Electronics
+        - Drive
+        - Investigate
+        - Recon
+        - Streetwise
+      ranks:
+        1:
+          title: Freelancer
+          skill: Electronics:Comms
+          level: 1
+        2:
+          title: Staff Writer
+          skill: Investigate
+          level: 1
+        4:
+          title: Correspondent
+          skill: Persuade
+          level: 1
+        6:
+          title: Senior Correspondent
+          stat: social_status
+
+    Performer:
+      survival:
+        intelligence: 5
+      advancement:
+        dexterity: 7
+      skills:
+        - choose:
+            - Art:Performer
+            - Art:Instrument
+        - Athletics
+        - Carouse
+        - Deception
+        - Stealth
+        - Streetwise
+      ranks:
+        1:
+          stat: dexterity
+        3:
+          stat: strength
+        5:
+          title: Famous Performer
+          stat: social_status
+
+Merchant:
+  qualification:
+    intelligence: 4
+  personal:
+    - strength
+    - dexterity
+    - endurance
+    - intelligence
+    - Language
+    - Streetwise
+  service:
+    - Drive
+    - Vacc Suit
+    - Broker
+    - Steward
+    - Electronics
+    - Persuade
+  advanced:
+    - Engineer
+    - Astrogation
+    - Electronics
+    - Pilot
+    - Admin
+    - Advocate
+  advanced_education: 8
+  credits:
+    - 1000
+    - 5000
+    - 10000
+    - 20000
+    - 20000
+    - 40000
+    - 40000
+  benefits:
+    - Blade
+    - intelligence
+    - education
+    - Gun
     - Ship Share
-    - Two Ship Shares
+    - Free Trader
+    - Free Trader
+  specialist:
+    Merchant Marine:
+      survival:
+        education: 5
+      advancement:
+        intelligence: 7
+      skills:
+        - Pilot
+        - Vacc Suit
+        - Athletics
+        - Mechanic
+        - Engineer
+        - Electronics
+      ranks:
+        0:
+          title: Crewman
+        1:
+          title: Senior Crewman
+          skill: Mechanic
+          level: 1
+        2:
+          title: 4th Officer
+        3:
+          title: 3rd Officer
+        4:
+          title: 2nd Officer
+          skill: Pilot
+          level: 1
+        5:
+          title: 1st Officer
+          stat: social_status
+        6:
+          title: Captain
+
+    Free Trader:
+      survival:
+        dexterity: 6
+      advancement:
+        intelligence: 6
+      skills:
+        - Pilot:Spacecraft
+        - Vacc Suit
+        - Deception
+        - Mechanic
+        - Streetwise
+        - Gunner
+      ranks:
+        1:
+          skill: Persuade
+          level: 1
+        3:
+          title: Experienced Trader
+          skill: Jack Of All Trades
+          level: 1
+
+    Broker:
+      survival:
+        education: 5
+      advancement:
+        intelligence: 7
+      skills:
+        - Admin
+        - Advocate
+        - Broker
+        - Streetwise
+        - Deception
+        - Persuade
+      ranks:
+        1:
+          skill: Broker
+          level: 1
+        3:
+          title: Experienced Broker
+          skill: Streetwise
+          level: 1
+
+Noble:
+  advanced_education: 8
+  qualification:
+    social_status: 10  #  TODO: autoqualify if social_status >= 10
+  personal:
+    - strength
+    - dexterity
+    - endurance
+    - Gambler
+    - Gun Combat
+    - Melee
+  service:
+    - Admin
+    - Advocate
+    - Electronics
+    - Diplomat
+    - Investigate
+    - Persuade
+  advanced:
+    - Admin
+    - Advocate
+    - Language
+    - Leadership
+    - Diplomat
+    - Art
+  credits:
+    - 10000
+    - 10000
+    - 50000
+    - 50000
+    - 100000
+    - 100000
+    - 200000
+  benefits:
+    - Ship Share
+    - [ Ship Share, Ship Share ]
+    - Blade
+    - social_status
+    - TAS Membership
+    - Yacht
+    - [ social_status, Yacht ]
+  specialist:
+    Administrator:
+      survival:
+        intelligence: 4
+      advancement:
+        education: 6
+      skills:
+        - Admin
+        - Advocate
+        - Broker
+        - Diplomat
+        - Leadership
+        - Persuade
+      ranks:
+        0:
+          title: Assistant
+        1:
+          title: Clerk
+          skill: Admin
+          level: 1
+        2:
+          title: Supervisor
+        3:
+          title: Manager
+          skill: Advocate
+          level: 1
+        4:
+          title: Chief
+        5:
+          title: Director
+          skill: Leadership
+          level: 1
+        6:
+          title: Minister
+    Diplomat:
+      survival:
+        intelligence: 5
+      advancement:
+        social_status: 7
+      skills:
+        - Advocate
+        - Carouse
+        - Electronics
+        - Steward
+        - Diplomat
+        - Deception
+      ranks:
+        0:
+          title: Intern
+        1:
+          title: 3rd Secretary
+          skill: Admin
+          level: 1
+        2:
+          title: 2nd Secretary
+        3:
+          title: 1st Secretary
+          skill: Advocate
+          level: 1
+        4:
+          title: Counsellor
+        5:
+          title: Minister
+          skill: Diplomat
+          level: 1
+        6:
+          title: Ambassador
+    Dilettante:
+      survival:
+        social_status: 3
+      advancement:
+        intelligence: 8
+      skills:
+        - Carouse
+        - Deception
+        - Flyer
+        - Streetwise
+        - Gambler
+        - Jack Of All Trades
+      ranks:
+        0:
+          title: Wastrel
+        2:
+          title: Ingrate
+          skill: Carouse
+          level: 1
+        4:
+          title: Black Sheep
+          skill: Persuade
+          level: 1
+        6:
+          title: Scoundrel
+          skill: Jack Of All Trades
+          level: 1
+
+Rogue:
+  advanced_education: 10
+  qualification:
+    dexterity: 6
+  personal:
+    - Carouse
+    - dexterity
+    - endurance
+    - Gambler
+    - Melee
+    - Gun Combat
+  service:
+    - Deception
+    - Recon
+    - Athletics
+    - Gun Combat
+    - Stealth
+    - Streetwise
+  advanced:
+    - Electronics
+    - Navigation
+    - Medic
+    - Investigate
+    - Broker
+    - Advocate
+  credits:
+    - 0
+    - 0
+    - 10000
+    - 10000
+    - 50000
+    - 100000
+    - 100000
+  benefits:
+    - Ship Share
+    - Weapon
+    - intelligence
+    - Ship Share # TODO: 1d6 Ship Shares
+    - Armour
+    - dexterity
+    - [ Ship Share, Ship Share ]   # TODO: 2d6 Ship Shares
+  specialist:
+    Thief:
+      survival:
+        intelligence: 6
+      advancement:
+        dexterity: 6
+      skills:
+        - Stealth
+        - Electronics
+        - Recon
+        - Streetwise
+        - Deception
+        - Athletics
+      ranks:
+        1:
+          skill: Stealth
+          level: 1
+        3:
+          skill: Streetwise
+          level: 1
+        5:
+          skill: Recon
+          level: 1
+    Enforcer:
+      survival:
+        endurance: 6
+      advancement:
+        strength: 6
+      skills:
+        - Gun Combat
+        - Melee
+        - Streetwise
+        - Persuade
+        - Athletics
+        - Drive
+      ranks:
+        1:
+          skill: Persuade
+          level: 1
+        3:
+          skill:
+            choose:
+              - Gun Combat
+              - Melee
+          level: 1
+        5:
+          skill: Streetwise
+          level: 1
+    Pirate:
+      survival:
+        dexterity: 6
+      advancement:
+        intelligence: 6
+      skills:
+        - Pilot
+        - Astrogation
+        - Gunner
+        - Engineer
+        - Vacc Suit
+        - Melee
+      ranks:
+        0:
+          title: Lackey
+        1:
+          title: Henchman
+          skill:
+            choose:
+              - Pilot
+              - Gunner
+          level: 1
+        2:
+          title: Corporal
+        3:
+          title: Sergeant
+          skill:
+            choose:
+              - Gun Combat
+              - Melee
+          level: 1
+        4:
+          title: Lieutenant
+        5:
+          title: Leader
+          skill:
+            choose:
+              - Engineer
+              - Navigation
+          level: 1
+        6:
+          title: Captain
+
+Scholar:
+  advanced_education: 10
+  qualification:
+    intelligence: 6
+  personal:
+    - intelligence
+    - education
+    - social_status
+    - dexterity
+    - endurance
+    - Language
+  service:
+    - Drive
+    - Electronics
+    - Diplomat
+    - Medic
+    - Investigate
+    - Science
+  advanced:
+    - Art
+    - Advocate
+    - Electronics
+    - Language
+    - Engineer
+    - Science
+  credits:
+    - 5000
+    - 10000
+    - 20000
+    - 30000
+    - 40000
+    - 60000
+    - 100000
+  benefits:
+    - intelligence
+    - education
+    - [ Ship Share, Ship Share]
+    - social_status
+    - Scientific Equipment
+    - Lab Ship
+    - Lab Ship
+  specialist:
+    Field Researcher:
+      survival:
+        endurance: 6
+      advancement:
+        intelligence: 6
+      skills:
+        - Electronics
+        - Vacc Suit
+        - Navigation
+        - Survival
+        - Investigate
+        - Science
+      ranks:
+        1:
+          skill: Science
+          level: 1
+        2:
+          skill: Electronics:Computers
+          level: 1
+        3:
+          skill: Investigate
+          level: 1
+        5:
+          skill: Science
+          level: 2
+    Scientist:
+      survival:
+        education: 4
+      advancement:
+        intelligence: 8
+      skills:
+        - Admin
+        - Engineer
+        - Science
+        - Science
+        - Electronics
+        - Science
+      ranks:
+        1:
+          skill: Science
+          level: 1
+        2:
+          skill: Electronics:Computers
+          level: 1
+        3:
+          skill: Investigate
+          level: 1
+        5:
+          skill: Science
+          level: 2
+
+    Physician:
+      survival:
+        education: 4
+      advancement:
+        education: 8
+      skills:
+        - Medic
+        - Electronics
+        - Investigate
+        - Medic
+        - Persuade
+        - Science
+      ranks:
+        1:
+          skill: Medic
+          level: 1
+        3:
+          skill: Science
+          level: 1
+        5:
+          skill: Science
+          level: 2
+
+Scout:
+  advanced_education: 8
+  qualification:
+    intelligence: 5
+  personal:
+    - strength
+    - dexterity
+    - endurance
+    - intelligence
+    - education
+    - Jack Of All Trades
+  service:
+    - choose:
+        - Pilot:Small Craft
+        - Pilot:Spacecraft
+    - Survival
+    - Mechanic
+    - Astrogation
+    - Vacc Suit
+    - Gun Combat
+  advanced:
+    - Medic
+    - Navigation
+    - Seafarer
+    - Explosives
+    - Science
+    - Jack Of All Trades
+  credits:
+    - 20000
+    - 20000
+    - 30000
+    - 30000
+    - 50000
+    - 50000
+    - 50000
+  benefits:
+    - Ship Share
+    - intelligence
+    - education
+    - Weapon
+    - Weapon
+    - Scout Ship
+    - Scout Ship
+  specialist:
+    Courier:
+      survival:
+        endurance: 5
+      advancement:
+        education: 9
+      skills:
+        - Electronics
+        - Flyer
+        - Pilot:Spacecraft
+        - Engineer
+        - Athletics
+        - Astrogation
+      ranks:
+        1:
+          title: Scout
+          skill: Vacc Suit
+          level: 1
+        3:
+          title: Senior Scout
+          skill: Pilot
+          level: 1
+    Surveyor:
+      survival:
+        endurance: 6
+      advancement:
+        intelligence: 8
+      skills:
+        - Electronics
+        - Persuade
+        - Pilot
+        - Navigation
+        - Diplomat
+        - Streetwise
+      ranks:
+        1:
+          title: Scout
+          skill: Vacc Suit
+          level: 1
+        3:
+          title: Senior Scout
+          skill: Pilot
+          level: 1
+    Explorer:
+      survival:
+        endurance: 7
+      advancement:
+        education: 7
+      skills:
+        - Electronics
+        - Pilot
+        - Engineer
+        - Science
+        - Stealth
+        - Recon
+      ranks:
+        1:
+          title: Scout
+          skill: Vacc Suit
+          level: 1
+        3:
+          title: Senior Scout
+          skill: Pilot
+          level: 1
+  events:
+    2:
+      text: >-
+        Disaster! Roll on the mishap table but you are not ejected from career.
+    3:
+      text: >-
+        Ambush! Choose Pilot 8+ to escape or Persuade 10+ to bargain. Gain an
+        Enemy either way.
+    4:
+      text: >-
+        Survey an alien world.  Choose Animals, Survival, Recon, or Life
+        Sciences 1.
+    5:
+      text: >-
+        You perform an exemplary service.  Gain a benefit roll with +1 DM
+    6:
+      text: >-
+        You spend several years exploring the star system;
+        Choose Atrogation, Navigation, Pilot (small craft) or Mechanic 1
+    7:
+      text: >-
+        Life event.  Roll on the Life Events table
+    8:
+      text: >-
+        Gathered intelligence on an alien race.  Roll Sensors 8+ or
+        Deception 8+.  Gain an ally in the Imperium and +2 DM to your
+        next Advancement roll on success.  Roll on the mishap table on
+        failure, but you are not ejected from career.
+    9:
+      text: >-
+        You rescue disaster survivors.  Roll either Medic 8+ or Engineer 8+.
+        Gain a Contact and +2 DM on next Advancement roll, else gain an Enemy.
+    10:
+      text: >-
+        You spend a great deal of time on the fringes of known space.
+        Roll Survival 8+ or Pilot 8+.  Gain a Contact in an alien race
+        and one level in any skill, or else roll on the Mishap table.
+    11:
+      text: >-
+        You serve as a courier for an important message for the Imperium.
+        Gain one level of diplomat or take +4 DM to your next Advancement roll.
+    12:
+      text: >-
+        You make an important discovery for the Imperium.  Gain a career rank.
+  mishaps:
+    1:
+      text: >-
+        Severely injured in action.  Roll twice on the Injury table
+        or take a level 2 Injury.
+    2:
+      text: >-
+        Suffer psychological damage. Reduce Intelligence or Social Standing
+        by 1.
+    3:
+      text: >-
+        Your ship is damaged, and you have to hitch a ride back to your
+        nearest scout base.  Gain 1d6 Contacts and 1d3 Enemies.
+    4:
+      text: >-
+        You inadvertently cause a conflict between the Imperium and a
+        minor world or race.  Gain a Rival and Diplomat 1.
+    5:
+      text: >-
+        You have no idea what happened to you.  Your ship was found
+        drifting on the fringes of friendly space.
+    6:
+      text: >-
+        Injured.  Roll on the Injury table.
