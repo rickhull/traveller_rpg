@@ -147,18 +147,29 @@ describe ComplexSkill do
   end
 
   describe "ComplexSkill#bump" do
-    it "must raise if level is provided" do
-      proc { @skill.bump(1) }.must_raise ArgumentError
-    end
-
-    it "must bump specialties" do
-      out, err = capture_io { Skill::MAX.times { @skill.bump } }
+    it "must bump a subskill and remain at level 0" do
+      @skill.skills.values.all? { |skill| skill.level == 0 }.must_equal true
+      out, err = capture_io { @skill.bump(1) }
       out.wont_be_empty
       err.must_be_empty
+      @skill.skills.values.all? { |s| s.level == 0 }.must_equal false
+      @skill.skills.values.any? { |s| s.level == 1 }.must_equal true
+      @skill.skills.values.select { |s| s.level == 1 }.size.must_equal 1
       @skill.level.must_equal 0
-      @skill.skills.values.reduce(0) { |memo, skill|
-        memo + skill.level
-      }.must_equal Skill::MAX
+    end
+
+    it "chooses a subskill with level < arg level" do
+      @skill.skills['First'].bump(1)
+      @skill.skills['Second'].bump(2)
+      @skill.skills['Third'].bump(3)
+      out, err = capture_io { @skill.bump(2) }
+      out.must_be_empty  # no choice needed
+      err.must_be_empty
+      @skill.skills['First'].level.must_equal 2
+      out, err = capture_io { @skill.bump(4) }
+      out.wont_be_empty  # choose from all 3 subskills
+      err.must_be_empty
+      @skill.skills.values.select { |s| s.level == 4 }.size.must_equal 1
     end
   end
 

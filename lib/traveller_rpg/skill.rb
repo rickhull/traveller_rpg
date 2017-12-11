@@ -66,8 +66,16 @@ module TravellerRPG
     end
 
     def bump(level = nil)
-      name =
-        TravellerRPG.choose("Choose #{@skill.name} specialty:", *@skills.keys)
+      skills = @skills.select { |_, s| level ? s.level < level : true }
+      case skills.size
+      when 0
+        return self
+      when 1
+        name = skills.keys.first
+      else
+        name = TravellerRPG.choose("Choose #{@skill.name} specialty:",
+                                   *skills.keys)
+      end
       @skills[name].bump level
     end
 
