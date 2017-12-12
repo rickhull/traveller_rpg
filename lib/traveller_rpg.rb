@@ -45,10 +45,23 @@ module TravellerRPG
         chosen = choice
       elsif args.include?(choice.to_sym)
         chosen = choice.to_sym
-      else
+      elsif choice.empty?
         puts "Try again.\n"
+      else
+        matches = args.grep %r{\A#{choice}}i
+        case matches.size
+        when 0
+          # ok
+          puts "Try again.\n"
+        when 1
+          chosen = matches.first
+        else
+          puts "Ambiguous: #{matches.join(' | ')}"
+          puts "Try again.\n"
+        end
       end
     end
+    puts "Accepted: #{chosen}"
     chosen
   end
 
