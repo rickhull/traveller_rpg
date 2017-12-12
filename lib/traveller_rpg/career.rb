@@ -418,41 +418,4 @@ module TravellerRPG
       self.take_rank_benefit
     end
   end
-
-  class ExampleMilitaryCareer < Career
-    #
-    # These are not present in a normal Career or MilitaryCareer
-
-    STAT = :strength
-    STAT_CHECK = 5
-    TITLE = 'Rookie'
-    SKILL = 'Deception'
-    OFFICER_TITLE = 'Lieutenant'
-    OFFICER_SKILL = 'Tactics'
-
-    #
-    # These are necessary for a Career to function
-
-    QUALIFICATION = [STAT, STAT_CHECK]
-
-    PERSONAL_SKILLS = Array.new(6) { SKILL }
-    SERVICE_SKILLS = Array.new(6) { SKILL }
-    ADVANCED_SKILLS = Array.new(6) { SKILL }
-
-    SPECIALIST = {
-      'Specialist' => {
-        skills: Array.new(6) { SKILL },
-        survival: [STAT, STAT_CHECK],
-        advancement: [STAT, STAT_CHECK],
-        ranks: { 0 => [TITLE, SKILL] },
-      }
-    }
-
-    #
-    # These are necessary for a MilitaryCareer to function
-
-    AGE_PENALTY = 40
-    OFFICER_SKILLS = Array.new(6) { OFFICER_SKILL }
-    OFFICER_RANKS = { 0 => [OFFICER_TITLE, OFFICER_SKILL] }
-  end
 end

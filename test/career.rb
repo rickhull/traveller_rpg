@@ -7,7 +7,7 @@ module TravellerRPG
     #
     # These are not present in a normal Career
 
-    STAT = 'strength'
+    STAT = :strength
     STAT_CHECK = 5
     TITLE = 'Rookie'
     SKILL = 'Deception'
@@ -27,13 +27,30 @@ module TravellerRPG
         survival: { STAT => STAT_CHECK },
         advancement: { STAT => STAT_CHECK },
         ranks: {
-          0 => { 'title': TITLE, 'skill': SKILL },
+          0 => { title: TITLE, skill: SKILL },
         },
       }
     }
 
     CREDITS = Array.new(7) { rand 9999 }
     BENEFITS = Array.new(7) { 'Stuff' }
+  end
+
+  class ExampleMilitaryCareer < ExampleCareer
+    #
+    # These are not present in a normal Career or MilitaryCareer
+
+    OFFICER_TITLE = 'Lieutenant'
+    OFFICER_SKILL = 'Tactics'
+
+    #
+    # These are necessary for a MilitaryCareer to function
+
+    AGE_PENALTY = 40
+    OFFICER_SKILLS = Array.new(6) { OFFICER_SKILL }
+    OFFICER_RANKS = {
+      0 => { title: OFFICER_TITLE, skill: OFFICER_SKILL },
+    }
   end
 end
 
@@ -341,7 +358,6 @@ describe MilitaryCareer do
 
     describe "MilitaryCareer#activate" do
       it "must update status, assignment, title, skills" do
-        skip "until MilitaryCareers are converted to YAML"
         capture_io { @career.activate }
         @career.assignment.wont_be_nil
         @career.assignment.must_equal @assignment
@@ -353,7 +369,6 @@ describe MilitaryCareer do
       end
 
       it "must not activate twice" do
-        skip "until MilitaryCareers are converted to YAML"
         capture_io { @career.activate }
         proc { @career.activate }.must_raise RuntimeError
       end
