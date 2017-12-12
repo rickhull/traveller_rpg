@@ -111,19 +111,23 @@ module TravellerRPG
     end
 
     def benefit(item)
-      if item.is_a?(Integer)
+      case item
+      when Integer
         if item != 0
           @credits += item
           self.log "Career benefit: #{item} credits"
         end
-      elsif item.is_a?(String)
+      when String
         @stuff[item] ||= 0
         @stuff[item] += 1
         self.log "Career benefit: #{item}"
-      elsif item.is_a?(Array)
-        items.each { |i| self.benefit i }
+      when Symbol
+        @stats.bump(item)
+        self.log "Career benefit: #{item} bump to #{@stats[item]}"
+      when Array
+        item.each { |i| self.benefit i }
       else
-        raise "unexpected benefit: #{benefit.inspect}"
+        raise "unexpected benefit: #{item.inspect}"
       end
       self
     end
