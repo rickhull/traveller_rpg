@@ -11,7 +11,33 @@ describe Character do
       @roll = Character::Stats.roll    # randos
     end
 
-    # TODO: Stats.sym and Stats.member?
+    describe Character::Stats.method(:sym) do
+      it "converts a string to a symbol" do
+        valid = { 'ABC DEF' => :abc_def,
+                  'asDf' => :asdf,
+                  'Social Status' => :social_status }
+        valid.each { |str, sym|
+          Character::Stats.sym(str).must_equal sym
+        }
+      end
+
+      it "returns any symbol passed in" do
+        [:asdf, :social_status, :"any-thing-goes"].each { |sym|
+          Character::Stats.sym(sym).must_equal sym
+        }
+      end
+    end
+
+    describe Character::Stats.method(:member?) do
+      it "accepts a string or symbol and returns true or false" do
+        [:strength, 'Dexterity', 'enDuRance', 'social Status'].each { |valid|
+          Character::Stats.member?(valid).must_equal true
+        }
+        ['xStrength', 'dexterity endurance', 'a-s_d-fg#*'].each { |invalid|
+          Character::Stats.member?(invalid).must_equal false
+        }
+      end
+    end
 
     describe Character::Stats.method(:new) do
       it "returns a set of Stats with nil values" do
