@@ -85,8 +85,7 @@ describe CareerPath do
         career.active?.must_equal true
         case career
         when @career.class
-          # TODO: this can fail if CareerPath.draft_career?(@career.name)
-          # career.must_equal @career
+          career.must_equal @career unless CareerPath.draft_career? career.name
         when Drifter
           # ok
         else
