@@ -225,8 +225,7 @@ module TravellerRPG
     def take_rank_benefit
       rb = self.rank_benefit or return self
       label = self.officer? ? "officer rank" : "rank"
-      title, skill, stat, level =
-                          rb.values_at('title', 'skill', 'stat', 'level')
+      title, skill, stat, level = rb.values_at(:title, :skill, :stat, :level)
       if title
         @char.log "Awarded #{label} title: #{title}"
         @title = title

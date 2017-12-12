@@ -167,7 +167,10 @@ describe Career do
 
       describe "Career#rank_benefit" do
         it "must return rank benefits according to specialty and rank" do
-          title, skill, level = @career.rank_benefit
+          @career.rank.must_equal 0
+          title, skill, level = @career.rank_benefit.values_at(:title,
+                                                               :skill,
+                                                               :level)
           title.must_equal @title
           skill.must_equal @skill
           level.must_be_nil # in this case, for @rank == 0 for ExampleCareer

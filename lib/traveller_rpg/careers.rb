@@ -289,25 +289,49 @@ module TravellerRPG
     def self.fetch_ranks!(hsh)
       r = hsh['ranks'] or raise(RankError, "no rank: #{hsh}")
       raise(RankError, r.inspect) unless r.is_a? Hash and r.size <= 7
+      res = {}
       r.each { |rank, h|
+        res[rank] = {}
         raise(RankError, h.inspect) unless h.is_a? Hash and h.size <= 4
         raise(RankError, h.inspect) if (h.keys & %w{title skill stat}).empty?
-        if h.key? 'skill' and !self.skill? h['skill']
-          raise(UnknownSkill, h['skill']) unless h['skill'].is_a?(Hash)
-          a = h['skill']['choose']
-          raise(RankError, "choose: #{h['skill']}") unless a.is_a?(Array)
-          a.each { |sk| raise(UnknownSkill, sk) unless self.skill? sk }
+        title, skill, stat, level = h.values_at(*%w{title skill stat level})
+        if title
+          raise(RankError, "not a string: #{title}") unless title.is_a?(String)
+          res[rank][:title] = title
         end
-        if h.key? 'stat' and !self.stat? h['stat']
-          raise(UnknownStat, h['stat']) unless h['stat'].is_a? Hash
-          a = h['stat']['choose']
-          raise(RankError, "choose: #{h['stat']}") unless a.is_a?(Array)
-          a.each { |stat| raise(UnknownStat, stat) unless self.stat? stat }
+        if skill
+          case skill
+          when Hash
+            a = skill['choose']
+            raise(RankError, "no choose: #{skill}") unless a.is_a?(Array)
+            a.each { |sk| raise(UnknownSkill, sk) unless self.skill? sk }
+          when String
+            raise(UnknownSkill, skill) unless self.skill?(skill)
+          else
+            raise(UnknownSkill, skill)
+          end
+          res[rank][:skill] = skill
         end
-        if h.key? 'level' and !(h.key? 'skill' or h.key? 'stat')
-          raise(RankError, "level without a skill/stat")
+        if stat
+          case stat
+          when Hash
+            a = stat['choose']
+            raise(RankError, "choose: #{stat}") unless a.is_a?(Array)
+            a.each { |st| raise(UnknownStat, st) unless self.stat? st }
+          when String
+            raise(UnknownStat, stat) unless self.stat?(stat)
+          else
+            raise(UnknownStat, stat)
+          end
+          res[rank][:stat] = stat
+        end
+        if level
+          raise(RankError, "unexpected level") unless skill or stat
+          raise(RankError, "bad level: #{level}") unless (0..5).include?(level)
+          res[rank][:level] = level
         end
       }
+      res
     end
 
     def self.specialist(hsh)
