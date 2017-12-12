@@ -6,6 +6,14 @@ module TravellerRPG
   class Character
     Stats = Struct.new(:strength, :dexterity, :endurance,
                        :intelligence, :education, :social_status) do
+      def self.sym(str)
+        str.is_a?(Symbol) ? str : str.to_s.downcase.gsub(' ', '_').to_sym
+      end
+
+      def self.member?(stat)
+        self.members.include? self.sym stat
+      end
+
       def self.roll
         self.new(*Array.new(6) { TravellerRPG.roll '2d6' })
       end
