@@ -1,5 +1,8 @@
+require 'yaml'
 require 'traveller_rpg'
 require 'traveller_rpg/career'
+require 'traveller_rpg/character'
+require 'traveller_rpg/skill_set'
 
 module TravellerRPG
   class Army < MilitaryCareer
@@ -279,9 +282,6 @@ module TravellerRPG
     class MishapError < Error; end
     class CreditError < Error; end
     class BenefitError < Error; end
-
-    require 'yaml'
-    require 'traveller_rpg/character'
 
     def self.load(file_name)
       hsh = YAML.load_file(self.find(file_name))
