@@ -6,4 +6,15 @@ require 'traveller_rpg/career_path'
 include TravellerRPG
 
 careers = %w{Agent Citizen Entertainer Merchant Noble Rogue Scholar Scout}
-CareerPath.run(careers, character: Generator.character)
+begin
+  path = CareerPath.run(careers, character: Generator.character)
+rescue => e
+  puts [e.class, e.message].join(': ')
+  begin
+    require 'pry'
+    binding.pry
+  rescue LoadError
+    # ok
+  end
+  raise
+end
