@@ -3,72 +3,93 @@ require 'traveller_rpg/career'
 
 module TravellerRPG
   class Army < MilitaryCareer
-    QUALIFICATION = [:endurance, 5]
+    QUALIFICATION = { endurance: 5 }
     AGE_PENALTY = 30
     PERSONAL_SKILLS = [:strength, :dexterity, :endurance,
                        'Gambler', 'Medic', 'Melee']
-    SERVICE_SKILLS =  [['Drive', 'Vacc Suit'], 'Athletics', 'Gun Combat',
-                      'Recon', 'Melee', 'Heavy Weapons']
+    SERVICE_SKILLS =  [ { choose: ['Drive', 'Vacc Suit'] }, 'Athletics',
+                        'Gun Combat', 'Recon', 'Melee', 'Heavy Weapons']
     ADVANCED_SKILLS = ['Tactics:Military', 'Electronics', 'Navigation',
                        'Explosives', 'Engineer', 'Survival']
     OFFICER_SKILLS = ['Tactics:Military', 'Leadership', 'Advocate',
                       'Diplomat', 'Electronics', 'Admin']
     RANKS = {
-      0 => ['Private', 'Gun Combat'],
-      1 => ['Lance Corporal', 'Recon', 1],
-      2 => ['Corporal'],
-      3 => ['Lance Sergeant', 'Leadership', 1],
-      4 => ['Sergeant'],
-      5 => ['Gunnery Sergeant'],
-      6 => ['Sergeant Major'],
+      0 => { title: 'Private',
+             skill: 'Gun Combat',
+             level: 1 },
+      1 => { title: 'Lance Corporal',
+             skill: 'Recon',
+             level: 1 },
+      2 => { title: 'Corporal' },
+      3 => { title: 'Lance Sergeant',
+             skill: 'Leadership',
+             level: 1 },
+      4 => { title: 'Sergeant' },
+      5 => { title: 'Gunnery Sergeant' },
+      6 => { title: 'Sergeant Major' },
     }
     OFFICER_RANKS = {
-      1 => ['Lieutenant', 'Leadership', 1],
-      2 => ['Captain'],
-      3 => ['Major', 'Tactics:Military', 1],
-      4 => ['Lieutenant Colonel'],
-      5 => ['Colonel'],
-      6 => ['General', :social_status, 10], # TODO
+      1 => { title: 'Lieutenant',
+             skill: 'Leadership',
+             level: 1 },
+      2 => { title: 'Captain' },
+      3 => { title: 'Major',
+             skill: 'Tactics:Military',
+             level: 1 },
+      4 => { title: 'Lieutenant Colonel' },
+      5 => { title: 'Colonel' },
+      6 => { title: 'General',
+             stat:  :social_status,
+             level: 10 },  # TODO: Choose :social_status +1 or level: 10
     }
 
     SPECIALIST = {
       'Support' => {
-        skills: ['Mechanic', ['Drive', 'Flyer'], 'Profession',
+        survival: { endurance: 5 },
+        advancement: { education: 7 },
+        skills: ['Mechanic', { choose: ['Drive', 'Flyer'] }, 'Profession',
                  'Explosives', 'Electronics:Comms', 'Medic'],
-        survival: [:endurance, 5],
-        advancement: [:education, 7],
         ranks: RANKS,
       },
       'Infantry' => {
+        survival: { strength: 6 },
+        advancement: { education: 6 },
         skills: ['Gun Combat', 'Melee', 'Heavy Weapons',
                  'Stealth', 'Athletics', 'Recon'],
-        survival: [:strength, 6],
-        advancement: [:education, 6],
         ranks: RANKS,
       },
       'Cavalry' => {
+        survival: { intelligence: 7 },
+        advancement: { intelligence: 5 },
         skills: ['Mechanic', 'Drive', 'Flyer', 'Recon',
                  'Heavy Weapons:Vehicle', 'Electronics:Sensors'],
-        survival: [:intelligence, 7],
-        advancement: [:intelligence, 5],
         ranks: RANKS,
       },
     }
 
-    # roll => [cash, benefit]
-    MUSTER_OUT = {
-      1 => [2000, 'Combat Implant'],
-      2 => [5000, 'INT +1'],
-      3 => [10_000, 'EDU +1'],
-      4 => [10_000, 'Weapon'],
-      5 => [10_000, 'Armour'],
-      6 => [20_000, ['END +1', 'Combat Implant']],
-      7 => [30_000, 'SOC +1'],
+    CREDITS = {
+      1 => 2000,
+      2 => 5000,
+      3 => 10_000,
+      4 => 10_000,
+      5 => 10_000,
+      6 => 20_000,
+      7 => 30_000,
+    }
+
+    BENEFITS = {
+      1 => 'Combat Implant',
+      2 => :intelligence,
+      3 => :education,
+      4 => 'Weapon',
+      5 => 'Armour',
+      6 => { choose: [:endurance, 'Combat Implant'] },
+      7 => :social_status,
     }
   end
 
   class Marines < MilitaryCareer
-    QUALIFICATION = [:endurance, 6]
+    QUALIFICATION = { endurance: 6 }
     AGE_PENALTY = 30
 
     PERSONAL_SKILLS = [:strength, :dexterity, :endurance, 'Gambler',
@@ -79,61 +100,86 @@ module TravellerRPG
                        'Engineer', 'Pilot', 'Navigation']
     OFFICER_SKILLS = ['Electronics', 'Tactics', 'Admin',
                       'Advocate', 'Vacc Suit', 'Leadership']
+
     RANKS = {
-      0 => ['Marine', 'Gun Combat'], # TODO "or Melee Blade"
-      1 => ['Lance Corporal', 'Gun Combat'], # TODO: any
-      2 => ['Corporal'],
-      3 => ['Lance Sergeant', 'Leadership', 1],
-      4 => ['Sergeant'],
-      5 => ['Gunnery Sergeant', :endurance],
-      6 => ['Sergeant Major'],
+      0 => { title: 'Marine',
+             skill: { choose: ['Gun Combat', 'Melee:Blade' ] },
+             level: 1 },
+      1 => { title: 'Lance Corporal',
+             skill: 'Gun Combat',
+             level: 1 },
+      2 => { title: 'Corporal' },
+      3 => { title: 'Lance Sergeant',
+             skill: 'Leadership',
+             level: 1 },
+      4 => { title: 'Sergeant' },
+      5 => { title: 'Gunnery Sergeant',
+             stat:  :endurance },
+      6 => { title: 'Sergeant Major' },
     }
+
     OFFICER_RANKS = {
-      1 => ['Lieutenant', 'Leadership', 1],
-      2 => ['Captain'],
-      3 => ['Force Commander', 'Tactics'],
-      4 => ['Lieutenant Colonel'],
-      5 => ['Colonel', :social_status, 10],  # TODO
-      6 => ['Brigadier'],
+      1 => { title: 'Lieutenant',
+             skill: 'Leadership',
+             level: 1 },
+      2 => { title: 'Captain' },
+      3 => { title: 'Force Commander',
+             skill: 'Tactics',
+             level: 1 },
+      4 => { title: 'Lieutenant Colonel' },
+      5 => { title: 'Colonel',
+             stat:  :social_status,
+             level: 10 },  # TODO or bump social_status
+      6 => { title: 'Brigadier' },
     }
 
     SPECIALIST = {
       'Support' => {
-        skills: ['Electronics', 'Mechanic', ['Drive', 'Flyer'],
+        survival: { endurance: 5 },
+        advancement: { education: 7 },
+        skills: ['Electronics', 'Mechanic', { choose: ['Drive', 'Flyer'] },
                  'Medic', 'Heavy Weapons', 'Gun Combat'],
-        survival: [:endurance, 5],
-        advancement: [:education, 7],
         ranks: RANKS,
       },
       'Star Marine' => {
+        survival: { endurance: 6 },
+        advancement: { education: 6 },
         skills: ['Vacc Suit', 'Athletics', 'Gunner',
                  'Melee:Blade', 'Electronics', 'Gun Combat'],
-        survival: [:endurance, 6],
-        advancement: [:education, 6],
         ranks: RANKS,
       },
       'Ground Assault' => {
+        survival: { endurance: 7 },
+        advancement: { education: 5 },
         skills: ['Vacc Suit', 'Heavy Weapons', 'Recon',
                  'Melee:Blade', 'Tactics:Military', 'Gun Combat'],
-        survival: [:endurance, 7],
-        advancement: [:education, 5],
         ranks: RANKS,
       }
     }
 
-    MUSTER_OUT = {
-      1 => [2000, 'Armour'],
-      2 => [5000, 'INT +1'],
-      3 => [5000, 'EDU +1'],
-      4 => [10_000, 'Weapon'],
-      5 => [20_000, 'TAS Membership'],
-      6 => [30_000, ['Armour', 'END +1']],
-      7 => [40_000, 'SOC +2'],
+    CREDITS = {
+      1 => 2000,
+      2 => 5000,
+      3 => 5_000,
+      4 => 10_000,
+      5 => 20_000,
+      6 => 30_000,
+      7 => 40_000,
+    }
+
+    BENEFITS = {
+      1 => 'Armour',
+      2 => :intelligence,
+      3 => :education,
+      4 => 'Weapon',
+      5 => 'TAS Membership',
+      6 => { choose: [:endurance, 'Armour'] },
+      7 => [:social_status, :social_status],    # i.e. SOC +2
     }
   end
 
   class Navy < MilitaryCareer
-    QUALIFICATION = [:intelligence, 6]
+    QUALIFICATION = { intelligence: 6 }
     AGE_PENALTY = 34
 
     PERSONAL_SKILLS = [:strength, :dexterity, :endurance,
@@ -145,54 +191,79 @@ module TravellerRPG
     OFFICER_SKILLS = ['Leadership', 'Electronics', 'Pilot',
                       'Melee:Blade', 'Admin', 'Tactics:Naval']
     RANKS = {
-      0 => ['Crewman'],
-      1 => ['Able Spacehand', 'Mechanic', 1],
-      2 => ['Petty Officer 3rd class', 'Vacc Suit', 1],
-      3 => ['Petty Officer 2nd class'],
-      4 => ['Petty Officer 1st class', :endurance, nil],
-      5 => ['Chief Petty Officer'],
-      6 => ['Master Chief'],
+      0 => { title: 'Crewman' },
+      1 => { title: 'Able Spacehand',
+             skill: 'Mechanic',
+             level: 1 },
+      2 => { title: 'Petty Officer 3rd class',
+             skill: 'Vacc Suit',
+             level: 1 },
+      3 => { title: 'Petty Officer 2nd class' },
+      4 => { title: 'Petty Officer 1st class',
+             stat:  :endurance },
+      5 => { title: 'Chief Petty Officer' },
+      6 => { title: 'Master Chief' },
     }
     OFFICER_RANKS = {
-      1 => ['Ensign', 'Melee:Blade', 1],
-      2 => ['Sublieutenant', 'Leadership', 1],
-      3 => ['Lieutenant'],
-      4 => ['Commander', 'Tactics:Naval', 1],
-      5 => ['Captain', :social_status, 10], # TODO
-      6 => ['Admiral', :social_status, 12], # TODO
+      1 => { title: 'Ensign',
+             skill: 'Melee:Blade',
+             level: 1 },
+      2 => { title: 'Sublieutenant',
+             skill: 'Leadership',
+             level: 1 },
+      3 => { title: 'Lieutenant' },
+      4 => { title: 'Commander',
+             skill: 'Tactics:Naval',
+             level: 1 },
+      5 => { title: 'Captain',
+             stat:  :social_status,
+             level: 10 }, # TODO or bump
+      6 => { title: 'Admiral',
+             stat:  :social_status,
+             level: 12 }, # TODO or bump
     }
     SPECIALIST = {
       'Line Crew' => {
+        survival: { intelligence: 5 },
+        advancement: { education: 7 },
         skills: ['Electronics', 'Mechanic', 'Gun Combat',
                  'Flyer', 'Melee', 'Vacc Suit'],
-        survival: [:intelligence, 5],
-        advancement: [:education, 7],
         ranks: RANKS,
       },
       'Engineer Gunner' => {
+        survival: { intelligence: 6 },
+        advancement: { education: 6 },
         skills: ['Engineer', 'Mechanic', 'Electronics',
                  'Engineer', 'Gunner', 'Flyer'],
-        survival: [:intelligence, 6],
-        advancement: [:education, 6],
         ranks: RANKS,
       },
       'Flight' => {
+        survival: { dexterity: 7 },
+        advancement: { education: 5 },
         skills: ['Pilot', 'Flyer', 'Gunner',
                  'Pilot:Small Craft', 'Astrogation', 'Electronics'],
-        survival: [:dexterity, 7],
-        advancement: [:education, 5],
         ranks: RANKS,
       },
     }
 
-    MUSTER_OUT = {
-      1 => [1000, ['Personal Vehicle', 'Ship Share']],
-      2 => [5000, 'INT +1'],
-      3 => [5000, ['EDU +1', 'Two Ship Shares']],
-      4 => [10_000, 'Weapon'],
-      5 => [20_000, 'TAS Membership'],
-      6 => [50_000, ["Ship's Boat", 'Two Ship Shares']],
-      7 => [50_000, 'SOC +2'],
+    CREDITS = {
+      1 => 1000,
+      2 => 5000,
+      3 => 5000,
+      4 => 10_000,
+      5 => 20_000,
+      6 => 50_000,
+      7 => 50_000,
+    }
+
+    BENEFITS = {
+      1 => { choose: ['Personal Vehicle', 'Ship Share'] },
+      2 => :intelligence,
+      3 => { choose: [:education, ['Ship Share', 'Ship Share' ]] },
+      4 => 'Weapon',
+      5 => 'TAS Membership',
+      6 => { choose: ["Ship's Boat", ['Ship Share', 'Ship Share']] },
+      7 => [:social_stats, :social_status],
     }
   end
 
@@ -229,109 +300,119 @@ module TravellerRPG
       else
         # prefer .yaml to .yml -- otherwise give up
         files.grep(/\.yaml\z/).first or
-          raise "#{file_name} matches #{files.inspect}"
+          raise "#{file_name} matches #{files}"
       end
-    end
-
-    def self.stat?(str)
-      Character::Stats.members.include? str.to_sym
     end
 
     def self.skill?(str)
       !!TravellerRPG::SkillSet.split_skill!(str) rescue false
     end
 
-    def self.known(str)
-      return :stat if self.stat?(str)
-      return :skill if self.skill?(str)
-      :unknown
+    # accepts symbol or string
+    def self.stat? stat
+      Character::Stats.member? stat
     end
 
-    def self.stat_check?(hsh)
-      return false unless hsh.is_a?(Hash) and hsh.size == 1
-      if hsh['choose']
-        hsh['choose'].all? { |k, v| self.stat_check?(k => v) }
-      else
-        hsh.all? { |k, v| self.stat?(k) and (0..15).include? v }
-      end
+    # accepts symbol or string; raises if not recongnized
+    def self.stat_sym! stat
+      raise(UnknownStat, stat) unless self.stat? stat
+      Character::Stats.sym stat
     end
 
+    # accepts symbol or string; returns symbol if stat is recognized
+    def self.stat_sym stat
+      self.stat?(stat) ? Character::Stats.sym(stat) : stat
+    end
+
+    # convert 'choose' to :choose and e.g. 'strength' to :strength
     def self.fetch_stat_check!(hsh, key)
       raise(StatCheckError, "#{key} not found: #{hsh}") unless hsh.key? key
-      val = hsh[key] or return false # e.g. Drifter
-      raise(StatCheckError, val.inspect) unless self.stat_check?(val)
-      val
+      cfg = hsh[key] or return false # e.g. Drifter
+      if !cfg.is_a?(Hash) or (key != 'choose' and cfg.size != 1)
+        raise(StatCheckError, cfg)
+      end
+      result = {}
+      if cfg.key? 'choose'
+        result[:choose] = self.fetch_stat_check!(cfg, 'choose')
+      else
+        result[self.stat_sym!(cfg.keys.first)] = cfg.values.first
+      end
+      result
     end
 
+    # converto 'choose' to :choose and e.g. 'strength' to :strength
     def self.fetch_skills!(hsh, key, stats_allowed: true)
-      val = hsh.fetch(key)
-      return false if val == false # Drifter['advanced']
-      raise(SkillError, val.inspect) unless val.is_a?(Array) and val.size == 6
-      val.each { |v|
-        case v
-        when Hash
-          raise(SkillError, v) unless v['choose'].is_a?(Array)
-          vals = v['choose']
+      ary = hsh.fetch(key)
+      return false if ary == false # Drifter['advanced']
+      if !ary.is_a?(Array) or (key != 'choose' and ary.size != 6)
+        raise(SkillError, "bad array: #{ary} (size #{size.inspect}")
+      end
+      result = []
+      ary.each { |val|
+        case val
+        when Hash # recursive, 'choose' becomes :choose
+          raise(SkillError, val) unless val['choose'].is_a?(Array)
+          result << { choose: self.fetch_skills!(val, 'choose') }
         else
-          vals = [v]
-        end
-        vals.each { |vv|
-          if stats_allowed
-            raise(SkillError, "unknown: #{vv}") if self.known(vv) == :unknown
+          if stats_allowed and self.stat? val
+            result << self.stat_sym!(val)
           else
-            raise(UnknownSkill, vv) unless self.skill?(vv)
+            result << (self.skill?(val) ? val : raise(UnknownSkill, val))
           end
-        }
+        end
       }
-      val
+      result
     end
 
-    def self.fetch_ranks!(hsh)
+    def self.ranks(hsh)
       r = hsh['ranks'] or raise(RankError, "no rank: #{hsh}")
-      raise(RankError, r.inspect) unless r.is_a? Hash and r.size <= 7
-      res = {}
+      raise(RankError, r) unless r.is_a? Hash and r.size <= 7
+      result = {}
       r.each { |rank, h|
-        res[rank] = {}
-        raise(RankError, h.inspect) unless h.is_a? Hash and h.size <= 4
-        raise(RankError, h.inspect) if (h.keys & %w{title skill stat}).empty?
+        result[rank] = {}
+        raise(RankError, h) unless h.is_a? Hash and h.size <= 4
+        raise(RankError, h) if (h.keys & %w{title skill stat}).empty?
         title, skill, stat, level = h.values_at(*%w{title skill stat level})
         if title
           raise(RankError, "not a string: #{title}") unless title.is_a?(String)
-          res[rank][:title] = title
+          result[rank][:title] = title
         end
         if skill
           case skill
           when Hash
             a = skill['choose']
             raise(RankError, "no choose: #{skill}") unless a.is_a?(Array)
-            a.each { |sk| raise(UnknownSkill, sk) unless self.skill? sk }
+            result[rank][:skill] = {
+              choose: a.map { |sk|
+                self.skill?(sk) ? sk : raise(UnknownSkill, sk)
+              }
+            }
           when String
-            raise(UnknownSkill, skill) unless self.skill?(skill)
+            result[rank][:skill] =
+              self.skill?(skill) ? skill : raise(UnknownSkill, skill)
           else
             raise(UnknownSkill, skill)
           end
-          res[rank][:skill] = skill
         end
         if stat
           case stat
           when Hash
             a = stat['choose']
             raise(RankError, "choose: #{stat}") unless a.is_a?(Array)
-            a.each { |st| raise(UnknownStat, st) unless self.stat? st }
-          when String
-            raise(UnknownStat, stat) unless self.stat?(stat)
+            result[rank][:stat] = { choose: a.map { |st| self.stat_sym! st } }
+          when String, Symbol
+            result[rank][:stat] = self.stat_sym! stat
           else
             raise(UnknownStat, stat)
           end
-          res[rank][:stat] = stat
         end
         if level
           raise(RankError, "unexpected level") unless skill or stat
           raise(RankError, "bad level: #{level}") unless (0..5).include?(level)
-          res[rank][:level] = level
+          result[rank][:level] = level
         end
       }
-      res
+      result
     end
 
     def self.specialist(hsh)
@@ -341,16 +422,16 @@ module TravellerRPG
         result[asg][:survival] = self.fetch_stat_check!(cfg, 'survival')
         result[asg][:advancement] = self.fetch_stat_check!(cfg, 'advancement')
         result[asg][:skills] = self.fetch_skills!(cfg, 'skills')
-        result[asg][:ranks] = self.fetch_ranks!(cfg)
+        result[asg][:ranks] = self.ranks(cfg)
       }
       result
     end
 
     def self.events(hsh)
       e = hsh.fetch('events')
-      raise(EventError, e.inspect) unless e.is_a?(Hash) and e.size == 11
+      raise(EventError, e) unless e.is_a?(Hash) and e.size == 11
       e.values.each { |h|
-        raise(EventError, h.inspect) unless h.is_a?(Hash)
+        raise(EventError, h) unless h.is_a?(Hash)
         text = h.fetch('text')
         raise(EventError, "text is empty") if text.empty?
         # TODO: validate h.fetch('script')
@@ -360,9 +441,9 @@ module TravellerRPG
 
     def self.mishaps(hsh)
       m = hsh.fetch('mishaps')
-      raise(MishapError, m.inspect) unless m.is_a?(Hash) and m.size == 6
+      raise(MishapError, m) unless m.is_a?(Hash) and m.size == 6
       m.values.each { |h|
-        raise(MishapError, h.inspect) unless h.is_a?(Hash)
+        raise(MishapError, h) unless h.is_a?(Hash)
         text = h.fetch('text')
         raise(MishapError, "text is empty") if text.empty?
         # TODO: validate h.fetch('script')
@@ -372,7 +453,7 @@ module TravellerRPG
 
     def self.credits(hsh)
       c = hsh.fetch('credits')
-      raise(CreditError, c.inspect) unless c.is_a?(Array) and c.size == 7
+      raise(CreditError, c) unless c.is_a?(Array) and c.size == 7
       creds = {}
       c.each.with_index { |credits, idx|
         raise(CreditError, credits) unless credits.is_a? Integer
@@ -381,32 +462,25 @@ module TravellerRPG
       creds
     end
 
-    def self.benefit_type(item)
-      raise(BenefitError, item.inspect) if !item.is_a?(String) or item.empty?
-      k = self.known(item)
-      k == :unknown ? :item : k
-    end
-
     def self.benefits(hsh)
+      result = {}
       b = hsh.fetch('benefits')
       raise(BenefitError, b) unless b.is_a?(Array) and b.size == 7
-      benefits = {}
       b.each.with_index { |item, idx|
         case item
         when String
-          self.benefit_type(item)
+          result[idx + 1] = self.stat_sym(item)
         when Hash
-          ary = item['choose'] or raise(BenefitError, ary)
-          raise(BenefitError, ary) unless ary.is_a?(Array) and ary.size < 5
-          ary.each { |a| self.benefit_type a }
+          ary = item['choose']
+          raise(BenefitError, item) unless ary.is_a?(Array) and ary.size < 5
+          result[idx + 1] = { choose: ary.map { |a| self.stat_sym(a) } }
         when Array
-          item.each { |a| self.benefit_type a }
+          result[idx + 1] = item.map { |a| self.stat_sym(a) }
         else
           raise(BenefitError, item)
         end
-        benefits[idx + 1] = item
       }
-      benefits
+      result
     end
 
     def self.generate_classes(file_name)
@@ -420,7 +494,7 @@ module TravellerRPG
           c.const_set('QUALIFICATION',
                       self.fetch_stat_check!(cfg, 'qualification'))
           c.const_set('PERSONAL_SKILLS', self.fetch_skills!(cfg, 'personal'))
-          c.const_set('SERVICE_SKILLS', self.fetch_skills!(cfg, 'service'))
+          c.const_set('SERVICE_SKILLS', self.fetch_skills!(cfg,  'service'))
           c.const_set('ADVANCED_SKILLS', self.fetch_skills!(cfg, 'advanced'))
           c.const_set('SPECIALIST', self.specialist(cfg))
 

@@ -103,16 +103,16 @@ module TravellerRPG
 
     def stat_check(hsh)
       return hsh if hsh == false
-      case hsh['choose']
+      case hsh[:choose]
       when Hash
         s = TravellerRPG.choose("Choose stat check:",
-                                *hsh['choose'].keys)
-        [s, hsh['choose'][s]]
+                                *hsh[:choose].keys)
+        [s, hsh[:choose][s]]
       when NilClass
         s = hsh.keys.first
         [s, hsh[s]]
       else
-        raise("unexpected choose: #{hsh['choose']}")
+        raise("unexpected choose: #{hsh[:choose]}")
       end
     end
 
@@ -162,11 +162,11 @@ module TravellerRPG
       if choose
         self.class::SERVICE_SKILLS.map { |s|
           s.is_a?(Hash) ?
-            TravellerRPG.choose("Choose:", *s.fetch('choose')) : s
+            TravellerRPG.choose("Choose:", *s.fetch(:choose)) : s
         }
       else
         self.class::SERVICE_SKILLS.reduce([]) { |ary, s|
-          ary + (s.is_a?(Hash) ? s.fetch('choose') : [s])
+          ary + (s.is_a?(Hash) ? s.fetch(:choose) : [s])
         }
       end
     end
@@ -187,7 +187,7 @@ module TravellerRPG
         when 'Officer'  then self.class::OFFICER_SKILLS.fetch(roll - 1)
         end
       if skill.is_a?(Hash)
-        skill = TravellerRPG.choose("Choose:", *skill.fetch('choose'))
+        skill = TravellerRPG.choose("Choose:", *skill.fetch(:choose))
       end
       # the "skill" could be a stat e.g. endurance
       if @char.skills.known?(skill)
@@ -233,7 +233,7 @@ module TravellerRPG
       if skill
         if skill.is_a?(Hash)
           skill = TravellerRPG.choose("Choose rank bonus:",
-                                      *skill.fetch('choose'))
+                                      *skill.fetch(:choose))
         end
         @char.log "Achieved #{label} bonus: #{skill} #{level}"
         @char.skills.bump(skill, level)
@@ -241,7 +241,7 @@ module TravellerRPG
       if stat
         if stat.is_a?(Hash)
           stat = TravellerRPG.choose("Choose rank bonus:",
-                                     *stat.fetch('choose'))
+                                     *stat.fetch(:choose))
         end
         @char.log "Achieved #{label} bonus: #{stat} #{level}"
         @char.stats.bump(stat, level)
@@ -313,7 +313,7 @@ module TravellerRPG
         when Array
           b.each { |ben| @char.benefit ben }
         when Hash
-          choice = TravellerRPG.choose("Choose benefit:", *b.fetch('choose'))
+          choice = TravellerRPG.choose("Choose benefit:", *b.fetch(:choose))
           @char.benefit choice
         else
           @char.benefit b
