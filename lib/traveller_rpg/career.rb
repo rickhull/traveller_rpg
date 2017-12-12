@@ -162,7 +162,7 @@ module TravellerRPG
       if choose
         self.class::SERVICE_SKILLS.map { |s|
           s.is_a?(Hash) ?
-            TravellerRPG.choose("Choose:", *s.fetch(:choose)) : s
+            TravellerRPG.choose("Choose skill:", *s.fetch(:choose)) : s
         }
       else
         self.class::SERVICE_SKILLS.reduce([]) { |ary, s|
