@@ -2,6 +2,7 @@ require 'traveller_rpg/skill'
 
 module TravellerRPG
   class SkillSet
+    # TODO: rename to Unknown
     class UnknownSkill < KeyError; end
 
     def self.split_skill!(str)

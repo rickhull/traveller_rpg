@@ -11,6 +11,8 @@ describe Character do
       @roll = Character::Stats.roll    # randos
     end
 
+    # TODO: Stats.sym and Stats.member?
+
     describe Character::Stats.method(:new) do
       it "returns a set of Stats with nil values" do
         @new.strength.must_be_nil
