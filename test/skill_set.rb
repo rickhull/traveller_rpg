@@ -7,7 +7,11 @@ describe SkillSet do
   describe SkillSet.method(:split_skill!) do
     it "recognizes subskills" do
       SkillSet.split_skill!('Animals:Handling').must_equal ['Animals',
-                                                                'Handling']
+                                                            'Handling']
+    end
+
+    it "ignores trailing colon" do
+      SkillSet.split_skill!('Art:').must_equal ['Art', nil]
     end
 
     it "must accept a single string arg do" do
@@ -17,9 +21,12 @@ describe SkillSet do
     end
 
     it "raises UnknownSkill for unknown skills" do
-      proc {
-        SkillSet.split_skill!('This:That')
-      }.must_raise SkillSet::UnknownSkill
+      ['This:That', 'art'].each { |unk|
+        proc { SkillSet.split_skill!(unk) }.must_raise SkillSet::UnknownSkill
+      }
+      [:art, :Art].each { |invalid|
+        proc { SkillSet.split_skill!(invalid) }.must_raise NoMethodError
+      }
     end
   end
 
