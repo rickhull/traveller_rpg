@@ -29,7 +29,7 @@ module TravellerRPG
         ranks: {
           0 => { title: TITLE, skill: SKILL },
         },
-      }
+      },
     }
 
     CREDITS = Array.new(7) { rand 9999 }
@@ -50,6 +50,32 @@ module TravellerRPG
     OFFICER_SKILLS = Array.new(6) { OFFICER_SKILL }
     OFFICER_RANKS = {
       0 => { title: OFFICER_TITLE, skill: OFFICER_SKILL },
+    }
+  end
+
+  class LongCareer < ExampleCareer
+    SPECIALIST = {
+      'Specialist' => {
+        skills: Array.new(6) { SKILL },
+        survival: { STAT => 0 },
+        advancement: { STAT => STAT_CHECK },
+        ranks: {
+          0 => { title: TITLE, skill: SKILL },
+        },
+      },
+    }
+  end
+
+  class ShortCareer < ExampleCareer
+    SPECIALIST = {
+      'Specialist' => {
+        skills: Array.new(6) { SKILL },
+        survival: { STAT => 13 },
+        advancement: { STAT => STAT_CHECK },
+        ranks: {
+          0 => { title: TITLE, skill: SKILL },
+        },
+      },
     }
   end
 end
@@ -147,8 +173,12 @@ describe Career do
       describe "Career#survival_check?" do
         it "must return true/false based on the dice and check value" do
           capture_io do
-            @career.survival_check?(dm: 10).must_equal true
-            @career.survival_check?(dm: -10).must_equal false
+            long_career = LongCareer.new(Generator.character)
+            short_career = ShortCareer.new(Generator.character)
+            long_career.activate
+            short_career.activate
+            long_career.survival_check?(dm: 10).must_equal true
+            short_career.survival_check?(dm: -10).must_equal false
           end
         end
       end
@@ -274,21 +304,19 @@ describe Career do
 
       describe "Career#retirement_bonus" do
         it "must be 0 unless term >= 5" do
-          # TODO: create LongCareer with survival_check 0
-          6.times {
-            capture_io {
+          long_career = LongCareer.new(@char)
+          capture_io do
+            long_career.activate
+            6.times { |term|
               begin
-                @career.run_term
+                long_career.run_term
               rescue Career::Error
-                # fine
+                # rolled 2 on advancement, @term_mandate == :must_exit
+                break
               end
             }
-          }
-          if @career.term < 5
-            @career.retirement_bonus.must_equal 0
-          else
-            @career.retirement_bonus.must_be :>, 0
           end
+          long_career.retirement_bonus.must_be(:>, 0) if long_career.term > 5
         end
       end
 
