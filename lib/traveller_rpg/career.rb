@@ -346,34 +346,6 @@ module TravellerRPG
     end
   end
 
-  class ExampleCareer < Career
-    #
-    # These are not present in a normal Career
-
-    STAT = :strength
-    STAT_CHECK = 5
-    TITLE = 'Rookie'
-    SKILL = 'Deception'
-
-    #
-    # These are necessary for a Career to function
-
-    QUALIFICATION = [STAT, STAT_CHECK]
-
-    PERSONAL_SKILLS = Array.new(6) { SKILL }
-    SERVICE_SKILLS = Array.new(6) { SKILL }
-    ADVANCED_SKILLS = Array.new(6) { SKILL }
-
-    SPECIALIST = {
-      'Specialist' => {
-        skills: Array.new(6) { SKILL },
-        survival: [STAT, STAT_CHECK],
-        advancement: [STAT, STAT_CHECK],
-        ranks: { 0 => [TITLE, SKILL] },
-      }
-    }
-  end
-
   #
   # MilitaryCareer adds Officer commission and parallel Officer ranks
 

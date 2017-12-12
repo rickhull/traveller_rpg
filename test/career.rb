@@ -2,6 +2,41 @@ require 'traveller_rpg/career'
 require 'traveller_rpg/generator'
 require 'minitest/autorun'
 
+module TravellerRPG
+  class ExampleCareer < Career
+    #
+    # These are not present in a normal Career
+
+    STAT = 'strength'
+    STAT_CHECK = 5
+    TITLE = 'Rookie'
+    SKILL = 'Deception'
+
+    #
+    # These are necessary for a Career to function
+
+    QUALIFICATION = { STAT => STAT_CHECK }
+
+    PERSONAL_SKILLS = Array.new(6) { SKILL }
+    SERVICE_SKILLS = Array.new(6) { SKILL }
+    ADVANCED_SKILLS = Array.new(6) { SKILL }
+
+    SPECIALIST = {
+      'Specialist' => {
+        skills: Array.new(6) { SKILL },
+        survival: { STAT => STAT_CHECK },
+        advancement: { STAT => STAT_CHECK },
+        ranks: {
+          0 => { 'title': TITLE, 'skill': SKILL },
+        },
+      }
+    }
+
+    CREDITS = Array.new(7) { rand 9999 }
+    BENEFITS = Array.new(7) { 'Stuff' }
+  end
+end
+
 include TravellerRPG
 
 describe Career do
@@ -21,6 +56,7 @@ describe Career do
   describe "new instance" do
     before do
       capture_io { @char = Generator.character }
+      # note: @skill is acquired when @career is activated, due to rank 0
       @career = ExampleCareer.new(@char)
       @skill = ExampleCareer::SKILL
       @assignment = ExampleCareer::SPECIALIST.keys.first
@@ -128,6 +164,8 @@ describe Career do
       describe "Career#training_roll" do
         it "must bump a skill or stat" do
           level = @char.skills.level(@skill)
+          level.wont_be_nil
+          level.must_equal 1 # @skill was bumped to rank benefit for rank 0
           capture_io { @career.training_roll }
           @char.skills.level(@skill).must_equal level + 1
         end
@@ -238,14 +276,8 @@ describe Career do
       end
 
       describe "Career#muster_roll" do
-        it "returns 2 values: cash (credits) and a benefit" do
-          ary = []
-          capture_io { ary = @career.muster_roll('') }
-          ary.must_be_kind_of Array
-          ary.size.must_equal 2
-          ary.first.must_be_kind_of Integer
-          # TODO: Benefits are just stubbed out as String for now
-          ary.last.must_be_kind_of String
+        it "returns (1..7) (d6 + Gambler DM)" do
+          capture_io { (1..7).must_include @career.muster_roll }
         end
       end
 
@@ -256,15 +288,15 @@ describe Career do
 
         it "yields at least one cash roll" do
           @char.cash_rolls.must_equal 0
-          mishap = false
+          status = nil
           capture_io {
             @career.run_term
-            mishap = @career.status == :mishap
+            status = @career.status
             @career.muster_out
           }
           @char.cash_rolls.must_equal 1
           # last term doesn't get a benefit in case of mishap
-          @char.stuff.size.must_equal (mishap ? 0 : 1)
+          @char.stuff.size.must_equal (status == :mishap ? 0 : 1)
         end
       end
     end
@@ -309,6 +341,7 @@ describe MilitaryCareer do
 
     describe "MilitaryCareer#activate" do
       it "must update status, assignment, title, skills" do
+        skip "until MilitaryCareers are converted to YAML"
         capture_io { @career.activate }
         @career.assignment.wont_be_nil
         @career.assignment.must_equal @assignment
@@ -320,6 +353,7 @@ describe MilitaryCareer do
       end
 
       it "must not activate twice" do
+        skip "until MilitaryCareers are converted to YAML"
         capture_io { @career.activate }
         proc { @career.activate }.must_raise RuntimeError
       end
