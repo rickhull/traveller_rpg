@@ -328,12 +328,13 @@ module TravellerRPG
     def self.fetch_stat_check!(hsh, key)
       raise(StatCheckError, "#{key} not found: #{hsh}") unless hsh.key? key
       cfg = hsh[key] or return false # e.g. Drifter
-      if !cfg.is_a?(Hash) or (key != 'choose' and cfg.size != 1)
-        raise(StatCheckError, cfg)
-      end
+      raise(StatCheckError, cfg) unless cfg.is_a?(Hash) and cfg.size == 1
       result = {}
       if cfg.key? 'choose'
-        result[:choose] = self.fetch_stat_check!(cfg, 'choose')
+        result[:choose] = {}
+        cfg['choose'].each { |stat, check|
+          result[:choose][self.stat_sym!(stat)] = check
+        }
       else
         result[self.stat_sym!(cfg.keys.first)] = cfg.values.first
       end
