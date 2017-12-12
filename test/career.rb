@@ -202,9 +202,11 @@ describe Career do
 
       describe "Career#advancement_roll" do
         it "tries to do MilitaryCareer#commission_roll" do
+          # TODO ?
         end
 
         it "will only advance a rank once per term" do
+          # TODO ?
         end
       end
 
