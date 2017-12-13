@@ -5,7 +5,8 @@ require 'traveller_rpg/career_path'
 
 include TravellerRPG
 
-careers = %w{Agent Citizen Entertainer Merchant Noble Rogue Scholar Scout}
+careers = %w{Agent Army Citizen Entertainer Marines Merchant
+             Navy Noble Rogue Scholar Scout}
 begin
   path = CareerPath.run(careers, character: Generator.character)
 rescue => e
