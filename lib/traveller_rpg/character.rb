@@ -203,7 +203,8 @@ module TravellerRPG
                       @desc.name,
                       homeworld.name,
                       homeworld.traits.join(' '))
-      puts self.report(skills: false, stuff: false, credits: false)
+      puts self.report(desc: :long, skills: false,
+                       stuff: false, credits: false)
       self.log format("Education %i provides up to %i background skills",
                       @stats.education, skill_count)
       homeworld.choose_skills(skill_count).each { |skill|

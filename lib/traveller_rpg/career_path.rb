@@ -27,7 +27,7 @@ module TravellerRPG
     end
 
     def self.run(careers, character:)
-      puts "\n", character.report(desc: :long, stuff: false, credits: false)
+      puts "\n", character.report(stuff: false, credits: false)
       path = self.new(character)
       loop {
         careers = careers.select { |c| path.eligible? c }
