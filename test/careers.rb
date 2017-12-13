@@ -89,7 +89,7 @@ describe Careers do
 
     it "fetches a key from hsh" do
       hsh = { 'xyz' => @simple }
-      Careers.fetch_stat_check!(hsh, 'xyz') # won't raise
+      Careers.fetch_stat_check!(hsh, 'xyz').must_be_kind_of Hash
       proc {
         Careers.fetch_stat_check!(hsh, 'stuff')
       }.must_raise Careers::StatCheckError
@@ -97,7 +97,7 @@ describe Careers do
 
     it "validates some stats" do
       hsh = { 'abc' => @simple }
-      Careers.fetch_stat_check!(hsh, 'abc') # won't raise
+      Careers.fetch_stat_check!(hsh, 'abc').must_be_kind_of Hash
 
       hsh = { 'abc' => @invalid_key }
       proc {
@@ -105,7 +105,7 @@ describe Careers do
       }.must_raise Careers::UnknownStat
 
       hsh = { 'abc' => @choose }
-      Careers.fetch_stat_check!(hsh, 'abc') # won't raise
+      Careers.fetch_stat_check!(hsh, 'abc').must_be_kind_of Hash
     end
 
     it "validates the size of the subhash" do
@@ -137,13 +137,45 @@ describe Careers do
   end
 
   describe Careers.method(:fetch_skills!) do
+    before do
+      @simple = ['Admin', 'Survival', 'Navigation',
+                 'Persuade', 'Deception', 'Gambler']
+      @complex = ['Art', 'Pilot', 'Science', 'Tactics', 'Flyer', 'Melee']
+      @subskills = ['Art:Holography', 'Pilot:Small Craft', 'Seafarer:Sail',
+                    'Gunner:Turret', 'Art:Write', 'Heavy Weapons:Man Portable']
+      @invalid_str = ['abc', '123', 'dog', 'cat', 'Art:Ology', '']
+    end
+
     it "fetches a key from hsh" do
+      hsh = { 'abc' => @simple }
+      Careers.fetch_skills!(hsh, 'abc').must_be_kind_of Array
+      proc {
+        Careers.fetch_skills!(hsh, 'stuff')
+      }.must_raise Careers::SkillError
     end
 
     it "validates skills" do
+      [@simple, @complex, @subskills].each { |valid|
+        hsh = { 'abc' => valid }
+        Careers.fetch_skills!(hsh, 'abc').must_be_kind_of Array
+      }
+
+      hsh = { 'abc' => @invalid_str }
+      proc {
+        Careers.fetch_skills!(hsh, 'abc')
+      }.must_raise Careers::UnknownSkill
     end
 
     it "can allow and validate stats" do
+      all_stats = ['strength', 'endurance', :dexterity, 'intelligence',
+                   'education', :social_status]
+      hsh = { 'abc' => all_stats }
+      Careers.fetch_skills!(hsh, 'abc',
+                            stats_allowed: true).must_be_kind_of Array
+
+      proc {
+        Careers.fetch_skills!(hsh, 'abc', stats_allowed: false)
+      }.must_raise Careers::UnknownSkill
     end
 
     it "converts some strings to symbols" do
