@@ -382,7 +382,11 @@ module TravellerRPG
           @char.log "Became an officer!"
           @officer = 1
           self.take_rank_benefit
+
           # skip normal advancement after successful commission
+          # but take the bonus training roll
+          self.training_roll
+
           return self
         else
           @char.log "Commission was rejected"
