@@ -68,7 +68,7 @@ module TravellerRPG
   def self.player_prompt(msg = nil)
     print msg + ' ' if msg
     print '> '
-    $stdin.gets(chomp: true)
+    $stdin.gets.chomp
   end
 end
 
