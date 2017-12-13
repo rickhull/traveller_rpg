@@ -78,10 +78,10 @@ module TravellerRPG
 
     # converto 'choose' to :choose and e.g. 'strength' to :strength
     def self.fetch_skills!(hsh, key, stats_allowed: true)
-      raise(SkillCheckError, "#{key} not found: #{hsh}") unless hsh.key? key
+      raise(SkillError, "#{key} not found: #{hsh}") unless hsh.key? key
       ary = hsh[key] or return false # e.g. Drifter['advanced']
       if !ary.is_a?(Array) or (key != 'choose' and ary.size != 6)
-        raise(SkillError, "bad array: #{ary} (size #{size.inspect}")
+        raise(SkillError, "bad array: #{ary}")
       end
       result = []
       ary.each { |val|
