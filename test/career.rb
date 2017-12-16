@@ -173,7 +173,9 @@ describe Career do
     describe "Career#activate" do
       it "updates status, assignment, title, skills" do
         @career.active?.must_equal false
-        capture_io { @career.activate }
+        out, err = capture_io { @career.activate }
+        out.wont_be_empty
+        err.must_be_empty
         @career.active?.must_equal true
         @career.assignment.wont_be_nil
         @career.assignment.must_equal @assignment
@@ -291,7 +293,9 @@ describe Career do
           level = @char.skills.level(@skill)
           level.wont_be_nil
           level.must_equal 1 # @skill was bumped to rank benefit for rank 0
-          capture_io { @career.training_roll }
+          out, err = capture_io { @career.training_roll }
+          out.wont_be_empty
+          err.must_be_empty
           @char.skills.level(@skill).must_equal level + 1
         end
       end
@@ -299,7 +303,9 @@ describe Career do
       describe "Career#event_roll" do
         it "must log an event" do
           size = @char.log.size
-          capture_io { @career.event_roll }
+          out, err = capture_io { @career.event_roll }
+          out.wont_be_empty
+          err.must_be_empty
           @char.log.size.must_equal size + 1
         end
 
@@ -315,7 +321,9 @@ describe Career do
       describe "Career#mishap_roll" do
         it "must log a mishap" do
           size = @char.log.size
-          capture_io { @career.mishap_roll }
+          out, err = capture_io { @career.mishap_roll }
+          out.wont_be_empty
+          err.must_be_empty
           @char.log.size.must_equal size + 1
         end
 
@@ -338,7 +346,9 @@ describe Career do
           skill.must_equal @skill
           level.must_be_nil # in this case, for @rank == 0 for ExampleCareer
 
-          capture_io { @career.advance_rank }
+          out, err = capture_io { @career.advance_rank }
+          out.wont_be_empty
+          err.must_be_empty
 
           title, skill, level = @career.rank_benefit.values_at(:title,
                                                                :skill,
@@ -353,7 +363,9 @@ describe Career do
         it "increments rank and provides rank benefits" do
           rank = @career.rank
           @career.title.must_equal @title
-          capture_io { @career.advance_rank }
+          out, err = capture_io { @career.advance_rank }
+          out.wont_be_empty
+          err.must_be_empty
           @career.rank.must_equal rank + 1
           @career.title.must_equal @new_title
         end
@@ -379,7 +391,9 @@ describe Career do
 
         it "must add some skills" do
           level = @char.skills.level(@skill)
-          capture_io { @career.run_term }
+          out, err = capture_io { @career.run_term }
+          out.wont_be_empty
+          err.must_be_empty
           @char.skills.level(@skill).must_be :>, level
         end
       end
@@ -404,7 +418,9 @@ describe Career do
 
       describe "Career#muster_roll" do
         it "returns (1..7) (d6 + Gambler DM)" do
-          capture_io { (1..7).must_include @career.muster_roll }
+          out, err = capture_io { (1..7).must_include @career.muster_roll }
+          out.wont_be_empty
+          err.must_be_empty
         end
       end
 
@@ -416,11 +432,13 @@ describe Career do
         it "yields at least one cash roll" do
           @char.cash_rolls.must_equal 0
           status = nil
-          capture_io {
+          out, err = capture_io {
             @career.run_term
             status = @career.status
             @career.muster_out
           }
+          out.wont_be_empty
+          err.must_be_empty
           @char.cash_rolls.must_equal 1
           # last term doesn't get a benefit in case of mishap
           @char.stuff.size.must_equal (status == :mishap ? 0 : 1)

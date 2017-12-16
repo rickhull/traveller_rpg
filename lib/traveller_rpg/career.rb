@@ -140,7 +140,7 @@ module TravellerRPG
 
     def qualify_check?(dm: 0)
       stat, check = self.class.stat_check(self.class::QUALIFICATION)
-      return true if stat == false
+      return true if stat == false        # only for Drifter
       @char.log "#{self.name} qualification: #{stat} #{check}+"
       dm += @char.stats_dm(stat)
       self.class.roll_check?('Qualify', dm: dm, check: check)
