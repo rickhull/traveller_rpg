@@ -42,6 +42,23 @@ module TravellerRPG
       (roll + dm) >= check
     end
 
+    # helper method -- handles :choose
+    def self.stat_check(hsh)
+      return hsh if hsh == false
+      raise(Error, hsh.inspect) unless hsh.is_a?(Hash) and hsh.size == 1
+      case hsh[:choose]
+      when Hash
+        s = TravellerRPG.choose("Choose stat check:",
+                                *hsh[:choose].keys)
+        [s, hsh[:choose][s]]
+      when NilClass
+        s = hsh.keys.first
+        [s, hsh[s]]
+      else
+        raise(Error, "unexpected choose: #{hsh[:choose]}")
+      end
+    end
+
     attr_reader :term, :status, :rank, :title, :assignment
 
     def initialize(char, term: 0, status: :new, rank: 0)
@@ -94,30 +111,20 @@ module TravellerRPG
       else
         @assignment = TravellerRPG.choose("Choose assignment:", *s.keys)
       end
+      @status = :active
       self.take_rank_benefit
     end
 
     def specialty
-      self.class::SPECIALIST.fetch(@assignment)
-    end
-
-    def stat_check(hsh)
-      return hsh if hsh == false
-      case hsh[:choose]
-      when Hash
-        s = TravellerRPG.choose("Choose stat check:",
-                                *hsh[:choose].keys)
-        [s, hsh[:choose][s]]
-      when NilClass
-        s = hsh.keys.first
-        [s, hsh[s]]
+      if @assignment and self.class::SPECIALIST.key?(@assignment)
+        self.class::SPECIALIST[@assignment]
       else
-        raise("unexpected choose: #{hsh[:choose]}")
+        raise(Error, "unknown assignment: #{@assignment.inspect}")
       end
     end
 
     def qualify_check?(dm: 0)
-      stat, check = self.stat_check(self.class::QUALIFICATION)
+      stat, check = self.class.stat_check(self.class::QUALIFICATION)
       return true if stat == false
       @char.log "#{self.name} qualification: #{stat} #{check}+"
       dm += @char.stats_dm(stat)
@@ -125,14 +132,14 @@ module TravellerRPG
     end
 
     def survival_check?(dm: 0)
-      stat, check = self.stat_check(self.specialty.fetch(:survival))
+      stat, check = self.class.stat_check(self.specialty.fetch(:survival))
       @char.log "#{self.name} [#{@assignment}] survival: #{stat} #{check}+"
       dm += @char.stats_dm(stat)
       self.class.roll_check?('Survival', dm: dm, check: check)
     end
 
     def advancement_check?(dm: 0)
-      stat, check = self.stat_check(self.specialty.fetch(:advancement))
+      stat, check = self.class.stat_check(self.specialty.fetch(:advancement))
       @char.log "#{self.name} [#{@assignment}] advancement: #{stat} #{check}+"
       dm += @char.stats_dm(stat)
       roll = TravellerRPG.roll('2d6')

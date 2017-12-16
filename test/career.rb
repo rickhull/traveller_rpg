@@ -96,6 +96,37 @@ describe Career do
     end
   end
 
+  describe Career.method(:stat_check) do
+    it "accepts a Hash and returns a pair" do
+      Career.stat_check(endurance: 2).must_equal [:endurance, 2]
+    end
+
+    it "rejects a Hash with size greater than 1" do
+      proc {
+        Career.stat_check(endurance: 2, strength: 3)
+      }.must_raise Career::Error
+    end
+
+    it "handles key :choose for multiple stats" do
+      ary = nil
+      out, err = capture_io do
+        ary = Career.stat_check(choose: { endurance: 5, strength: 5 })
+      end
+      out.wont_be_empty
+      err.must_be_empty
+      [:strength, :endurance].must_include ary[0]
+      ary[1].must_equal 5
+    end
+
+    it "rejects non Hash" do
+      invalid = [[], nil, :symbol, 'String']
+      invalid.each { |iv|
+        proc { Career.stat_check(iv) }.must_raise Career::Error
+      }
+      proc { Career.stat_check(invalid) }.must_raise Career::Error
+    end
+  end
+
   describe "new instance" do
     before do
       capture_io { @char = Generator.character }
