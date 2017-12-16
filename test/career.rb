@@ -215,6 +215,19 @@ describe Career do
         end
       end
 
+      describe "Career#service_skills" do
+        it "returns a flat array of skills based on SERVICE_SKILLS" do
+          skills = @career.service_skills(choose: true)
+          # TODO: there are no choices in the ExampleCareer
+          skills.must_be_kind_of Array
+          skills.size.must_equal 6
+          skills = @career.service_skills(choose: false)
+          skills.must_be_kind_of Array
+          # TODO: this would return e.g. 7 skills, with one choice of 2
+          skills.size.must_equal 6
+        end
+      end
+
       describe "Career#qualify_check?" do
         it "returns true/false based on the dice and check value" do
           out, err = capture_io do

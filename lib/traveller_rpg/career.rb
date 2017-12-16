@@ -122,6 +122,22 @@ module TravellerRPG
       end
     end
 
+    def service_skills(choose: false)
+      if choose
+        self.class::SERVICE_SKILLS.map { |s|
+          if s.is_a? Hash
+            TravellerRPG.choose("Choose skill:", *s.fetch(:choose))
+          else
+            s
+          end
+        }
+      else
+        self.class::SERVICE_SKILLS.reduce([]) { |ary, s|
+          ary + (s.is_a?(Hash) ? s.fetch(:choose) : [s])
+        }
+      end
+    end
+
     def qualify_check?(dm: 0)
       stat, check = self.class.stat_check(self.class::QUALIFICATION)
       return true if stat == false
@@ -161,22 +177,6 @@ module TravellerRPG
       if self.advancement_check?(dm: dm)
         self.advance_rank
         self.training_roll
-      end
-    end
-
-    def service_skills(choose: false)
-      if choose
-        self.class::SERVICE_SKILLS.map { |s|
-          if s.is_a? Hash
-            TravellerRPG.choose("Choose skill:", *s.fetch(:choose))
-          else
-            s
-          end
-        }
-      else
-        self.class::SERVICE_SKILLS.reduce([]) { |ary, s|
-          ary + (s.is_a?(Hash) ? s.fetch(:choose) : [s])
-        }
       end
     end
 
