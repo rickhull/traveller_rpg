@@ -102,8 +102,7 @@ module TravellerRPG
     # take any rank 0 title or skill
     #
     def activate(asg = nil)
-      raise("invalid status: #{@status}") unless @status == :new
-      @status = :active
+      raise(Error, "can't activate status: #{@status}") unless @status == :new
       s = self.class::SPECIALIST
       if asg
         raise(UnknownAssignment, asg.inspect) unless s.key?(asg)
@@ -154,8 +153,8 @@ module TravellerRPG
     end
 
     def advanced_education?
-      return false if self.class::ADVANCED_SKILLS == false
-      @char.stats[:education] >= self.class::ADVANCED_EDUCATION
+      self.class::ADVANCED_EDUCATION and
+        @char.stats.education >= self.class::ADVANCED_EDUCATION
     end
 
     def advancement_roll(dm: 0)
@@ -168,8 +167,11 @@ module TravellerRPG
     def service_skills(choose: false)
       if choose
         self.class::SERVICE_SKILLS.map { |s|
-          s.is_a?(Hash) ?
-            TravellerRPG.choose("Choose skill:", *s.fetch(:choose)) : s
+          if s.is_a? Hash
+            TravellerRPG.choose("Choose skill:", *s.fetch(:choose))
+          else
+            s
+          end
         }
       else
         self.class::SERVICE_SKILLS.reduce([]) { |ary, s|

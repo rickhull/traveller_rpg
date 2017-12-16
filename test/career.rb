@@ -2,6 +2,10 @@ require 'traveller_rpg/career'
 require 'traveller_rpg/generator'
 require 'minitest/autorun'
 
+#
+# first, some test careers
+#
+
 module TravellerRPG
   class ExampleCareer < Career
     #
@@ -84,7 +88,7 @@ include TravellerRPG
 
 describe Career do
   describe Career.method(:roll_check?) do
-    it "must return true or false based on roll and check" do
+    it "returns true or false based on roll and check" do
       capture_io do
         Career.roll_check?('Stuff', check: 5, roll: 5, dm: 0).must_equal true
         Career.roll_check?('Stuff', check: 5, roll: 4, dm: 1).must_equal true
@@ -137,7 +141,7 @@ describe Career do
       @title = ExampleCareer::TITLE
     end
 
-    it "must have attrs" do
+    it "has attrs" do
       @career.term.must_equal 0
       @career.status.must_equal :new
       @career.rank.must_equal 0
@@ -145,11 +149,11 @@ describe Career do
       @career.assignment.must_be_nil
     end
 
-    it "must have a name based on class" do
+    it "has a name based on class" do
       @career.name.must_equal 'ExampleCareer' # not TravellerRPG::ExampleCareer
     end
 
-    it "must respond to predicate methods" do
+    it "responds to predicate methods" do
       @career.officer?.must_equal false
       @career.active?.must_equal false
       @career.finished?.must_equal false
@@ -158,32 +162,42 @@ describe Career do
     end
 
     describe "Career#report" do
-      it "must have multiple lines" do
+      it "has multiple lines" do
         @career.report.split("\n").size.must_be :>, 1
       end
     end
 
     describe "Career#activate" do
-      it "must update status, assignment, title, skills" do
+      it "updates status, assignment, title, skills" do
+        @career.active?.must_equal false
         capture_io { @career.activate }
+        @career.active?.must_equal true
         @career.assignment.wont_be_nil
         @career.assignment.must_equal @assignment
         @career.status.must_equal :active
-        @career.active?.must_equal true
         @career.finished?.must_equal false
         @career.title.must_equal @title
         @char.skills.level(@skill).must_be :>=, 0
       end
 
-      it "must not activate twice" do
+      it "won't activate twice" do
         capture_io { @career.activate }
-        proc { @career.activate }.must_raise RuntimeError
+        proc { @career.activate }.must_raise Career::Error
       end
 
-      it "must reject an unknown assignment" do
+      it "rejects unknown assignments" do
         proc {
           capture_io { @career.activate :random }
         }.must_raise Career::UnknownAssignment
+        proc {
+          capture_io { @career.activate 'Stuff' }
+        }.must_raise Career::UnknownAssignment
+      end
+
+      it "allows Career#specialty via setting @assignment" do
+        proc { @career.specialty }.must_raise Career::Error
+        capture_io { @career.activate }
+        @career.specialty.must_be_kind_of Hash
       end
     end
 
@@ -192,18 +206,28 @@ describe Career do
         capture_io { @career.activate }
       end
 
+      describe "Career#specialty" do
+        it "returns the SPECIALIST config for the assignment" do
+          cfg = @career.specialty
+          cfg.must_be_kind_of Hash
+          cfg.must_equal @career.class::SPECIALIST[@assignment]
+        end
+      end
+
       describe "Career#qualify_check?" do
-        it "must return true/false based on the dice and check value" do
-          capture_io do
+        it "returns true/false based on the dice and check value" do
+          out, err = capture_io do
             @career.qualify_check?(dm: 10).must_equal true
             @career.qualify_check?(dm: -10).must_equal false
           end
+          out.wont_be_empty
+          err.must_be_empty
         end
       end
 
       describe "Career#survival_check?" do
         it "must return true/false based on the dice and check value" do
-          capture_io do
+          out, err = capture_io do
             long_career = LongCareer.new(Generator.character)
             short_career = ShortCareer.new(Generator.character)
             long_career.activate
@@ -211,15 +235,19 @@ describe Career do
             long_career.survival_check?(dm: 10).must_equal true
             short_career.survival_check?(dm: -10).must_equal false
           end
+          out.wont_be_empty
+          err.must_be_empty
         end
       end
 
       describe "Career#advancement_check?" do
         it "must return true/false based on the dice and check value" do
-          capture_io do
+          out, err = capture_io do
             @career.advancement_check?(dm: 10).must_equal true
             @career.advancement_check?(dm: -10).must_equal false
           end
+          out.wont_be_empty
+          err.must_be_empty
         end
       end
 
