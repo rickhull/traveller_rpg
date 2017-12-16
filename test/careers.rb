@@ -170,11 +170,10 @@ describe Careers do
       all_stats = ['strength', 'endurance', :dexterity, 'intelligence',
                    'education', :social_status]
       hsh = { 'abc' => all_stats }
-      Careers.fetch_skills!(hsh, 'abc',
-                            stats_allowed: true).must_be_kind_of Array
+      Careers.fetch_skills!(hsh, 'abc', stats_ok: true).must_be_kind_of Array
 
       proc {
-        Careers.fetch_skills!(hsh, 'abc', stats_allowed: false)
+        Careers.fetch_skills!(hsh, 'abc', stats_ok: false)
       }.must_raise Careers::UnknownSkill
     end
 

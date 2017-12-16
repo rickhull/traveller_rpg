@@ -408,6 +408,7 @@ Citizen:
 
 Drifter:
   qualification: false
+  advanced_education: false
   personal:
     - strength
     - endurance
@@ -422,7 +423,6 @@ Drifter:
     - Streetwise
     - Stealth
     - Survival
-  advanced: false
   credits:
     - 0
     - 0

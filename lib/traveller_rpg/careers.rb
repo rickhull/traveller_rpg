@@ -76,28 +76,32 @@ module TravellerRPG
       result
     end
 
-    # converto 'choose' to :choose and e.g. 'strength' to :strength
-    def self.fetch_skills!(hsh, key, stats_allowed: true)
-      raise(SkillError, "#{key} not found: #{hsh}") unless hsh.key? key
-      ary = hsh[key] or return false # e.g. Drifter['advanced']
-      if !ary.is_a?(Array) or (key != 'choose' and ary.size != 6)
-        raise(SkillError, "bad array: #{ary}")
+    def self.fetch_skills!(hsh, key, stats_ok: true)
+      ary = hsh[key] or raise(SkillError, hsh[key].inspect)
+      unless ary.is_a?(Array) and ary.size == 6
+        raise(SkillError, "unexpected: #{ary}")
       end
-      result = []
-      ary.each { |val|
+      self.extract_skills(ary, stats_ok: stats_ok)
+    end
+
+    # convert 'choose' to :choose and e.g. 'strength' to :strength
+    def self.extract_skills(ary, stats_ok: true)
+      ary.reduce([]) { |memo, val|
         case val
-        when Hash # recursive, 'choose' becomes :choose
-          raise(SkillError, val) unless val['choose'].is_a?(Array)
-          result << { choose: self.fetch_skills!(val, 'choose') }
+        when Hash
+          raise(SkillError, val) unless val['choose'].is_a? Array
+          val = {
+            choose: self.extract_skills(val['choose'], stats_ok: stats_ok)
+          }
         else
-          if stats_allowed and self.stat? val
-            result << self.stat_sym!(val)
+          if stats_ok and self.stat? val
+            val = self.stat_sym! val
           else
-            result << (self.skill?(val) ? val : raise(UnknownSkill, val))
+            raise(UnknownSkill, val) unless self.skill? val
           end
         end
+        memo + [val]
       }
-      result
     end
 
     def self.ranks(hsh)
@@ -243,10 +247,15 @@ module TravellerRPG
           c.const_set('QUALIFICATION',
                       self.fetch_stat_check!(cfg, 'qualification'))
           c.const_set('PERSONAL_SKILLS', self.fetch_skills!(cfg, 'personal'))
-          c.const_set('SERVICE_SKILLS', self.fetch_skills!(cfg,  'service'))
-          c.const_set('ADVANCED_SKILLS', self.fetch_skills!(cfg, 'advanced'))
+          c.const_set('SERVICE_SKILLS', self.fetch_skills!(cfg, 'service'))
+          if cfg.key?('advanced_education')
+            c.const_set('ADVANCED_EDUCATION', cfg['advanced_education'])
+            if cfg['advanced_education']
+              c.const_set('ADVANCED_SKILLS',
+                          self.fetch_skills!(cfg, 'advanced'))
+            end
+          end
           c.const_set('SPECIALIST', self.specialist(cfg))
-
           # TODO: Events and mishaps are tedious to write.
           #       Currently Career::EVENTS and ::MISHAPS provides defaults.
           #       These should be mandatory once defined for each career.
