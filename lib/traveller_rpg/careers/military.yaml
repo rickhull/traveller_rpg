@@ -1,0 +1,550 @@
+Army:
+  advanced_education: 8
+  age_penalty: 30
+  qualification:
+    endurance: 5
+  commission:
+    social_status: 8
+  personal:
+    - strength
+    - dexterity
+    - endurance
+    - Gambler
+    - Medic
+    - Melee
+  service:
+    - choose:
+        - Drive
+        - Vacc Suit
+    - Athletics
+    - Gun Combat
+    - Recon
+    - Melee
+    - Heavy Weapons
+  advanced:
+    - Tactics:Military
+    - Electronics
+    - Navigation
+    - Explosives
+    - Engineer
+    - Survival
+  officer:
+    - Tactics:Military
+    - Leadership
+    - Advocate
+    - Diplomat
+    - Electronics
+    - Admin
+  officer_ranks:
+    1:
+      title: Lieutenant
+      skill: Leadership
+      level: 1
+    2:
+      title: Captain
+    3:
+      title: Major
+      skill: Tactics:Military
+      level: 1
+    4:
+      title: Lieutenant Colonel
+    5:
+      title: Colonel
+    6:
+      title: General
+      choose:
+        - stat: social_status
+          level: 10
+        - stat: social_status
+  credits:
+    - 2000
+    - 5000
+    - 10000
+    - 10000
+    - 10000
+    - 20000
+    - 30000
+  benefits:
+    - Combat Implant
+    - intelligence
+    - education
+    - Weapon
+    - Armour
+    - choose:
+        - endurance
+        - Combat Implant
+    - social_status
+
+  specialist:
+    Support:
+      survival:
+        endurance: 5
+      advancement:
+        education: 7
+      skills:
+        - Mechanic
+        - choose:
+            - Drive
+            - Flyer
+        - Profession
+        - Explosives
+        - Electronics:Comms
+        - Medic
+      ranks:
+        0:
+          title: Private
+          skill: Gun Combat
+          level: 1
+        1:
+          title: Lance Corporal
+          skill: Recon
+          level: 1
+        2:
+          title: Corporal
+        3:
+          title: Lance Sergeant
+          skill: Leadership
+          level: 1
+        4:
+          title: Sergeant
+        5:
+          title: Gunnery Sergeant
+        6:
+          title: Sergeant Major
+    Infantry:
+      survival:
+        strength: 6
+      advancement:
+        education: 6
+      skills:
+        - Gun Combat
+        - Melee
+        - Heavy Weapons
+        - Stealth
+        - Athletics
+        - Recon
+      ranks:
+        0:
+          title: Private
+          skill: Gun Combat
+          level: 1
+        1:
+          title: Lance Corporal
+          skill: Recon
+          level: 1
+        2:
+          title: Corporal
+        3:
+          title: Lance Sergeant
+          skill: Leadership
+          level: 1
+        4:
+          title: Sergeant
+        5:
+          title: Gunnery Sergeant
+        6:
+          title: Sergeant Major
+    Cavalry:
+      survival:
+        intelligence: 7
+      advancement:
+        intelligence: 5
+      skills:
+        - Mechanic
+        - Drive
+        - Flyer
+        - Recon
+        - Heavy Weapons:Vehicle
+        - Electronics:Sensors
+      ranks:
+        0:
+          title: Private
+          skill: Gun Combat
+          level: 1
+        1:
+          title: Lance Corporal
+          skill: Recon
+          level: 1
+        2:
+          title: Corporal
+        3:
+          title: Lance Sergeant
+          skill: Leadership
+          level: 1
+        4:
+          title: Sergeant
+        5:
+          title: Gunnery Sergeant
+        6:
+          title: Sergeant Major
+
+Marines:
+  advanced_education: 8
+  age_penalty: 30
+  qualification:
+    endurance: 6
+  commission:
+    social_status: 8
+  personal:
+    - strength
+    - dexterity
+    - endurance
+    - Gambler
+    - Melee:Unarmed
+    - Melee:Blade
+  service:
+    - Athletics
+    - Vacc Suit
+    - Tactics
+    - Heavy Weapons
+    - Gun Combat
+    - Stealth
+  advanced:
+    - Medic
+    - Survival
+    - Explosives
+    - Engineer
+    - Pilot
+    - Navigation
+  officer:
+    - Electronics
+    - Tactics
+    - Admin
+    - Advocate
+    - Vacc Suit
+    - Leadership
+  officer_ranks:
+    1:
+      title: Lieutenant
+      skill: Leadership
+      level: 1
+    2:
+      title: Captain
+    3:
+      title: Force Commander
+      skill: Tactics
+      level: 1
+    4:
+      title: Lieutenant Colonel
+    5:
+      title: Colonel
+      choose:
+        - stat: social_status
+          level: 10
+        - stat: social_status
+    6:
+      title: Brigadier
+  credits:
+    - 2000
+    - 5000
+    - 5000
+    - 10000
+    - 20000
+    - 30000
+    - 40000
+  benefits:
+    - Armour
+    - intelligence
+    - education
+    - Weapon
+    - TAS Membership
+    - choose:
+        - endurance
+        - Armour
+    - [social_status, social_status]
+
+  specialist:
+    Support:
+      survival:
+        endurance: 5
+      advancement:
+        education: 7
+      skills:
+        - Electronics
+        - Mechanic
+        - choose:
+            - Drive
+            - Flyer
+        - Medic
+        - Heavy Weapons
+        - Gun Combat
+      ranks:
+        0:
+          title: Marine
+          choose:
+            - skill: Gun Combat
+              level: 1
+            - skill: Melee:Blade
+              level: 1
+        1:
+          title: Lance Corporal
+          skill: Gun Combat
+          level: 1
+        2:
+          title: Corporal
+        3:
+          title: Lance Sergeant
+          skill: Leadership
+          level: 1
+        4:
+          title: Sergeant
+        5:
+          title: Gunnery Sergeant
+          stat:  endurance
+        6:
+          title: Sergeant Major
+    Star Marine:
+      survival:
+        endurance: 6
+      advancement:
+        education: 6
+      skills:
+        - Vacc Suit
+        - Athletics
+        - Gunner
+        - Melee:Blade
+        - Electronics
+        - Gun Combat
+      ranks:
+        0:
+          title: Marine
+          choose:
+            - skill: Gun Combat
+              level: 1
+            - skill: Melee:Blade
+              level: 1
+        1:
+          title: Lance Corporal
+          skill: Gun Combat
+          level: 1
+        2:
+          title: Corporal
+        3:
+          title: Lance Sergeant
+          skill: Leadership
+          level: 1
+        4:
+          title: Sergeant
+        5:
+          title: Gunnery Sergeant
+          stat:  endurance
+        6:
+          title: Sergeant Major
+    Ground Assault:
+      survival:
+        endurance: 7
+      advancement:
+        education: 5
+      skills:
+        - Vacc Suit
+        - Heavy Weapons
+        - Recon
+        - Melee:Blade
+        - Tactics:Military
+        - Gun Combat
+      ranks:
+        0:
+          title: Marine
+          choose:
+            - skill: Gun Combat
+              level: 1
+            - skill: Melee:Blade
+              level: 1
+        1:
+          title: Lance Corporal
+          skill: Gun Combat
+          level: 1
+        2:
+          title: Corporal
+        3:
+          title: Lance Sergeant
+          skill: Leadership
+          level: 1
+        4:
+          title: Sergeant
+        5:
+          title: Gunnery Sergeant
+          stat:  endurance
+        6:
+          title: Sergeant Major
+Navy:
+  advanced_education: 8
+  age_penalty: 34
+  qualification:
+    intelligence: 6
+  commission:
+    social_status: 8
+  personal:
+    - strength
+    - dexterity
+    - endurance
+    - intelligence
+    - education
+    - social_status
+  service:
+    - Pilot
+    - Vacc Suit
+    - Athletics
+    - Gunner
+    - Mechanic
+    - Gun Combat
+  advanced:
+    - Electronics
+    - Astrogation
+    - Engineer
+    - Drive
+    - Navigation
+    - Admin
+  officer:
+    - Leadership
+    - Electronics
+    - Pilot
+    - Melee:Blade
+    - Admin
+    - Tactics:Naval
+  officer_ranks:
+    1:
+      title: Ensign
+      skill: Melee:Blade
+      level: 1
+    2:
+      title: Sublieutenant
+      skill: Leadership
+      level: 1
+    3:
+      title: Lieutenant
+    4:
+      title: Commander
+      skill: Tactics:Naval
+      level: 1
+    5:
+      title: Captain
+      choose:
+        - stat: social_status
+          level: 10
+        - stat: social_status
+    6:
+      title: Admiral
+      choose:
+        - stat: social_status
+          level: 12
+        - stat: social_status
+  credits:
+    - 1000
+    - 5000
+    - 5000
+    - 10000
+    - 20000
+    - 50000
+    - 50000
+  benefits:
+    - choose:
+        - Personal Vehicle
+        - Ship Share
+    - intelligence
+    - choose:
+        - education
+        - 2x Ship Share
+    - Weapon
+    - TAS Membership
+    - choose:
+        - "Ship's Boat"
+        - 2x Ship Share
+    - [social_status, social_status]
+  specialist:
+    Line Crew:
+      survival:
+        intelligence: 5
+      advancement:
+        education: 7
+      skills:
+        - Electronics
+        - Mechanic
+        - Gun Combat
+        - Flyer
+        - Melee
+        - Vacc Suit
+      ranks:
+        0:
+          title: Crewman
+        1:
+          title: Able Spacehand
+          skill: Mechanic
+          level: 1
+        2:
+          title: Petty Officer 3rd Class
+          skill: Vacc Suit
+          level: 1
+        3:
+          title: Petty Officer 2nd Class
+        4:
+          title: Petty Officer 1st Class
+          stat: endurance
+        5:
+          title: Chief Petty Officer
+        6:
+          title: Master Chief
+    Engineer Gunner:
+      survival:
+        intelligence: 6
+      advancement:
+        education: 6
+      skills:
+        - Engineer
+        - Mechanic
+        - Electronics
+        - Engineer
+        - Gunner
+        - Flyer
+      ranks:
+        0:
+          title: Crewman
+        1:
+          title: Able Spacehand
+          skill: Mechanic
+          level: 1
+        2:
+          title: Petty Officer 3rd Class
+          skill: Vacc Suit
+          level: 1
+        3:
+          title: Petty Officer 2nd Class
+        4:
+          title: Petty Officer 1st Class
+          stat: endurance
+        5:
+          title: Chief Petty Officer
+        6:
+          title: Master Chief
+    Flight:
+      survival:
+        dexterity: 7
+      advancement:
+        education: 5
+      skills:
+        - Pilot
+        - Flyer
+        - Gunner
+        - Pilot:Small Craft
+        - Astrogation
+        - Electronics
+      ranks:
+        0:
+          title: Crewman
+        1:
+          title: Able Spacehand
+          skill: Mechanic
+          level: 1
+        2:
+          title: Petty Officer 3rd Class
+          skill: Vacc Suit
+          level: 1
+        3:
+          title: Petty Officer 2nd Class
+        4:
+          title: Petty Officer 1st Class
+          stat: endurance
+        5:
+          title: Chief Petty Officer
+        6:
+          title: Master Chief

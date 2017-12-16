@@ -382,7 +382,7 @@ module TravellerRPG
     end
 
     def commission_check?(dm: 0)
-      stat, check = self.class::COMMISSION
+      stat, check = self.class.stat_check(self.class::COMMISSION)
       @char.log "#{self.name} commission: #{stat} #{check}"
       dm += @char.stats_dm(stat)
       self.class.roll_check?('Commission', dm: dm, check: check)
@@ -438,7 +438,7 @@ module TravellerRPG
     end
   end
 
-  class Army < MilitaryCareer
+  class Armyx < MilitaryCareer
     QUALIFICATION = { endurance: 5 }
     AGE_PENALTY = 30
     PERSONAL_SKILLS = [:strength, :dexterity, :endurance,
@@ -527,7 +527,7 @@ module TravellerRPG
     }
   end
 
-  class Marines < MilitaryCareer
+  class Marinesx < MilitaryCareer
     QUALIFICATION = { endurance: 6 }
     AGE_PENALTY = 30
 
@@ -624,7 +624,7 @@ module TravellerRPG
     }
   end
 
-  class Navy < MilitaryCareer
+  class Navyx < MilitaryCareer
     QUALIFICATION = { intelligence: 6 }
     AGE_PENALTY = 34
 
@@ -715,7 +715,7 @@ module TravellerRPG
       4 => 'Weapon',
       5 => 'TAS Membership',
       6 => { choose: ["Ship's Boat", '2x Ship Share'] },
-      7 => [:social_stats, :social_status],
+      7 => [:social_status, :social_status],
     }
   end
 end

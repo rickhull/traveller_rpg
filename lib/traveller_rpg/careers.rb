@@ -104,8 +104,8 @@ module TravellerRPG
       }
     end
 
-    def self.ranks(hsh)
-      r = hsh['ranks'] or raise(RankError, "no rank: #{hsh}")
+    def self.ranks(hsh, key = 'ranks')
+      r = hsh[key] or raise(RankError, "no rank: #{hsh}")
       raise(RankError, r) unless r.is_a? Hash and r.size <= 7
       result = {}
       r.each { |rank, h|
@@ -160,7 +160,7 @@ module TravellerRPG
           end
         end
         if level
-          raise(RankError, "unexpected level") unless skill or stat
+          raise(RankError, "unexpected level: #{level}") unless skill or stat
           raise(RankError, "bad level: #{level}") unless (0..5).include?(level)
           result[rank][:level] = level
         end
@@ -236,11 +236,11 @@ module TravellerRPG
       result
     end
 
-    def self.generate_classes(file_name)
+    def self.generate_classes(file_name, superclass)
       scope = TravellerRPG
       self.load(file_name).each { |name, cfg|
         # inherit from Career
-        c = Class.new(TravellerRPG::Career)
+        c = Class.new(superclass)
 
         begin
           # create class constants
@@ -263,6 +263,16 @@ module TravellerRPG
           c.const_set('MISHAPS', self.mishaps(cfg)) if cfg['mishaps']
           c.const_set('CREDITS', self.credits(cfg))
           c.const_set('BENEFITS', self.benefits(cfg))
+
+
+          if superclass == MilitaryCareer
+            c.const_set('AGE_PENALTY', cfg.fetch('age_penalty'))
+            c.const_set('COMMISSION',
+                        self.fetch_stat_check!(cfg, 'commission'))
+            c.const_set('OFFICER_RANKS',
+                        self.ranks(cfg, 'officer_ranks'))
+            c.const_set('OFFICER_SKILLS', self.fetch_skills!(cfg, 'officer'))
+          end
         rescue => e
           warn ["Career: #{name}", e.class, e].join("\n")
           raise
@@ -272,6 +282,7 @@ module TravellerRPG
       }
     end
 
-    self.generate_classes('base')
+    self.generate_classes('base', Career)
+    self.generate_classes('military', MilitaryCareer)
   end
 end
