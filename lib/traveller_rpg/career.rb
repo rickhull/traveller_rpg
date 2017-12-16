@@ -699,10 +699,10 @@ module TravellerRPG
     BENEFITS = {
       1 => { choose: ['Personal Vehicle', 'Ship Share'] },
       2 => :intelligence,
-      3 => { choose: [:education, ['Ship Share', 'Ship Share' ]] },
+      3 => { choose: [:education, '2x Ship Share'] },
       4 => 'Weapon',
       5 => 'TAS Membership',
-      6 => { choose: ["Ship's Boat", ['Ship Share', 'Ship Share']] },
+      6 => { choose: ["Ship's Boat", '2x Ship Share'] },
       7 => [:social_stats, :social_status],
     }
   end

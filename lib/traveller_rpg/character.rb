@@ -118,9 +118,18 @@ module TravellerRPG
           self.log "Career benefit: #{item} credits"
         end
       when String
+        matches = item.match %r{\A(\d)x (.+)}
+        if matches
+          # e.g. 2x Ship Share
+          count = matches[1].to_i
+          item = matches[2]
+        else
+          count = 1
+        end
+        qty = count > 1 ? "(#{count})" : ''
         @stuff[item] ||= 0
-        @stuff[item] += 1
-        self.log "Career benefit: #{item}"
+        @stuff[item] += count
+        self.log "Career benefit: #{item} #{qty}"
       when Symbol
         @stats.bump(item)
         self.log "Career benefit: #{item} bump to #{@stats[item]}"

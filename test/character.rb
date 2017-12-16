@@ -175,13 +175,38 @@ describe Character do
     end
 
     describe "Character#benefit" do
-      it "accepts an Integer (credits) or a singular String" do
+      it "accepts an Integer representing credits" do
         @char.credits.must_equal 0
         capture_io { @char.benefit(5) }
         @char.credits.must_equal 5
+      end
+
+      it "accepts a String representing a single item" do
         @char.stuff['Violin'].must_be_nil
         capture_io { @char.benefit('Violin') }
         @char.stuff['Violin'].must_equal 1
+      end
+
+      it "accepts a String representing multiple items" do
+        @char.stuff['Violin'].must_be_nil
+        capture_io { @char.benefit('2x Violin') }
+        @char.stuff['Violin'].must_equal 2
+      end
+
+      it "accepts an Array representing multiple items" do
+        @char.stuff['Violin'].must_be_nil
+        capture_io { @char.benefit %w{Violin Violin} }
+        @char.stuff['Violin'].must_equal 2
+      end
+
+      it "accepts a Symbol representing a stat bump" do
+        endurance = @char.stats.endurance
+        capture_io { @char.benefit :endurance }
+        @char.stats.endurance.must_equal endurance + 1
+
+        strength = @char.stats.strength
+        capture_io { @char.benefit [:strength, :strength] }
+        @char.stats.strength.must_equal strength + 2
       end
     end
 

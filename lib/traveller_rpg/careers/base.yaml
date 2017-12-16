@@ -327,7 +327,7 @@ Citizen:
     - intelligence
     - Gun
     - education
-    - [ Ship Share, Ship Share ]
+    - 2x Ship Share
     - TAS Membership
   specialist:
     Coporate:
@@ -438,7 +438,7 @@ Drifter:
     - Weapon
     - education
     - Ship Share
-    - Two Ship Shares
+    - 2x Ship Share
   specialist:
     Barbarian:
       survival:
@@ -624,7 +624,7 @@ Entertainer:
     - Contact
     - social_status
     - intelligence
-    - [ Ship Share, Ship Share ]
+    - 2x Ship Share
     - [ social_status, education ]
   specialist:
     Artist:
@@ -856,7 +856,7 @@ Noble:
     - 200000
   benefits:
     - Ship Share
-    - [ Ship Share, Ship Share ]
+    - 2x Ship Share
     - Blade
     - social_status
     - TAS Membership
@@ -994,10 +994,10 @@ Rogue:
     - Ship Share
     - Weapon
     - intelligence
-    - Ship Share # TODO: 1d6 Ship Shares
+    - Ship Share     # TODO: 1d6 Ship Shares
     - Armour
     - dexterity
-    - [ Ship Share, Ship Share ]   # TODO: 2d6 Ship Shares
+    - 2x Ship Share  # TODO: 2d6 Ship Shares
   specialist:
     Thief:
       survival:
@@ -1125,7 +1125,7 @@ Scholar:
   benefits:
     - intelligence
     - education
-    - [ Ship Share, Ship Share]
+    - 2x Ship Share
     - social_status
     - Scientific Equipment
     - Lab Ship
