@@ -231,36 +231,6 @@ module TravellerRPG
       self.specialty.fetch(:ranks)[@rank]
     end
 
-    def take_rank_benefit
-      rb = self.rank_benefit or return self
-      label = self.officer? ? "officer rank" : "rank"
-      title, skill, stat, level = rb.values_at(:title, :skill, :stat, :level)
-      if title
-        @char.log "Awarded #{label} title: #{title}"
-        @title = title
-      end
-      if rb[:choose]
-        raise("unexpected choose: #{rb}") unless rb[:choose].is_a?(Array)
-        choices = rb[:choose].map { |h|
-          [h[:skill] || h[:stat], h[:level]].compact.join(' ')
-        }
-        choice = TravellerRPG.choose("Choose rank bonus:", *choices)
-        skill, stat, level = rb[:choose].select { |h|
-          choice == [h[:skill] || h[:stat], h[:level]].compact.join(' ')
-        }.first.values_at(:skill, :stat, :level)
-        raise "#{skill.inspect} or #{stat.inspect}" unless skill or stat
-      end
-      if skill
-        @char.log "Achieved #{label} bonus: #{skill} #{level}"
-        @char.skills.bump(skill, level)
-      end
-      if stat
-        @char.log "Achieved #{label} bonus: #{stat} #{level}"
-        @char.stats.bump(stat, level)
-      end
-      self
-    end
-
     def run_term
       raise(Error, "career is inactive") unless self.active?
       raise(Error, "must exit") if self.must_exit?
@@ -355,6 +325,38 @@ module TravellerRPG
         report << format("%s: %s", label.to_s.rjust(15, ' '), val)
       }
       report.join("\n")
+    end
+
+    protected
+
+    def take_rank_benefit
+      rb = self.rank_benefit or return self
+      label = self.officer? ? "officer rank" : "rank"
+      title, skill, stat, level = rb.values_at(:title, :skill, :stat, :level)
+      if title
+        @char.log "Awarded #{label} title: #{title}"
+        @title = title
+      end
+      if rb[:choose]
+        raise("unexpected choose: #{rb}") unless rb[:choose].is_a?(Array)
+        choices = rb[:choose].map { |h|
+          [h[:skill] || h[:stat], h[:level]].compact.join(' ')
+        }
+        choice = TravellerRPG.choose("Choose rank bonus:", *choices)
+        skill, stat, level = rb[:choose].select { |h|
+          choice == [h[:skill] || h[:stat], h[:level]].compact.join(' ')
+        }.first.values_at(:skill, :stat, :level)
+        raise "#{skill.inspect} or #{stat.inspect}" unless skill or stat
+      end
+      if skill
+        @char.log "Achieved #{label} bonus: #{skill} #{level}"
+        @char.skills.bump(skill, level)
+      end
+      if stat
+        @char.log "Achieved #{label} bonus: #{stat} #{level}"
+        @char.stats.bump(stat, level)
+      end
+      self
     end
   end
 

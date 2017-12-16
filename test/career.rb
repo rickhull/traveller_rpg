@@ -14,6 +14,7 @@ module TravellerRPG
     STAT = :strength
     STAT_CHECK = 5
     TITLE = 'Rookie'
+    NEW_TITLE = 'Sophomore'
     SKILL = 'Deception'
 
     #
@@ -33,6 +34,7 @@ module TravellerRPG
         advancement: { STAT => STAT_CHECK },
         ranks: {
           0 => { title: TITLE, skill: SKILL },
+          1 => { title: NEW_TITLE },
         },
       },
     }
@@ -205,6 +207,7 @@ describe Career do
     describe "Active Career" do
       before do
         capture_io { @career.activate }
+        @new_title = ExampleCareer::NEW_TITLE
       end
 
       describe "Career#specialty" do
@@ -337,18 +340,22 @@ describe Career do
 
           capture_io { @career.advance_rank }
 
-          title, skill, level = @career.rank_benefit
-          title.must_be_nil
+          title, skill, level = @career.rank_benefit.values_at(:title,
+                                                               :skill,
+                                                               :level)
+          title.must_equal @new_title
           skill.must_be_nil
           level.must_be_nil
         end
       end
 
       describe "Career#advance_rank" do
-        it "must increase rank and take rank benefits" do
+        it "increments rank and provides rank benefits" do
           rank = @career.rank
+          @career.title.must_equal @title
           capture_io { @career.advance_rank }
           @career.rank.must_equal rank + 1
+          @career.title.must_equal @new_title
         end
       end
 
