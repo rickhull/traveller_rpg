@@ -19,6 +19,7 @@ module TravellerRPG
     #
     # These are necessary for a Career to function
 
+    ADVANCED_EDUCATION = 8
     QUALIFICATION = { STAT => STAT_CHECK }
 
     PERSONAL_SKILLS = Array.new(6) { SKILL }

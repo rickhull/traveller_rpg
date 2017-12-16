@@ -9,7 +9,6 @@ module TravellerRPG
     # Actually useful defaults
 
     TERM_YEARS = 4
-    ADVANCED_EDUCATION = 8
 
     EVENTS = Array.new(11) { |i|
       "Event #{i+2}"
@@ -25,10 +24,11 @@ module TravellerRPG
     #
     # Needed to function
 
-    # QUALIFICATION
+    # ADVANCED_EDUCATION (false for Drifter)
+    # QUALIFICATION      (false for Drifter)
     # PERSONAL_SKILLS
     # SERVICE_SKILLS
-    # ADVANCED_SKILLS
+    # ADVANCED_SKILLS    (unless ADVANCED_EDUCATION is false)
     # SPECIALIST
     # EVENTS
     # MISHAPS
@@ -363,8 +363,9 @@ module TravellerRPG
 
   class MilitaryCareer < Career
     #
-    # Actually useful default
+    # Actually useful defaults
 
+    ADVANCED_EDUCATION = 8
     COMMISSION = [:social_status, 8]
 
     def initialize(char, **kwargs)
