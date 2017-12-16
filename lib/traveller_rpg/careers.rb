@@ -106,23 +106,40 @@ module TravellerRPG
       result = {}
       r.each { |rank, h|
         result[rank] = {}
-        raise(RankError, h) unless h.is_a? Hash and h.size <= 4
-        raise(RankError, h) if (h.keys & %w{title skill stat}).empty?
+        raise(RankError, h) unless h.is_a? Hash and h.size <= 3
+        raise(RankError, h) if (h.keys & %w{title skill stat choose}).empty?
         title, skill, stat, level = h.values_at(*%w{title skill stat level})
         if title
           raise(RankError, "not a string: #{title}") unless title.is_a?(String)
           result[rank][:title] = title
         end
+        choices = h['choose']
+        if choices
+          raise("bad choices: #{choices}") unless choices.is_a?(Array)
+          result[rank][:choose] = []
+          choices.each { |hh|
+            if hh['skill'] and hh['stat']
+              raise("can't have both skill and stat: #{hh}")
+            elsif hh['skill']
+              raise(UnknownSkill, hh['skill']) unless self.skill?(hh['skill'])
+              res = { skill: hh['skill'] }
+              res[:level] = hh['level'] if hh['level']
+              result[rank][:choose] << res
+            elsif hh['stat']
+              res = { stat: self.stat_sym!(hh['stat']) }
+              res[:level] = hh['level'] if hh['level']
+              result[rank][:choose] << res
+            else
+              raise("need at least one of skill or stat: #{hh}")
+            end
+          }
+          next
+        end
+
+        # ok, no choose
+
         if skill
           case skill
-          when Hash
-            a = skill['choose']
-            raise(RankError, "no choose: #{skill}") unless a.is_a?(Array)
-            result[rank][:skill] = {
-              choose: a.map { |sk|
-                self.skill?(sk) ? sk : raise(UnknownSkill, sk)
-              }
-            }
           when String
             result[rank][:skill] =
               self.skill?(skill) ? skill : raise(UnknownSkill, skill)
@@ -132,10 +149,6 @@ module TravellerRPG
         end
         if stat
           case stat
-          when Hash
-            a = stat['choose']
-            raise(RankError, "choose: #{stat}") unless a.is_a?(Array)
-            result[rank][:stat] = { choose: a.map { |st| self.stat_sym! st } }
           when String, Symbol
             result[rank][:stat] = self.stat_sym! stat
           else

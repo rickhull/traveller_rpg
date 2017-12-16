@@ -230,19 +230,22 @@ module TravellerRPG
         @char.log "Awarded #{label} title: #{title}"
         @title = title
       end
+      if rb[:choose]
+        raise("unexpected choose: #{rb}") unless rb[:choose].is_a?(Array)
+        choices = rb[:choose].map { |h|
+          [h[:skill] || h[:stat], h[:level]].compact.join(' ')
+        }
+        choice = TravellerRPG.choose("Choose rank bonus:", *choices)
+        skill, stat, level = rb[:choose].select { |h|
+          choice == [h[:skill] || h[:stat], h[:level]].compact.join(' ')
+        }.first.values_at(:skill, :stat, :level)
+        raise "#{skill.inspect} or #{stat.inspect}" unless skill or stat
+      end
       if skill
-        if skill.is_a?(Hash)
-          skill = TravellerRPG.choose("Choose rank bonus:",
-                                      *skill.fetch(:choose))
-        end
         @char.log "Achieved #{label} bonus: #{skill} #{level}"
         @char.skills.bump(skill, level)
       end
       if stat
-        if stat.is_a?(Hash)
-          stat = TravellerRPG.choose("Choose rank bonus:",
-                                     *stat.fetch(:choose))
-        end
         @char.log "Achieved #{label} bonus: #{stat} #{level}"
         @char.stats.bump(stat, level)
       end
@@ -460,8 +463,11 @@ module TravellerRPG
       4 => { title: 'Lieutenant Colonel' },
       5 => { title: 'Colonel' },
       6 => { title: 'General',
-             stat:  :social_status,
-             level: 10 },  # TODO: Choose :social_status +1 or level: 10
+             choose: [ { stat: :social_status,
+                         level: 10 },
+                       { stat: :social_status },
+                     ],
+           },
     }
 
     SPECIALIST = {
@@ -524,8 +530,12 @@ module TravellerRPG
 
     RANKS = {
       0 => { title: 'Marine',
-             skill: { choose: ['Gun Combat', 'Melee:Blade' ] },
-             level: 1 },
+             choose: [ { skill: 'Gun Combat',
+                         level: 1, },
+                       { skill: 'Melee:Blade',
+                         level: 1 },
+                     ],
+           },
       1 => { title: 'Lance Corporal',
              skill: 'Gun Combat',
              level: 1 },
@@ -549,8 +559,11 @@ module TravellerRPG
              level: 1 },
       4 => { title: 'Lieutenant Colonel' },
       5 => { title: 'Colonel',
-             stat:  :social_status,
-             level: 10 },  # TODO or bump social_status
+             choose: [ { stat: :social_status,
+                         level: 10 },
+                       { stat: :social_status, },
+                     ],
+           },
       6 => { title: 'Brigadier' },
     }
 
@@ -637,11 +650,17 @@ module TravellerRPG
              skill: 'Tactics:Naval',
              level: 1 },
       5 => { title: 'Captain',
-             stat:  :social_status,
-             level: 10 }, # TODO or bump
+             choose: [ { stat: :social_status,
+                         level: 10 },
+                       { stat: :social_status },
+                     ],
+           },
       6 => { title: 'Admiral',
-             stat:  :social_status,
-             level: 12 }, # TODO or bump
+             choose: [ { stat: :social_status,
+                         level: 12 },
+                       { stat: :social_status },
+                     ],
+           },
     }
     SPECIALIST = {
       'Line Crew' => {
