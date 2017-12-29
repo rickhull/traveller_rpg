@@ -35,6 +35,7 @@ module TravellerRPG
         career = TravellerRPG.choose("Choose a career:", *careers)
         path.run(career)
         puts "\n", path.report, "\n"
+        break if character.age > 45
         break if TravellerRPG.choose("Exit career mode?", :yes, :no) == :yes
       }
       puts

@@ -180,28 +180,17 @@ module TravellerRPG
       result
     end
 
-    def self.events(hsh)
-      e = hsh.fetch('events')
-      raise(EventError, e) unless e.is_a?(Hash) and e.size == 11
-      e.values.each { |h|
+    def self.events(hsh, key, size)
+      result = {}
+      e = hsh[key]
+      raise(EventError, "#{key} #{e}") unless e.is_a?(Hash) and e.size == size
+      e.each { |num, h|
+        result[num] = {}
         raise(EventError, h) unless h.is_a?(Hash)
-        text = h.fetch('text')
-        raise(EventError, "text is empty") if text.empty?
-        # TODO: validate h.fetch('script')
+        result[num][:text] = h.fetch('text')
+        result[num][:script] = h['script'] if h['script']
       }
-      e
-    end
-
-    def self.mishaps(hsh)
-      m = hsh.fetch('mishaps')
-      raise(MishapError, m) unless m.is_a?(Hash) and m.size == 6
-      m.values.each { |h|
-        raise(MishapError, h) unless h.is_a?(Hash)
-        text = h.fetch('text')
-        raise(MishapError, "text is empty") if text.empty?
-        # TODO: validate h.fetch('script')
-      }
-      m
+      result
     end
 
     def self.credits(hsh)
@@ -259,8 +248,10 @@ module TravellerRPG
           # TODO: Events and mishaps are tedious to write.
           #       Currently Career::EVENTS and ::MISHAPS provides defaults.
           #       These should be mandatory once defined for each career.
-          c.const_set('EVENTS', self.events(cfg)) if cfg['events']
-          c.const_set('MISHAPS', self.mishaps(cfg)) if cfg['mishaps']
+          if cfg['events']
+            c.const_set('EVENTS', self.events(cfg, 'events', 11))
+            c.const_set('MISHAPS', self.events(cfg, 'mishaps', 6))
+          end
           c.const_set('CREDITS', self.credits(cfg))
           c.const_set('BENEFITS', self.benefits(cfg))
 

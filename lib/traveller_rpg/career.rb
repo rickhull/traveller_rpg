@@ -13,12 +13,12 @@ module TravellerRPG
     EVENTS = Array.new(11) { |i|
       "Event #{i+2}"
     }.each.with_index.reduce({}) { |memo, (s,idx)|
-      memo.merge(idx + 2 => { 'text' => s })
+      memo.merge(idx + 2 => { :text => s })
     }
     MISHAPS = Array.new(6) { |i|
       "Mishap #{i+1}"
     }.each.with_index.reduce({}) { |memo, (s,idx)|
-      memo.merge(idx + 1 => { 'text' => s })
+      memo.merge(idx + 1 => { :text => s })
     }
 
     #
@@ -210,13 +210,13 @@ module TravellerRPG
 
     def event_roll
       ev = self.class::EVENTS.fetch TravellerRPG.roll('2d6', label: 'Event')
-      @char.log "Event: #{ev.fetch('text')}"
+      @char.log "Event: #{ev.fetch(:text)}"
       # TODO: actually perform the event stuff in ev['script']
     end
 
     def mishap_roll
       mh = self.class::MISHAPS.fetch TravellerRPG.roll('d6', label: 'Mishap')
-      @char.log "Mishap: #{mh.fetch('text')}"
+      @char.log "Mishap: #{mh.fetch(:text)}"
       # TODO: actually perform the mishap stuff in mh['script']
     end
 

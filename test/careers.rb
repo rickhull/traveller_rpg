@@ -229,17 +229,6 @@ describe Careers do
     end
   end
 
-  describe Careers.method(:mishaps) do
-    it "fetches a key from hsh" do
-    end
-
-    it "converts some strings to symbols" do
-    end
-
-    it "returns a new hash" do
-    end
-  end
-
   describe Careers.method(:credits) do
     it "fetches a key from hsh" do
     end
