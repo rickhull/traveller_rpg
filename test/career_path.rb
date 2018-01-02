@@ -109,6 +109,15 @@ describe CareerPath do
         # can't enter Scout a 2nd time, even if it's a new career
         proc { @path.apply @career }.must_raise CareerPath::Ineligible
       end
+
+      it "has a Drifter fallback" do
+      end
+
+      it "has a Draft fallback" do
+      end
+
+      it "does not allow Draft more than once" do
+      end
     end
 
     describe "CareerPath#run" do

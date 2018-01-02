@@ -82,6 +82,7 @@ module TravellerRPG
     end
 
     attr_reader :desc, :stats, :skills, :stuff, :credits, :cash_rolls
+    attr_accessor :drafted
 
     def initialize(desc:, stats:, skills: SkillSet.new, stuff: {},
                    log: [], credits: 0, cash_rolls: 0, homeworld: nil)
@@ -108,6 +109,10 @@ module TravellerRPG
         @skills.provide skill
       end
       self
+    end
+
+    def drafted?
+      !!@drafted
     end
 
     def benefit(item)

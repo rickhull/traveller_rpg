@@ -82,9 +82,16 @@ module TravellerRPG
         self.enter career, asg
       else
         @char.log "Did not qualify for #{career.name}"
-        case TravellerRPG.choose("Choose fallback:", 'Drifter', 'Draft')
+        if @char.drafted?
+          choice = 'Drifter'
+        else
+          choice = TravellerRPG.choose("Choose fallback:", 'Draft', 'Drifter')
+        end
+        case choice
         when 'Drifter' then self.enter 'Drifter'
         when 'Draft'   then self.draft
+        else
+          raise "unexpected: #{choice}"
         end
       end
     end
@@ -92,9 +99,11 @@ module TravellerRPG
     # return an active career, no qualification check, that has completed basic
     # training
     def draft
+      raise "Character cannot be drafted twice" if @char.drafted?
       roll = TravellerRPG.roll('d6', label: "Draft")
       career, asg = self.class::DRAFT_CAREERS.fetch(roll)
       @char.log "Drafted: #{[career, asg].compact.join(', ')}"
+      @char.drafted = career
       self.enter(career, asg)
     end
 
