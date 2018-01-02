@@ -67,6 +67,8 @@ module TravellerRPG
       end
     end
 
+    # Dice Modifier based on a given stat value
+    #
     def self.stats_dm(stat_val)
       case stat_val
       when 0 then -3
@@ -96,6 +98,8 @@ module TravellerRPG
       self.birth(homeworld) if homeworld
     end
 
+    # Dice Modifier based on the value of a given stat (e.g. :education)
+    #
     def stats_dm(stat_sym)
       self.class.stats_dm(@stats[stat_sym])
     end
