@@ -365,6 +365,8 @@ module TravellerRPG
   # Officer skills and Officer ranks
 
   class MilitaryCareer < Career
+    ALWAYS_ATTEMPT_COMMISSION = false
+
     def initialize(char, **kwargs)
       super(char, **kwargs)
       @officer = false
@@ -384,25 +386,19 @@ module TravellerRPG
     end
 
     def advancement_roll(dm: 0)
-      if !@officer and
-         (@term == 1 or @char.stats[:social_status] > 9) and true
-         # TravellerRPG.choose("Apply for commission?", :yes, :no) == :yes
+      if !@officer and (@term == 1 or @char.stats[:social_status] > 9) and
+         (ALWAYS_ATTEMPT_COMMISSION or
+          :yes == TravellerRPG.choose("Apply for commission?", :yes, :no))
         comm_dm = @term > 1 ? dm - 1 : dm
         if self.commission_check?(dm: comm_dm)
           @char.log "Became an officer!"
           @officer = 1
           self.take_rank_benefit
-
-          # skip normal advancement after successful commission
-          # but take the bonus training roll
-          self.training_roll
-
-          return self
         else
           @char.log "Commission was rejected"
         end
       end
-      # perform normal advancement unless commission was obtained
+      # perform normal advancement
       super(dm: dm)
     end
 
