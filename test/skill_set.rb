@@ -6,40 +6,42 @@ include TravellerRPG
 describe SkillSet do
   describe SkillSet.method(:split_skill!) do
     it "recognizes subskills" do
-      SkillSet.split_skill!('Animals:Handling').must_equal ['Animals',
-                                                            'Handling']
+      expect(SkillSet.split_skill!('Animals:Handling')).
+        must_equal ['Animals', 'Handling']
     end
 
     it "ignores trailing colon" do
-      SkillSet.split_skill!('Art:').must_equal ['Art', nil]
+      expect(SkillSet.split_skill!('Art:')).must_equal ['Art', nil]
     end
 
     it "must accept a single string arg do" do
       ['Admin', 'Animals', 'Animals:Handling'].each { |valid|
-        SkillSet.split_skill!(valid).must_be_kind_of Array
+        expect(SkillSet.split_skill!(valid)).must_be_kind_of Array
       }
     end
 
     it "raises UnknownSkill for unknown skills" do
       ['This:That', 'art'].each { |unk|
-        proc { SkillSet.split_skill!(unk) }.must_raise SkillSet::UnknownSkill
+        expect { SkillSet.split_skill!(unk) }.must_raise SkillSet::UnknownSkill
       }
       [:art, :Art].each { |invalid|
-        proc { SkillSet.split_skill!(invalid) }.must_raise NoMethodError
+        expect { SkillSet.split_skill!(invalid) }.must_raise NoMethodError
       }
     end
   end
 
   describe SkillSet.method(:new_skill) do
     it "does not recognize subskills" do
-      proc {
+      expect {
         SkillSet.new_skill('Animals:Handling')
       }.must_raise SkillSet::UnknownSkill
     end
 
     it "accepts a string to find a Skill or ComplexSkill" do
-      SkillSet.new_skill('Admin').must_be_kind_of TravellerRPG::Skill
-      SkillSet.new_skill('Animals').must_be_kind_of TravellerRPG::ComplexSkill
+      expect(SkillSet.new_skill('Admin')).
+        must_be_kind_of TravellerRPG::Skill
+      expect(SkillSet.new_skill('Animals')).
+        must_be_kind_of TravellerRPG::ComplexSkill
     end
   end
 
@@ -52,38 +54,38 @@ describe SkillSet do
 
     describe "SkillSet#count" do
       it "does not count subskills by default" do
-        @skills.count.must_equal 0
+        expect(@skills.count).must_equal 0
         @skills.provide 'Animals'
-        @skills.count.must_equal 1
+        expect(@skills.count).must_equal 1
         @skills.provide 'Admin'
-        @skills.count.must_equal 2
+        expect(@skills.count).must_equal 2
       end
 
       it "optionally counts subskills" do
-        @skills.count.must_equal 0
+        expect(@skills.count).must_equal 0
         @skills.provide 'Animals'
         animals_subskills = @skills['Animals'].skills.size
-        @skills.count(subskills: true).must_equal animals_subskills + 1
+        expect(@skills.count(subskills: true)).must_equal animals_subskills + 1
         @skills.provide 'Admin'
-        @skills.count(subskills: true).must_equal animals_subskills + 2
+        expect(@skills.count(subskills: true)).must_equal animals_subskills + 2
       end
     end
 
     describe "SkillSet#[]" do
       it "must raise for unknown skills" do
         @invalid.each { |s|
-          proc { @skills[s] }.must_raise SkillSet::UnknownSkill
+          expect { @skills[s] }.must_raise SkillSet::UnknownSkill
         }
       end
 
       it "must return nil for untrained skills" do
-        @valid.each { |s| @skills[s].must_be_nil }
+        @valid.each { |s| expect(@skills[s]).must_be_nil }
       end
 
       it "must return a Skill or ComplexSkill for trained skills" do
         @valid.each { |s|
           @skills.provide(s)
-          [Skill, ComplexSkill].must_include @skills[s].class
+          expect([Skill, ComplexSkill]).must_include @skills[s].class
         }
       end
     end
@@ -91,18 +93,18 @@ describe SkillSet do
     describe "SkillSet#level" do
       it "must raise for unknown skills" do
         @invalid.each { |s|
-          proc { @skills.level(s) }.must_raise SkillSet::UnknownSkill
+          expect { @skills.level(s) }.must_raise SkillSet::UnknownSkill
         }
       end
 
       it "must return nil for untrained skills" do
-        @valid.each { |s| @skills.level(s).must_be_nil }
+        @valid.each { |s| expect(@skills.level(s)).must_be_nil }
       end
 
       it "must return an Integer for trained skills" do
         @valid.each { |s|
           @skills.provide(s)
-          @skills.level(s).must_equal 0
+          expect(@skills.level(s)).must_equal 0
         }
       end
     end
@@ -110,29 +112,29 @@ describe SkillSet do
     describe "SkillSet#check?" do
       it "must raise for unknown skills" do
         @invalid.each { |s|
-          proc { @skills.check?(s, 0) }.must_raise SkillSet::UnknownSkill
+          expect { @skills.check?(s, 0) }.must_raise SkillSet::UnknownSkill
         }
       end
 
       it "must return false for untrained skills" do
-        @valid.each { |s| @skills.check?(s, 0).must_equal false }
+        @valid.each { |s| expect(@skills.check?(s, 0)).must_equal false }
       end
 
       it "must return false against a higher level" do
         @valid.each { |s|
           @skills.provide(s)
-          @skills.check?(s, 5).must_equal false
+          expect(@skills.check?(s, 5)).must_equal false
         }
       end
 
       it "must return true against a lower or equal level" do
         @valid.each { |s|
           @skills.provide(s)
-          @skills.check?(s, 0).must_equal true
+          expect(@skills.check?(s, 0)).must_equal true
           # ComplexSkills won't go past 0, only their subskills
           # Don't show the TravellerRPG.choose
           capture_io { @skills.bump(s) }
-          @skills.check?(s, 5).must_equal false
+          expect(@skills.check?(s, 5)).must_equal false
         }
       end
     end
@@ -147,34 +149,34 @@ describe SkillSet do
 
       it "must raise for unknown skills" do
         @invalid.each { |s|
-          proc { @skills.bump(s) }.must_raise SkillSet::UnknownSkill
+          expect { @skills.bump(s) }.must_raise SkillSet::UnknownSkill
         }
       end
 
       it "must create untrained skills" do
         @valid.each { |s|
           capture_io { @skills.bump(s) }
-          @skills[s].wont_be_nil
+          expect(@skills[s]).wont_be_nil
         }
       end
 
       it "must increment Skills" do
         @simple.each { |s|
-          @skills[s].must_be_nil
+          expect(@skills[s]).must_be_nil
           @skills.bump(s)
-          @skills[s].wont_be_nil
-          @skills.level(s).must_equal 1
+          expect(@skills[s]).wont_be_nil
+          expect(@skills.level(s)).must_equal 1
           @skills.bump(s)
-          @skills.level(s).must_equal 2
+          expect(@skills.level(s)).must_equal 2
         }
       end
 
       it "must increment ComplexSkills" do
         @complex.each { |s|
-          @skills[s].must_be_nil
+          expect(@skills[s]).must_be_nil
           capture_io { @skills.bump(s) } # subskill via TravellerRPG.choose
-          @skills[s].wont_be_nil
-          @skills.level(s).must_equal 0
+          expect(@skills[s]).wont_be_nil
+          expect(@skills.level(s)).must_equal 0
         }
       end
     end
