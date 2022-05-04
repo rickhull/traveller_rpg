@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/rickhull/traveller_rpg.svg?branch=master)](https://travis-ci.org/rickhull/traveller_rpg)
+[![CI Status](https://github.com/rickhull/traveller_rpg/actions/workflows/ci.yaml/badge.svg)](https://github.com/rickhull/traveller_rpg/actions/workflows/ci.yaml)
 [![Gem Version](https://badge.fury.io/rb/traveller_rpg.svg)](http://badge.fury.io/rb/traveller_rpg)
 
 # Traveller RPG
