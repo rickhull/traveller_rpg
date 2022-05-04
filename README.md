@@ -1,7 +1,5 @@
 [![Build Status](https://travis-ci.org/rickhull/traveller_rpg.svg?branch=master)](https://travis-ci.org/rickhull/traveller_rpg)
 [![Gem Version](https://badge.fury.io/rb/traveller_rpg.svg)](http://badge.fury.io/rb/traveller_rpg)
-[![Dependency Status](https://gemnasium.com/rickhull/traveller_rpg.svg)](https://gemnasium.com/rickhull/traveller_rpg)
-[![Security Status](https://hakiri.io/github/rickhull/traveller_rpg/master.svg?cachebuster)](https://hakiri.io/github/rickhull/traveller_rpg/master)
 
 # Traveller RPG
 
